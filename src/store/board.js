@@ -4,33 +4,37 @@ import generateUuid from './utils';
 //   id: string;
 //   userId: string;
 //   title: string;
-//   index: int;
+//   color: string;
 // }
 
 function state() {
   return {
-    boards: [],
+    boards: [{
+      id: '1',
+      userId: 1,
+      title: 'sample board',
+      color: 'indigo',
+    }],
   };
 }
 
 const mutations = {
-  addBoard({ boards }, userId, title) {
+  addBoard({ boards, userId }, { title, text, color }) {
     boards.push({
       id: generateUuid(),
       userId,
       title,
-      index: boards.length,
+      text,
+      color,
     });
   },
   removeBoard({ boards }, { id }) {
     boards.splice(boards.index(board => board.id === id), 1);
   },
-  rearrangeBoard(_state, oldIndex, newIndex) {
-    _state.boards.map((board) => {
-      if (board.index === oldIndex) {
-        board.index = newIndex;
-      } else if (board.index >= newIndex) {
-        board.index += 1;
+  editBoard(_state, newBoard) {
+    _state.boards = _state.boards.map((board) => {
+      if (board.id === newBoard.id) {
+        return newBoard;
       }
       return board;
     });
@@ -38,24 +42,20 @@ const mutations = {
 };
 
 const actions = {
-  addBoard({ commit }, title) {
-    commit('addBoard', title);
+  addBoard({ commit }, { title, text, color }) {
+    commit('addBoard', { title, text, color });
   },
   removeBoard({ commit }, { id }) {
     commit('removeBoard', id);
   },
-  rearrangeBoard({ commit }, { index }, newIndex) {
-    commit('removeBoard', index, newIndex);
+  editBoard({ commit }, board) {
+    commit('editBoard', board);
   },
 };
 
 const getters = {
-  getBoardById({ boards }, id) {
-    return boards.find(board => board.id === id);
-  },
-  getBoardsByUserId({ boards }, userId) {
-    return boards.filter(board => board.userId === userId);
-  },
+  getBoardById: ({ boards }) => id => boards.find(board => board.id === id),
+  getBoardsByUserId: ({ boards }) => userId => boards.filter(board => board.userId === userId),
 };
 
 export default {
