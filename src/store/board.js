@@ -4,6 +4,7 @@ import generateUuid from './utils';
 //   id: string;
 //   userId: string;
 //   title: string;
+//   text: string;
 //   color: string;
 // }
 
@@ -13,6 +14,7 @@ function state() {
       id: '1',
       userId: 1,
       title: 'sample board',
+      text: '',
       color: 'indigo',
     }],
   };
@@ -28,8 +30,8 @@ const mutations = {
       color,
     });
   },
-  removeBoard({ boards }, { id }) {
-    boards.splice(boards.index(board => board.id === id), 1);
+  removeBoard(_state, id) {
+    _state.boards = _state.boards.filter(board => board.id !== id);
   },
   editBoard(_state, newBoard) {
     _state.boards = _state.boards.map((board) => {

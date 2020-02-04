@@ -4,7 +4,6 @@ import generateUuid from './utils';
 //   id: string;
 //   boardId: string;
 //   title: string;
-//   index: int;
 // }
 
 function state() {
@@ -14,49 +13,41 @@ function state() {
 }
 
 const mutations = {
-  addList({ lists }, boardId, title) {
+  addList({ lists }, { boardId, title }) {
     lists.push({
       id: generateUuid(),
       boardId,
       title,
-      index: lists.length,
     });
   },
-  removeList({ lists }, { id }) {
-    lists.splice(lists.index(list => list.id === id), 1);
+  removeList(_state, id) {
+    _state.lists = _state.lists.filter(list => list.id !== id);
   },
-  rearrangeList(_state, oldIndex, newIndex) {
-    _state.lists.map((list) => {
-      if (list.index === oldIndex) {
-        list.index = newIndex;
-      } else if (list.index >= newIndex) {
-        list.index += 1;
+  editList(_state, newList) {
+    _state.lists = _state.lists.map((list) => {
+      if (list.id === newList.id) {
+        return newList;
       }
       return list;
     });
   },
-
 };
 
 const actions = {
-  addList({ commit }, title) {
-    commit('addList', title);
+  addList({ commit }, { title, boardId }) {
+    commit('addList', { title, boardId });
   },
   removeList({ commit }, { id }) {
     commit('removeList', id);
   },
-  rearrangeList({ commit }, { index }, newIndex) {
-    commit('removeList', index, newIndex);
+  editList({ commit }, newList) {
+    commit('editList', newList);
   },
 };
 
 const getters = {
-  getListById({ lists }, id) {
-    return lists.find(list => list.id === id);
-  },
-  getListsByBoardId({ lists }, boardId) {
-    return lists.filter(list => list.boardId === boardId);
-  },
+  getListById: ({ lists }) => id => lists.find(list => list.id === id),
+  getListsByBoardId: ({ lists }) => boardId => lists.filter(list => list.boardId === boardId),
 };
 
 export default {

@@ -3,16 +3,6 @@
     <v-container>
       <v-row justify="center">
         <h1 class="text-center ma-3">Your Boards</h1>
-        <v-btn
-          class="my-auto"
-          fab
-          dark
-          small
-          color="primary"
-          @click="modal = true"
-        >
-          <v-icon dark>mdi-plus</v-icon>
-        </v-btn>
       </v-row>
     </v-container>
 
@@ -29,8 +19,15 @@
       <v-row dense justify="start">
         <v-col v-for="(board, i) in boards" :key="i" cols="auto">
           <v-card dark>
-            <Board :id="board.id" />
+            <router-link style="text-decoration: none" :to="`/board/${board.id}`">
+              <Board :id="board.id" />
+            </router-link>
           </v-card>
+        </v-col>
+        <v-col cols="auto">
+          <v-btn class="mx-auto" width="300" height="100" @click="modal = true">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
         </v-col>
       </v-row>
     </v-container>
