@@ -4,23 +4,21 @@
       <v-row>
         <!-- List title -->
         <v-col cols="9">
-          <v-card-title
-            v-if="!editListMode"
-            class="headline text-truncate"
-          >{{ list.title }}</v-card-title>
-          <v-text-field
-            class="headline ml-4 mt-3"
-            v-model="newListTitle"
-            v-if="editListMode"
-            dense
-            full-width
-            label="New List"
-            single-line
-            autofocus
-            :rules="[!!newListTitle || 'Required']"
-            @keypress.enter="saveListTitle()"
-            @blur="saveListTitle()"
-          ></v-text-field>
+          <v-card-title v-if="editListMode">
+            <v-text-field
+              class="headline ml-0 mt-0"
+              v-model="newListTitle"
+              dense
+              full-width
+              label="New List"
+              single-line
+              autofocus
+              :rules="[!!newListTitle || 'Required']"
+              @keypress.enter="saveListTitle()"
+              @blur="saveListTitle()"
+            ></v-text-field>
+          </v-card-title>
+          <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
         </v-col>
 
         <!-- Menu button -->
@@ -52,13 +50,36 @@
 
       <v-divider class="mx-3"></v-divider>
 
-      <v-list>
-        <!-- <v-list-item>
-          <Item />
-        </v-list-item>-->
+      <v-list dense>
+        <v-list-item v-for="(item, index) in items" :key="index">
+          <Item :id="item.id" />
+        </v-list-item>
+        <v-list-item v-if="addItemMode" class="my-2">
+          <v-card class="mx-auto" width="270">
+            <!-- <v-card-title> -->
+            <v-text-field
+              class="headline mx-4"
+              v-model="newItemTitle"
+              dense
+              full-width
+              label="New Item"
+              single-line
+              autofocus
+              :rules="[!!newItemTitle || 'Required']"
+              @keypress.enter="addNewItem"
+              @blur="addNewItem"
+            ></v-text-field>
+            <!-- </v-card-title> -->
+          </v-card>
+        </v-list-item>
       </v-list>
       <v-card-actions>
-        <v-btn class="mx-auto" width="250" depressed @click="modal = true">
+        <v-btn
+          class="mx-auto"
+          width="250"
+          depressed
+          @click="addItemMode = true"
+        >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-card-actions>
@@ -69,7 +90,7 @@
       text="Can not restore list and items in list."
       :open="deleteListMode"
       @cancel="deleteListMode = false"
-      @confirm="del()"
+      @confirm="del"
     />
   </div>
 </template>
@@ -77,31 +98,39 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import Item from '@/components/Item.vue';
 
 export default {
   name: 'list',
   components: {
     ConfirmModal,
+    Item,
   },
   props: {
     id: String,
   },
   data() {
     return {
-      modal: false,
       editListMode: false,
       deleteListMode: false,
-      newListTitle: false,
+      addItemMode: false,
+      newListTitle: '',
+      newItemTitle: '',
       menuItems: [
         {
           title: 'edit',
           icon: 'mdi-pencil',
-          action: this.edit,
+          action: () => {
+            this.newListTitle = this.list.title;
+            this.editListMode = true;
+          },
         },
         {
           title: 'delete',
           icon: 'mdi-trash-can-outline',
-          action: () => { this.deleteListMode = true; },
+          action: () => {
+            this.deleteListMode = true;
+          },
         },
       ],
     };
@@ -110,29 +139,32 @@ export default {
     list() {
       return this.getListById()(this.id);
     },
+    items() {
+      return this.getItemsByListId()(this.id);
+    },
   },
   methods: {
-    ...mapGetters(['getListById']),
-    ...mapActions(['editList', 'removeList']),
-    closeDialog() {
-      this.modal = false;
-    },
-    saveDialog() {
-      this.modal = false;
+    ...mapGetters(['getListById', 'getItemsByListId']),
+    ...mapActions(['editList', 'removeList', 'addItem']),
+    addNewItem() {
+      const newTitle = this.newItemTitle.trim();
+      if (newTitle) {
+        this.addItem({
+          listId: this.id,
+          title: this.newItemTitle.trim(),
+        });
+      }
+      this.newItemTitle = '';
+      this.addItemMode = false;
     },
     del() {
       this.removeList(this.list);
       this.deleteListMode = false;
     },
-    edit() {
-      this.newListTitle = this.list.title;
-      this.editListMode = true;
-    },
     saveListTitle() {
       const newTitle = this.newListTitle.trim();
       if (newTitle) {
-        const curList = this.list;
-        const newList = Object.assign(curList, { title: newTitle });
+        const newList = Object.assign({ ...this.list }, { title: newTitle });
         this.editList(newList);
         this.editListMode = false;
         this.newListTitle = '';
@@ -141,6 +173,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-</style>
