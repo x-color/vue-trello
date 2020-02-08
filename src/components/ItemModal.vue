@@ -77,7 +77,7 @@
                 <v-list dense subheader max-width="400">
                   <v-subheader>Tags</v-subheader>
                   <v-list-item
-                    v-for="(tag, index) in $store.state.tag.tags"
+                    v-for="(tag, index) in tags"
                     :key="index"
                     class="px-2"
                   >
@@ -131,6 +131,11 @@ export default {
       isOpenedMenu: false,
       activeList: {},
     };
+  },
+  computed: {
+    tags() {
+      return this.$store.state.tag.tags;
+    },
   },
   methods: {
     addTag(tag) {
