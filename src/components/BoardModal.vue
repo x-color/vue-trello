@@ -4,60 +4,34 @@
       <v-container>
         <v-row>
           <!-- PIN: Title -->
-          <v-col cols="12">
-            <v-card-title
-              v-if="!editTitleMode"
-              class="title pt-1 pb-0"
-              :class="{ 'font-weight-light': !value.title }"
-              @click="editTitleMode = true"
-            >{{ value.title | replaceToHintTitle }}</v-card-title>
-            <v-card-title v-else class="py-0">
+          <v-col cols="10">
+            <v-card-title class="py-0">
               <v-text-field
                 class="title pt-1 pb-0"
                 dense
                 hide-details
+                placeholder="Title..."
                 v-model="value.title"
                 autofocus
-                @blur="editTitleMode = false"
               ></v-text-field>
             </v-card-title>
           </v-col>
 
-          <!-- PIN: Text -->
-          <v-col cols="12" class="pt-0">
-            <v-card-text
-              v-if="!editTextMode"
-              class="pt-0 body-2"
-              :class="{ 'font-weight-light': !value.text }"
-              @click="editTextMode = true"
-            >{{ value.text | replaceToHintText }}</v-card-text>
-            <v-card-text v-else class="pt-0 pb-2">
-              <v-textarea
-                class="body-2"
-                v-model="value.text"
-                autofocus
-                placeholder="Add desription..."
-                auto-grow
-                dense
-                hide-details
-                @blur="editTextMode = false"
-              ></v-textarea>
-            </v-card-text>
-          </v-col>
-
           <!-- PIN: Color -->
-          <v-col cols="12" class="p-0 px-5">
+          <v-col cols="2" class="pl-0">
             <!-- PIN: Colors Menu -->
-            <v-menu v-model="isOpenedMenu" offset-x :close-on-content-click="false">
+            <v-menu
+              v-model="isOpenedMenu"
+              offset-y
+              :close-on-content-click="false"
+            >
               <template v-slot:activator="{ on }">
                 <v-icon
                   :color="iconColor(value.color)"
                   class="ma-1"
                   x-large
                   v-on="on"
-                >
-                {{ circleIcon(value.color) }}
-                </v-icon>
+                >{{ circleIcon(value.color) }}</v-icon>
               </template>
               <v-card>
                 <v-list dense subheader max-width="400">
@@ -84,17 +58,34 @@
               </v-card>
             </v-menu>
           </v-col>
+
+          <!-- PIN: Text -->
+          <v-col cols="12" class="pt-0">
+            <v-card-text class="pt-0 pb-2">
+              <v-textarea
+                class="body-2"
+                v-model="value.text"
+                placeholder="Add desription..."
+                auto-grow
+                dense
+                hide-details
+              ></v-textarea>
+            </v-card-text>
+          </v-col>
         </v-row>
       </v-container>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn text color="red" @click="close">CANCEL</v-btn>
+        <v-btn text color="green" :disabled="!value.title" @click="save">CONFIRM</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-// import Vue from 'vue';
-
 export default {
-  name: 'board-modal',
+  name: 'new-board-modal',
   props: {
     value: Object,
     open: Boolean,
@@ -126,6 +117,11 @@ export default {
     close() {
       if (!this.isOpenedMenu) {
         this.$emit('close');
+      }
+    },
+    save() {
+      if (!this.isOpenedMenu) {
+        this.$emit('save');
       }
     },
   },

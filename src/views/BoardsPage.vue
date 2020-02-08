@@ -26,7 +26,7 @@
       </v-col>
     </v-row>
 
-    <NewBoardModal
+    <BoardModal
       v-model="newBoard"
       :open="addBoardMode"
       @close="resetNewBoard"
@@ -37,14 +37,14 @@
 
 <script>
 import { mapActions } from 'vuex';
-import NewBoardModal from '@/components/NewBoardModal.vue';
+import BoardModal from '@/components/BoardModal.vue';
 import Board from '@/components/Board.vue';
 
 export default {
   name: 'boards',
   components: {
     Board,
-    NewBoardModal,
+    BoardModal,
   },
   computed: {
     boards() {
