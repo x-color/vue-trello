@@ -5,7 +5,7 @@ import generateUuid from './utils';
 //   listId: string;
 //   title: string;
 //   text: string;
-//   index: int;
+//   color: string;
 // }
 
 function state() {
@@ -15,23 +15,24 @@ function state() {
 }
 
 const mutations = {
-  addItem({ items }, listId, title) {
+  addItem({ items }, {
+    listId, title, text = '', color = 'white',
+  }) {
     items.push({
       id: generateUuid(),
       listId,
       title,
-      index: items.length,
+      text,
+      color,
     });
   },
-  removeItem({ items }, { id }) {
-    items.splice(items.index(item => item.id === id), 1);
+  removeItem(_state, id) {
+    _state.items = _state.items.filter(item => item.id !== id);
   },
-  rearrangeItem(_state, oldIndex, newIndex) {
-    _state.items.map((item) => {
-      if (item.index === oldIndex) {
-        item.index = newIndex;
-      } else if (item.index >= newIndex) {
-        item.index += 1;
+  editItem(_state, newItem) {
+    _state.items = _state.items.map((item) => {
+      if (item.id === newItem.id) {
+        return newItem;
       }
       return item;
     });
@@ -39,24 +40,24 @@ const mutations = {
 };
 
 const actions = {
-  addItem({ commit }, title) {
-    commit('addItem', title);
+  addItem({ commit }, {
+    listId, title, text, color,
+  }) {
+    commit('addItem', {
+      listId, title, text, color,
+    });
   },
   removeItem({ commit }, { id }) {
     commit('removeItem', id);
   },
-  rearrangeItem({ commit }, { index }, newIndex) {
-    commit('removeItem', index, newIndex);
+  editItem({ commit }, newItem) {
+    commit('editItem', newItem);
   },
 };
 
 const getters = {
-  getItemById({ items }, id) {
-    return items.find(item => item.id === id);
-  },
-  getItemsByListId({ items }, listId) {
-    return items.filter(item => item.listId === listId);
-  },
+  getItemById: ({ items }) => id => items.find(item => item.id === id),
+  getItemsByListId: ({ items }) => listId => items.filter(item => item.listId === listId),
 };
 
 export default {
