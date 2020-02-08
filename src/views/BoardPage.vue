@@ -31,14 +31,12 @@
         <v-row style="height: 15px">
           <p class="mx-4">{{ board.text }}</p>
         </v-row>
-        <Dialog
-          :cur-title="board.title"
-          :cur-text="board.text"
-          :cur-color="board.color"
-          :open="editBoardDialog"
-          @close-dialog="editBoardDialog = false"
-          @save-dialog="saveEditedBoard"
-        ></Dialog>
+        <BoardModal
+          v-model="editedBoard"
+          :open="editBoardMode"
+          @close="editBoardMode = false"
+          @save="saveEditedBoard"
+        ></BoardModal>
       </v-container>
 
       <!-- Lists -->
@@ -110,14 +108,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import List from '@/components/List.vue';
-import Dialog from '@/components/Dialog.vue';
+import BoardModal from '@/components/BoardModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 
 export default {
   name: 'board-page',
   components: {
     List,
-    Dialog,
+    BoardModal,
     ConfirmModal,
   },
   computed: {
@@ -142,15 +140,15 @@ export default {
       this.newListTitle = '';
       this.addListMode = false;
     },
-    saveEditedBoard({ color, text, title }) {
+    saveEditedBoard() {
       this.editBoard({
         id: this.board.id,
         userId: this.board.userId,
-        color,
-        text,
-        title,
+        color: this.editedBoard.color,
+        text: this.editedBoard.text,
+        title: this.editedBoard.title,
       });
-      this.editBoardDialog = false;
+      this.editBoardMode = false;
     },
     del() {
       this.removeBoard(this.board);
@@ -160,15 +158,17 @@ export default {
   data() {
     return {
       addListMode: false,
-      editBoardDialog: false,
+      editBoardMode: false,
       deleteBoardMode: false,
       newListTitle: '',
+      editedBoard: {},
       menuItems: [
         {
           title: 'edit',
           icon: 'mdi-pencil',
           action: () => {
-            this.editBoardDialog = true;
+            this.editedBoard = { ...this.board };
+            this.editBoardMode = true;
           },
         },
         {
