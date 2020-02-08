@@ -5,7 +5,7 @@ import generateUuid from './utils';
 //   listId: string;
 //   title: string;
 //   text: string;
-//   color: string;
+//   tags: Tag[];
 // }
 
 function state() {
@@ -16,14 +16,14 @@ function state() {
 
 const mutations = {
   addItem({ items }, {
-    listId, title, text = '', color = 'white',
+    listId, title, text, tags,
   }) {
     items.push({
       id: generateUuid(),
       listId,
       title,
       text,
-      color,
+      tags,
     });
   },
   removeItem(_state, id) {
@@ -41,10 +41,10 @@ const mutations = {
 
 const actions = {
   addItem({ commit }, {
-    listId, title, text, color,
+    listId, title, text = '', tags = [],
   }) {
     commit('addItem', {
-      listId, title, text, color,
+      listId, title, text, tags,
     });
   },
   removeItem({ commit }, { id }) {

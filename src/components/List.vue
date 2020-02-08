@@ -1,56 +1,58 @@
 <template>
   <div>
-    <v-card class="mx-auto" width="300">
-      <v-row>
-        <!-- List title -->
-        <v-col cols="9">
-          <v-card-title v-if="editListMode">
-            <v-text-field
-              class="headline ml-0 mt-0"
-              v-model="newListTitle"
-              dense
-              full-width
-              label="New List"
-              single-line
-              autofocus
-              :rules="[!!newListTitle || 'Required']"
-              @keypress.enter="saveListTitle()"
-              @blur="saveListTitle()"
-            ></v-text-field>
-          </v-card-title>
-          <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
-        </v-col>
+    <v-card class="mx-auto" width="300" color="grey lighten-4">
+      <v-container>
+        <v-row>
+          <!-- List title -->
+          <v-col cols="9">
+            <v-card-title v-if="editListMode" color="grey lighten-4">
+              <v-text-field
+                class="headline ml-0 mt-0"
+                v-model="newListTitle"
+                dense
+                full-width
+                label="New List"
+                single-line
+                autofocus
+                :rules="[!!newListTitle || 'Required']"
+                @keypress.enter="saveListTitle()"
+                @blur="saveListTitle()"
+              ></v-text-field>
+            </v-card-title>
+            <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
+          </v-col>
 
-        <!-- Menu button -->
-        <v-col cols="3">
-          <div class="text-center">
-            <v-menu offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn fab outlined small text dark v-on="on">
-                  <v-icon color="black">mdi-dots-horizontal</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  class="pr-1"
-                  v-for="(item, index) in menuItems"
-                  :key="index"
-                  @click="item.action()"
-                >
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-avatar class="mx-0">
-                    <v-icon small>{{ item.icon }}</v-icon>
-                  </v-list-item-avatar>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </v-col>
-      </v-row>
+          <!-- Menu button -->
+          <v-col cols="3">
+            <div class="text-center">
+              <v-menu offset-y>
+                <template v-slot:activator="{ on }">
+                  <v-btn fab outlined small text dark v-on="on">
+                    <v-icon color="black">mdi-dots-horizontal</v-icon>
+                  </v-btn>
+                </template>
+                <v-list>
+                  <v-list-item
+                    class="pr-1"
+                    v-for="(item, index) in menuItems"
+                    :key="index"
+                    @click="item.action()"
+                  >
+                    <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    <v-list-item-avatar class="mx-0">
+                      <v-icon small>{{ item.icon }}</v-icon>
+                    </v-list-item-avatar>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </div>
+          </v-col>
+        </v-row>
+      </v-container>
 
       <v-divider class="mx-3"></v-divider>
 
-      <v-list dense>
+      <v-list dense color="grey lighten-4">
         <v-list-item v-for="(item, index) in items" :key="index">
           <Item :id="item.id" />
         </v-list-item>
@@ -69,7 +71,6 @@
               @keypress.enter="addNewItem"
               @blur="addNewItem"
             ></v-text-field>
-            <!-- </v-card-title> -->
           </v-card>
         </v-list-item>
       </v-list>
@@ -78,6 +79,7 @@
           class="mx-auto"
           width="250"
           depressed
+          color="grey lighten-2"
           @click="addItemMode = true"
         >
           <v-icon>mdi-plus</v-icon>

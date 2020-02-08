@@ -1,113 +1,84 @@
 <template>
   <div>
-    <v-container class="mx-auto py-1 px-0">
-      <v-card class="mx-auto" width="270" :color="item.color">
-        <v-row justify="center" @click="openDialog">
-          <!-- Item title -->
-          <v-col cols="9">
-            <v-card-title class="headline text-truncate py-1">{{ item.title }}</v-card-title>
-            <v-card-subtitle class="py-2 text-truncate">{{ item.text }}</v-card-subtitle>
-          </v-col>
-
-          <!-- Menu button -->
-          <v-col class="pt-0" cols="3">
-            <div class="text-center">
-              <v-menu offset-y>
-                <template v-slot:activator="{ on }">
-                  <v-btn fab outlined small text dark v-on="on">
-                    <v-icon color="black">mdi-dots-horizontal</v-icon>
-                  </v-btn>
-                </template>
-                <v-list>
-                  <v-list-item
-                    class="pr-1"
-                    v-for="(item, index) in menuItems"
-                    :key="index"
-                    @click="item.action()"
-                  >
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-avatar class="mx-0">
-                      <v-icon small>{{ item.icon }}</v-icon>
-                    </v-list-item-avatar>
-                  </v-list-item>
-                </v-list>
-              </v-menu>
-            </div>
+    <v-card class="mx-auto my-1" width="270" @click.stop="edit">
+      <v-container class="mx-auto py-1 px-0">
+        <v-row v-if="item.tags.length" justify="start">
+          <v-col cols="auto" class="py-0">
+            <v-chip
+              v-for="(tag, index) in tags"
+              :key="index"
+              :color="tag.color"
+              class="ml-2"
+              small
+              label
+              text-color="white"
+            >
+              <v-icon small left>mdi-label</v-icon>
+              {{ tag.title }}
+            </v-chip>
           </v-col>
         </v-row>
-      </v-card>
-    </v-container>
-    <Dialog
+        <v-card-title class="headline text-truncate py-3">{{ item.title }}</v-card-title>
+        <v-card-subtitle class="py-2 text-truncate">{{ item.text }}</v-card-subtitle>
+      </v-container>
+    </v-card>
+    <ItemModal
       v-model="editedItem"
-      :open="editItemDialog"
-      @close="editItemDialog = false"
-      @save="saveEditedItem"
-    ></Dialog>
+      :open="editItemMode"
+      @close="saveEditedItem"
+    ></ItemModal>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import Dialog from '@/components/ItemModal.vue';
+import ItemModal from '@/components/ItemModal.vue';
 
 export default {
   name: 'item',
   components: {
-    Dialog,
+    ItemModal,
   },
   props: {
     id: String,
   },
   data() {
     return {
-      editItemDialog: false,
+      editItemMode: false,
       newItemTitle: '',
-      editedItem: {},
-      menuItems: [
-        {
-          title: 'edit',
-          icon: 'mdi-pencil',
-          action: this.edit,
-        },
-        {
-          title: 'delete',
-          icon: 'mdi-trash-can-outline',
-          action: this.del,
-        },
-      ],
+      editedItem: { title: '', text: '', tags: [] },
     };
   },
   computed: {
     item() {
       return this.getItemById()(this.id);
     },
+    tags() {
+      return this.item.tags.map(tagId => this.getTagById()(tagId));
+    },
   },
   methods: {
-    ...mapGetters(['getItemById']),
+    ...mapGetters(['getItemById', 'getTagById']),
     ...mapActions(['editItem', 'removeItem']),
-    del() {
-      this.removeItem(this.item);
-    },
     edit() {
-      this.newItemTitle = this.item.title;
-      this.editItemDialog = true;
+      this.editedItem = Object.assign(
+        { ...this.item },
+        { tags: this.item.tags.slice() },
+      );
+      this.editItemMode = true;
     },
     saveItemTitle() {
       const newTitle = this.newItemTitle.trim();
       if (newTitle) {
         const newItem = Object.assign({ ...this.item }, { title: newTitle });
         this.editItem(newItem);
-        this.editItemDialog = false;
+        this.editItemMode = false;
         this.newItemTitle = '';
       }
     },
-    openDialog() {
-      this.editedItem = { ...this.item };
-      this.editItemDialog = true;
-    },
     saveEditedItem() {
       this.editItem(this.editedItem);
-      this.editItemDialog = false;
+      this.editItemMode = false;
     },
   },
 };

@@ -18,7 +18,7 @@ function state() {
 
 const mutations = {
   addTag({ tags }, {
-    title, color = 'white',
+    title, color,
   }) {
     tags.push({
       id: generateUuid(),
@@ -41,7 +41,7 @@ const mutations = {
 
 const actions = {
   addTag({ commit }, {
-    title, color,
+    title, color = 'white',
   }) {
     commit('addTag', {
       title, color,
@@ -55,8 +55,13 @@ const actions = {
   },
 };
 
+const getters = {
+  getTagById: ({ tags }) => id => tags.find(tag => tag.id === id),
+};
+
 export default {
   state,
   mutations,
   actions,
+  getters,
 };

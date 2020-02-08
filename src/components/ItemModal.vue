@@ -7,13 +7,13 @@
           <v-col cols="12">
             <v-card-title
               v-if="!editTitleMode"
-              class="title pt-1 pb-0"
+              class="headline pt-1 pb-0"
               :class="{ 'font-weight-light': !value.title }"
               @click="editTitleMode = true"
             >{{ value.title | replaceToHintTitle }}</v-card-title>
             <v-card-title v-else class="py-0">
               <v-text-field
-                class="title pt-1 pb-0"
+                class="headline pt-1 pb-0"
                 dense
                 hide-details
                 v-model="value.title"
@@ -47,29 +47,33 @@
 
           <!-- PIN: Tags -->
           <v-col cols="12" class="px-5">
-            <v-chip
-              v-for="(tag, index) in value.tags"
-              :key="index"
-              :color="tag.color"
-              class="ma-1"
-              small
-              label
-              text-color="white"
-            >
-              <v-icon small left>mdi-label</v-icon>
-              {{ tag.title }}
-            </v-chip>
+            <!--
+              NOTE: This `span` tag lines tags up. (`tag1`, `tag2`, `+`)
+                    If remove it, tags line up `+`, `tag1`, `tag2`.
+            -->
+            <span>
+              <v-chip
+                v-for="(tag, index) in tags"
+                :key="index"
+                :color="tag.color"
+                class="ma-1"
+                small
+                label
+                text-color="white"
+              >
+                <v-icon small left>mdi-label</v-icon>
+                {{ tag.title }}
+              </v-chip>
+            </span>
 
             <!-- PIN: Tags Menu -->
-            <v-menu v-model="isOpenedMenu" :close-on-content-click="false">
+            <v-menu
+              v-model="isOpenedMenu"
+              :close-on-content-click="false"
+              offset-y
+            >
               <template v-slot:activator="{ on }">
-                <v-chip
-                  class="ma-2"
-                  color="gray"
-                  small
-                  label
-                  v-on="on"
-                >
+                <v-chip class="ma-2" color="gray" small label v-on="on">
                   <v-icon small>mdi-plus</v-icon>
                 </v-chip>
               </template>
@@ -77,7 +81,7 @@
                 <v-list dense subheader max-width="400">
                   <v-subheader>Tags</v-subheader>
                   <v-list-item
-                    v-for="(tag, index) in tags"
+                    v-for="(tag, index) in $store.state.tag.tags"
                     :key="index"
                     class="px-2"
                   >
@@ -117,12 +121,18 @@
 
 <script>
 import Vue from 'vue';
+import { mapGetters } from 'vuex';
 
 export default {
-  name: 'modal',
+  name: 'item-modal',
   props: {
     value: Object,
     open: Boolean,
+  },
+  computed: {
+    tags() {
+      return this.value.tags.map(tagId => this.getTagById()(tagId));
+    },
   },
   data() {
     return {
@@ -132,38 +142,34 @@ export default {
       activeList: {},
     };
   },
-  computed: {
-    tags() {
-      return this.$store.state.tag.tags;
-    },
-  },
   methods: {
-    addTag(tag) {
-      this.value.tags.push(tag);
+    ...mapGetters(['getTagById']),
+    addTag(id) {
+      this.value.tags.push(id);
     },
-    removeTag({ id }) {
-      this.value.tags = this.value.tags.filter(tag => tag.id !== id);
+    removeTag(id) {
+      this.value.tags = this.value.tags.filter(tagId => tagId !== id);
     },
     isActive({ id }) {
       if (id in this.activeList) {
         return this.activeList[id];
       }
-      if (this.value.tags.find(tag => tag.id === id)) {
+      if (this.value.tags.find(tagId => tagId === id)) {
         Vue.set(this.activeList, id, true);
         return true;
       }
       return false;
     },
-    toggleTag(tag) {
-      if (tag.id in this.activeList) {
-        Vue.set(this.activeList, tag.id, !this.activeList[tag.id]);
+    toggleTag({ id }) {
+      if (id in this.activeList) {
+        Vue.set(this.activeList, id, !this.activeList[id]);
       } else {
-        Vue.set(this.activeList, tag.id, true);
+        Vue.set(this.activeList, id, true);
       }
-      if (this.activeList[tag.id]) {
-        this.addTag(tag);
+      if (this.activeList[id]) {
+        this.addTag(id);
       } else {
-        this.removeTag(tag);
+        this.removeTag(id);
       }
     },
     close() {
