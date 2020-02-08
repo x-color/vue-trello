@@ -19,6 +19,7 @@
           class="mx-auto"
           width="300"
           height="100"
+          color="grey lighten-2"
           @click="addBoardMode = true"
         >
           <v-icon>mdi-plus</v-icon>

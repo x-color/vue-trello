@@ -53,13 +53,14 @@
               class="mx-auto"
               width="300"
               height="100"
+              color="grey lighten-2"
               @click="addListMode = true"
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
 
             <!-- New list form -->
-            <v-card v-if="addListMode" class="mx-auto" width="300">
+            <v-card v-if="addListMode" class="mx-auto" width="300" color="grey lighten-4">
               <v-card-title>
                 <v-text-field
                   class="headline"
