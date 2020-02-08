@@ -1,49 +1,50 @@
 <template>
-  <div class="home">
-    <v-container>
-      <v-row justify="center">
-        <h1 class="text-center ma-3">Your Boards</h1>
-      </v-row>
-    </v-container>
+  <v-container>
+    <v-row justify="start">
+      <v-col cols="auto">
+        <h1 class="ma-3">Your Boards</h1>
+      </v-col>
+    </v-row>
 
-    <Dialog
-      :cur-title="''"
-      :cur-text="''"
-      :cur-color="''"
-      :open="modal"
-      @close-dialog="modal = false"
-      @save-dialog="saveDialog"
-    ></Dialog>
+    <v-row dense justify="start">
+      <v-col v-for="(board, i) in boards" :key="i" cols="auto">
+        <v-card dark>
+          <router-link style="text-decoration: none" :to="`/board/${board.id}`">
+            <Board :id="board.id" />
+          </router-link>
+        </v-card>
+      </v-col>
+      <v-col cols="auto">
+        <v-btn
+          class="mx-auto"
+          width="300"
+          height="100"
+          @click="addBoardMode = true"
+        >
+          <v-icon>mdi-plus</v-icon>
+        </v-btn>
+      </v-col>
+    </v-row>
 
-    <v-container>
-      <v-row dense justify="start">
-        <v-col v-for="(board, i) in boards" :key="i" cols="auto">
-          <v-card dark>
-            <router-link style="text-decoration: none" :to="`/board/${board.id}`">
-              <Board :id="board.id" />
-            </router-link>
-          </v-card>
-        </v-col>
-        <v-col cols="auto">
-          <v-btn class="mx-auto" width="300" height="100" @click="modal = true">
-            <v-icon>mdi-plus</v-icon>
-          </v-btn>
-        </v-col>
-      </v-row>
-    </v-container>
-  </div>
+    <NewBoardModal
+      v-model="newBoard"
+      :open="addBoardMode"
+      @close="resetNewBoard"
+      @save="addNewBoard"
+    />
+  </v-container>
 </template>
 
 <script>
 import { mapActions } from 'vuex';
+import NewBoardModal from '@/components/NewBoardModal.vue';
 import Board from '@/components/Board.vue';
-import Dialog from '@/components/Dialog.vue';
 
 export default {
   name: 'boards',
   components: {
     Board,
-    Dialog,
+    NewBoardModal,
   },
   computed: {
     boards() {
@@ -52,14 +53,23 @@ export default {
   },
   methods: {
     ...mapActions(['addBoard']),
-    saveDialog({ color, text, title }) {
-      this.addBoard({ color, text, title });
-      this.modal = false;
+    addNewBoard() {
+      this.addBoard({
+        color: this.newBoard.color,
+        text: this.newBoard.text,
+        title: this.newBoard.title,
+      });
+      this.resetNewBoard();
+    },
+    resetNewBoard() {
+      this.newBoard = { title: '', text: '', color: 'indigo' };
+      this.addBoardMode = false;
     },
   },
   data() {
     return {
-      modal: false,
+      addBoardMode: false,
+      newBoard: { title: '', text: '', color: 'indigo' },
     };
   },
 };
