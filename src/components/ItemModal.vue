@@ -61,7 +61,7 @@
             </v-chip>
 
             <!-- PIN: Tags Menu -->
-            <v-menu :close-on-content-click="false" @input="closeMenu">
+            <v-menu v-model="isOpenedMenu" :close-on-content-click="false">
               <template v-slot:activator="{ on }">
                 <v-chip
                   class="ma-2"
@@ -69,7 +69,6 @@
                   small
                   label
                   v-on="on"
-                  @click="isOpenedMenu = true"
                 >
                   <v-icon small>mdi-plus</v-icon>
                 </v-chip>
@@ -161,11 +160,6 @@ export default {
       } else {
         this.removeTag(tag);
       }
-    },
-    closeMenu() {
-      setTimeout(() => {
-        this.isOpenedMenu = false;
-      }, 1000);
     },
     close() {
       if (!this.isOpenedMenu) {
