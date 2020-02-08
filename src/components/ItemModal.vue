@@ -46,7 +46,7 @@
           </v-col>
 
           <!-- PIN: Tags -->
-          <v-col cols="12" class="p-0 px-5">
+          <v-col cols="12" class="px-5">
             <v-chip
               v-for="(tag, index) in value.tags"
               :key="index"
