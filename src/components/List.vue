@@ -160,8 +160,8 @@ export default {
       this.addItemMode = false;
     },
     del() {
-      this.removeList(this.list);
       this.deleteListMode = false;
+      this.removeList(this.list);
     },
     saveListTitle() {
       const newTitle = this.newListTitle.trim();

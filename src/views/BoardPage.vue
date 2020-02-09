@@ -152,8 +152,8 @@ export default {
       this.editBoardMode = false;
     },
     del() {
-      this.removeBoard(this.board);
       this.deleteBoardMode = false;
+      this.removeBoard(this.board);
     },
   },
   data() {

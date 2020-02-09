@@ -37,7 +37,10 @@ const actions = {
   addList({ commit }, { title, boardId }) {
     commit('addList', { title, boardId });
   },
-  removeList({ commit }, { id }) {
+  removeList({ commit, getters, dispatch }, { id }) {
+    getters.getItemsByListId(id).forEach((item) => {
+      dispatch('removeItem', item);
+    });
     commit('removeList', id);
   },
   editList({ commit }, newList) {

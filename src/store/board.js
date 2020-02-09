@@ -47,7 +47,10 @@ const actions = {
   addBoard({ commit }, { title, text, color }) {
     commit('addBoard', { title, text, color });
   },
-  removeBoard({ commit }, { id }) {
+  removeBoard({ commit, getters, dispatch }, { id }) {
+    getters.getListsByBoardId(id).forEach((list) => {
+      dispatch('removeList', list);
+    });
     commit('removeBoard', id);
   },
   editBoard({ commit }, board) {
