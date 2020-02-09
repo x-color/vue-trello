@@ -192,8 +192,9 @@ export default {
     ConfirmModal,
   },
   computed: {
+    ...mapGetters(['getTagById']),
     tags() {
-      return this.value.tags.map(tagId => this.getTagById()(tagId));
+      return this.value.tags.map(tagId => this.getTagById(tagId));
     },
   },
   data() {
@@ -208,7 +209,6 @@ export default {
     };
   },
   methods: {
-    ...mapGetters(['getTagById']),
     addTag(id) {
       this.value.tags.push(id);
     },

@@ -30,12 +30,12 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getBoardById']),
     board() {
-      return this.getBoardById()(this.id);
+      return this.getBoardById(this.id);
     },
   },
   methods: {
-    ...mapGetters(['getBoardById']),
     ...mapActions(['editBoard']),
   },
 };

@@ -138,15 +138,15 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getListById', 'getItemsByListId']),
     list() {
-      return this.getListById()(this.id);
+      return this.getListById(this.id);
     },
     items() {
-      return this.getItemsByListId()(this.id);
+      return this.getItemsByListId(this.id);
     },
   },
   methods: {
-    ...mapGetters(['getListById', 'getItemsByListId']),
     ...mapActions(['editList', 'removeList', 'addItem']),
     addNewItem() {
       const newTitle = this.newItemTitle.trim();

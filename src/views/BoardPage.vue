@@ -120,15 +120,15 @@ export default {
     ConfirmModal,
   },
   computed: {
+    ...mapGetters(['getBoardById', 'getListsByBoardId']),
     board() {
-      return this.getBoardById()(this.$route.params.id);
+      return this.getBoardById(this.$route.params.id);
     },
     lists() {
-      return this.getListsByBoardId()(this.$route.params.id);
+      return this.getListsByBoardId(this.$route.params.id);
     },
   },
   methods: {
-    ...mapGetters(['getBoardById', 'getListsByBoardId']),
     ...mapActions(['addList', 'editBoard', 'removeBoard']),
     addNewList() {
       const newTitle = this.newListTitle.trim();

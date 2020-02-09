@@ -51,15 +51,15 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['getItemById', 'getTagById']),
     item() {
-      return this.getItemById()(this.id);
+      return this.getItemById(this.id);
     },
     tags() {
-      return this.item.tags.map(tagId => this.getTagById()(tagId));
+      return this.item.tags.map(tagId => this.getTagById(tagId));
     },
   },
   methods: {
-    ...mapGetters(['getItemById', 'getTagById']),
     ...mapActions(['editItem', 'removeItem']),
     edit() {
       this.editedItem = Object.assign(
