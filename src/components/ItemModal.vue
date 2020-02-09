@@ -114,20 +114,82 @@
             </v-menu>
           </v-col>
         </v-row>
+
+        <v-row justify="end">
+          <v-col cols="auto">
+            <v-btn
+              v-if="isHoverDeleteIcon"
+              text
+              small
+              icon
+              color="red"
+              @mouseleave="isHoverDeleteIcon = false"
+              @click="deleteItemMode = true"
+            >
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+            <v-btn
+              v-else
+              text
+              small
+              icon
+              color="red"
+              @mouseover="isHoverDeleteIcon = true"
+            >
+              <v-icon>mdi-delete-outline</v-icon>
+            </v-btn>
+          </v-col>
+          <v-col cols="auto" class="mr-3">
+            <v-btn
+              v-if="isHoverCheckIcon"
+              text
+              small
+              icon
+              color="green"
+              @mouseleave="isHoverCheckIcon = false"
+              @click="close"
+            >
+              <v-icon>mdi-check-bold</v-icon>
+            </v-btn>
+            <v-btn
+              v-else
+              text
+              small
+              icon
+              color="green"
+              @mouseover="isHoverCheckIcon = true"
+            >
+              <v-icon>mdi-check</v-icon>
+            </v-btn>
+          </v-col>
+        </v-row>
       </v-container>
     </v-card>
+
+    <!-- PIN: Delete confirmation modal -->
+    <ConfirmModal
+      :title="`Delete '${value.title}' ?`"
+      text="Can not restore this item."
+      :open="deleteItemMode"
+      @cancel="deleteItemMode = false"
+      @confirm="del()"
+    />
   </v-dialog>
 </template>
 
 <script>
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
+import ConfirmModal from '@/components/ConfirmModal.vue';
 
 export default {
   name: 'item-modal',
   props: {
     value: Object,
     open: Boolean,
+  },
+  components: {
+    ConfirmModal,
   },
   computed: {
     tags() {
@@ -138,7 +200,10 @@ export default {
     return {
       editTitleMode: false,
       editTextMode: false,
+      deleteItemMode: false,
       isOpenedMenu: false,
+      isHoverDeleteIcon: false,
+      isHoverCheckIcon: false,
       activeList: {},
     };
   },
@@ -176,6 +241,10 @@ export default {
       if (!this.isOpenedMenu) {
         this.$emit('close');
       }
+    },
+    del() {
+      this.deleteItemMode = false;
+      this.$emit('delete');
     },
   },
   filters: {

@@ -26,6 +26,7 @@
       v-model="editedItem"
       :open="editItemMode"
       @close="saveEditedItem"
+      @delete="del"
     ></ItemModal>
   </div>
 </template>
@@ -79,6 +80,10 @@ export default {
     saveEditedItem() {
       this.editItem(this.editedItem);
       this.editItemMode = false;
+    },
+    del() {
+      this.editItemMode = false;
+      this.removeItem(this.item);
     },
   },
 };
