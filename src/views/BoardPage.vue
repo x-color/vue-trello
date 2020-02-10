@@ -42,9 +42,11 @@
       <!-- Lists -->
       <v-container>
         <v-row class="flex-nowrap" dense justify="start">
-          <v-col v-for="(list, i) in lists" :key="i" cols="auto">
-            <List :id="list.id" />
-          </v-col>
+          <draggable class="row flex-nowrap row--dense justify-start" v-model="lists" group="lists">
+            <v-col v-for="(list, i) in lists" :key="i" cols="auto">
+              <List :id="list.id" />
+            </v-col>
+          </draggable>
 
           <!-- Add new list -->
           <v-col cols="auto">
@@ -60,7 +62,12 @@
             </v-btn>
 
             <!-- New list form -->
-            <v-card v-if="addListMode" class="mx-auto" width="300" color="grey lighten-4">
+            <v-card
+              v-if="addListMode"
+              class="mx-auto"
+              width="300"
+              color="grey lighten-4"
+            >
               <v-card-title>
                 <v-text-field
                   class="headline"
@@ -108,6 +115,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import draggable from 'vuedraggable';
 import List from '@/components/List.vue';
 import BoardModal from '@/components/BoardModal.vue';
 import ConfirmModal from '@/components/ConfirmModal.vue';
@@ -118,14 +126,24 @@ export default {
     List,
     BoardModal,
     ConfirmModal,
+    draggable,
   },
   computed: {
     ...mapGetters(['getBoardById', 'getListsByBoardId']),
     board() {
       return this.getBoardById(this.$route.params.id);
     },
-    lists() {
-      return this.getListsByBoardId(this.$route.params.id);
+    lists: {
+      get() {
+        return this.getListsByBoardId(this.$route.params.id);
+      },
+      set(newValue) {
+        const newBoard = Object.assign(
+          { ...this.board },
+          { lists: newValue.map(list => list.id) },
+        );
+        this.editBoard(newBoard);
+      },
     },
   },
   methods: {

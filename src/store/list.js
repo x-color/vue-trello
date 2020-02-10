@@ -14,13 +14,8 @@ function state() {
 }
 
 const mutations = {
-  addList({ lists }, { boardId, title }) {
-    lists.push({
-      id: generateUuid(),
-      boardId,
-      title,
-      items: [],
-    });
+  addList({ lists }, newList) {
+    lists.push(newList);
   },
   removeList(_state, id) {
     _state.lists = _state.lists.filter(list => list.id !== id);
@@ -36,8 +31,18 @@ const mutations = {
 };
 
 const actions = {
-  addList({ commit }, { title, boardId }) {
-    commit('addList', { title, boardId });
+  addList({ commit, dispatch, getters }, { title, boardId }) {
+    const newList = {
+      id: generateUuid(),
+      boardId,
+      title,
+      items: [],
+    };
+    commit('addList', newList);
+
+    const board = getters.getBoardById(boardId);
+    board.lists.push(newList.id);
+    dispatch('editBoard', board);
   },
   removeList({ commit, getters, dispatch }, { id }) {
     getters.getItemsByListId(id).forEach((item) => {
@@ -52,7 +57,8 @@ const actions = {
 
 const getters = {
   getListById: ({ lists }) => id => lists.find(list => list.id === id),
-  getListsByBoardId: ({ lists }) => boardId => lists.filter(list => list.boardId === boardId),
+  // eslint-disable-next-line max-len
+  getListsByBoardId: (_, _getters) => boardId => _getters.getBoardById(boardId).lists.map(listId => _getters.getListById(listId)),
 };
 
 export default {

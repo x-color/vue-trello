@@ -15,16 +15,7 @@ function state() {
 }
 
 const mutations = {
-  addItem({ items }, {
-    id, listId, title, text, tags,
-  }) {
-    const newItem = {
-      id,
-      listId,
-      title,
-      text,
-      tags,
-    };
+  addItem({ items }, newItem) {
     items.push(newItem);
   },
   removeItem(_state, id) {

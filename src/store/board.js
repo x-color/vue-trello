@@ -6,6 +6,7 @@ import generateUuid from './utils';
 //   title: string;
 //   text: string;
 //   color: string;
+//   lists: []string;
 // }
 
 function state() {
@@ -16,6 +17,7 @@ function state() {
       title: 'sample board',
       text: '',
       color: 'indigo',
+      lists: [],
     }],
   };
 }
@@ -28,6 +30,7 @@ const mutations = {
       title,
       text,
       color,
+      lists: [],
     });
   },
   removeBoard(_state, id) {
