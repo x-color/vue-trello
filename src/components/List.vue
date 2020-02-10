@@ -153,12 +153,11 @@ export default {
         return this.getItemsByListId(this.id);
       },
       set(newValue) {
-        if (this.items.length === newValue.length) {
-          const newList = Object.assign({ ...this.list }, { items: newValue.map(item => item.id) });
-          this.editList(newList);
-        } else {
-          // moved items across lists
-        }
+        const newList = Object.assign(
+          { ...this.list },
+          { items: newValue.map(item => item.id) },
+        );
+        this.editList(newList);
       },
     },
   },
