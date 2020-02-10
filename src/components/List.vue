@@ -3,7 +3,7 @@
     <v-card class="mx-auto" width="300" color="grey lighten-4">
       <v-container>
         <v-row>
-          <!-- List title -->
+          <!-- PIN: List title -->
           <v-col cols="9">
             <v-card-title v-if="editListMode" color="grey lighten-4">
               <v-text-field
@@ -22,7 +22,7 @@
             <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
           </v-col>
 
-          <!-- Menu button -->
+          <!-- PIN: Menu button -->
           <v-col cols="3">
             <div class="text-center">
               <v-menu offset-y>
@@ -52,28 +52,32 @@
 
       <v-divider class="mx-3"></v-divider>
 
+      <!-- PIN: Items -->
       <v-list dense color="grey lighten-4">
-        <v-list-item v-for="(item, index) in items" :key="index">
-          <Item :id="item.id" />
-        </v-list-item>
-        <v-list-item v-if="addItemMode" class="my-2">
-          <v-card class="mx-auto" width="270">
-            <!-- <v-card-title> -->
-            <v-text-field
-              class="headline mx-4"
-              v-model="newItemTitle"
-              dense
-              full-width
-              label="New Item"
-              single-line
-              autofocus
-              :rules="[!!newItemTitle || 'Required']"
-              @keypress.enter="addNewItem"
-              @blur="addNewItem"
-            ></v-text-field>
-          </v-card>
-        </v-list-item>
+        <draggable v-model="items" group="items">
+          <v-list-item v-for="(item, index) in items" :key="index">
+            <Item :id="item.id" />
+          </v-list-item>
+          <v-list-item v-if="addItemMode" class="my-2">
+            <v-card class="mx-auto" width="270">
+              <v-text-field
+                class="headline mx-4"
+                v-model="newItemTitle"
+                dense
+                full-width
+                label="New Item"
+                single-line
+                autofocus
+                :rules="[!!newItemTitle || 'Required']"
+                @keypress.enter="addNewItem"
+                @blur="addNewItem"
+              ></v-text-field>
+            </v-card>
+          </v-list-item>
+        </draggable>
       </v-list>
+
+      <!-- PIN: Add item button -->
       <v-card-actions>
         <v-btn
           class="mx-auto"
@@ -99,6 +103,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import draggable from 'vuedraggable';
 import ConfirmModal from '@/components/ConfirmModal.vue';
 import Item from '@/components/Item.vue';
 
@@ -107,6 +112,7 @@ export default {
   components: {
     ConfirmModal,
     Item,
+    draggable,
   },
   props: {
     id: String,
@@ -142,8 +148,18 @@ export default {
     list() {
       return this.getListById(this.id);
     },
-    items() {
-      return this.getItemsByListId(this.id);
+    items: {
+      get() {
+        return this.getItemsByListId(this.id);
+      },
+      set(newValue) {
+        if (this.items.length === newValue.length) {
+          const newList = Object.assign({ ...this.list }, { items: newValue.map(item => item.id) });
+          this.editList(newList);
+        } else {
+          // moved items across lists
+        }
+      },
     },
   },
   methods: {

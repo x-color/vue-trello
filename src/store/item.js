@@ -16,15 +16,16 @@ function state() {
 
 const mutations = {
   addItem({ items }, {
-    listId, title, text, tags,
+    id, listId, title, text, tags,
   }) {
-    items.push({
-      id: generateUuid(),
+    const newItem = {
+      id,
       listId,
       title,
       text,
       tags,
-    });
+    };
+    items.push(newItem);
   },
   removeItem(_state, id) {
     _state.items = _state.items.filter(item => item.id !== id);
@@ -40,12 +41,21 @@ const mutations = {
 };
 
 const actions = {
-  addItem({ commit }, {
+  addItem({ commit, dispatch, getters }, {
     listId, title, text = '', tags = [],
   }) {
-    commit('addItem', {
-      listId, title, text, tags,
-    });
+    const newItem = {
+      id: generateUuid(),
+      listId,
+      title,
+      text,
+      tags,
+    };
+    commit('addItem', newItem);
+
+    const list = getters.getListById(listId);
+    list.items.push(newItem.id);
+    dispatch('editList', list);
   },
   removeItem({ commit }, { id }) {
     commit('removeItem', id);
@@ -57,7 +67,8 @@ const actions = {
 
 const getters = {
   getItemById: ({ items }) => id => items.find(item => item.id === id),
-  getItemsByListId: ({ items }) => listId => items.filter(item => item.listId === listId),
+  // eslint-disable-next-line max-len
+  getItemsByListId: (_, _getters) => listId => _getters.getListById(listId).items.map(itemId => _getters.getItemById(itemId)),
 };
 
 export default {

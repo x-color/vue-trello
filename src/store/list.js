@@ -4,6 +4,7 @@ import generateUuid from './utils';
 //   id: string;
 //   boardId: string;
 //   title: string;
+//   items: []string;
 // }
 
 function state() {
@@ -18,6 +19,7 @@ const mutations = {
       id: generateUuid(),
       boardId,
       title,
+      items: [],
     });
   },
   removeList(_state, id) {
