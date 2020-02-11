@@ -48,7 +48,10 @@ const actions = {
     list.items.push(newItem.id);
     dispatch('editList', list);
   },
-  removeItem({ commit }, { id }) {
+  removeItem({ commit, getters }, { id, listId }) {
+    const list = getters.getListById(listId);
+    list.items = list.items.filter(itemId => itemId !== id);
+    commit('editList', list);
     commit('removeItem', id);
   },
   editItem({ commit }, newItem) {

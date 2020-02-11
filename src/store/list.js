@@ -44,10 +44,13 @@ const actions = {
     board.lists.push(newList.id);
     dispatch('editBoard', board);
   },
-  removeList({ commit, getters, dispatch }, { id }) {
+  removeList({ commit, getters, dispatch }, { id, boardId }) {
     getters.getItemsByListId(id).forEach((item) => {
       dispatch('removeItem', item);
     });
+    const board = getters.getBoardById(boardId);
+    board.lists = board.lists.filter(listId => listId !== id);
+    commit('editBoard', board);
     commit('removeList', id);
   },
   editList({ commit }, newList) {
