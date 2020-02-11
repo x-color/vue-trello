@@ -9,9 +9,10 @@ import generateUuid from './utils';
 function state() {
   return {
     tags: [
-      { id: '1', title: 'tag1', color: 'pink' },
-      { id: '2', title: 'tag2', color: 'primary' },
-      { id: '3', title: 'tag', color: 'primary' },
+      { id: '1', title: 'p1', color: 'red' },
+      { id: '2', title: 'p2', color: 'orange' },
+      { id: '3', title: 'p3', color: 'green' },
+      { id: '4', title: 'p4', color: 'blue' },
     ],
   };
 }
