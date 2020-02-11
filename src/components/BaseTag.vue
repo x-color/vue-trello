@@ -12,7 +12,7 @@
 </template>
 <script>
 export default {
-  name: 'base-tag',
+  name: 'BaseTag',
   props: {
     tag: Object,
   },

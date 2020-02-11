@@ -15,7 +15,7 @@
 </template>
 <script>
 export default {
-  name: 'confirm-modal',
+  name: 'ModalConfirm',
   props: {
     title: String,
     text: String,

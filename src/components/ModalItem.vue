@@ -161,7 +161,7 @@
     </v-card>
 
     <!-- PIN: Confirmation modal for deleting item -->
-    <ConfirmModal
+    <ModalConfirm
       :title="`Delete '${value.title}' ?`"
       text="Can not restore this item."
       :open="deleteItemMode"
@@ -174,17 +174,17 @@
 <script>
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
-import ConfirmModal from '@/components/ConfirmModal.vue';
+import ModalConfirm from '@/components/ModalConfirm.vue';
 import BaseTag from '@/components/BaseTag.vue';
 
 export default {
-  name: 'item-modal',
+  name: 'ModalItem',
   props: {
     value: Object,
     open: Boolean,
   },
   components: {
-    ConfirmModal,
+    ModalConfirm,
     BaseTag,
   },
   computed: {

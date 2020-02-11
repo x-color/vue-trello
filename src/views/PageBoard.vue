@@ -33,12 +33,12 @@
         </v-row>
 
         <!-- PIN: Modal for editing board -->
-        <BoardModal
+        <ModalBoard
           v-model="editedBoard"
           :open="editBoardMode"
           @close="editBoardMode = false"
           @save="saveEditedBoard"
-        ></BoardModal>
+        ></ModalBoard>
       </v-container>
 
       <!-- PIN: Lists -->
@@ -50,7 +50,7 @@
           draggable=".item"
         >
           <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
-            <List :id="list.id" />
+            <CardList :id="list.id" />
           </v-col>
 
           <!-- PIN: Button for creating new list -->
@@ -93,7 +93,7 @@
       </v-container>
 
       <!-- PIN: Confirmation modal for deleting board -->
-      <ConfirmModal
+      <ModalConfirm
         :title="`Delete '${board.title}' ?`"
         text="Can not restore all data in board."
         :open="deleteBoardMode"
@@ -124,16 +124,16 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
-import List from '@/components/List.vue';
-import BoardModal from '@/components/BoardModal.vue';
-import ConfirmModal from '@/components/ConfirmModal.vue';
+import CardList from '@/components/CardList.vue';
+import ModalBoard from '@/components/ModalBoard.vue';
+import ModalConfirm from '@/components/ModalConfirm.vue';
 
 export default {
-  name: 'board-page',
+  name: 'PageBoard',
   components: {
-    List,
-    BoardModal,
-    ConfirmModal,
+    CardList,
+    ModalBoard,
+    ModalConfirm,
     draggable,
   },
   computed: {

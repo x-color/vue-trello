@@ -19,7 +19,7 @@
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
-  name: 'board',
+  name: 'CardBoard',
   components: {},
   props: {
     id: String,

@@ -57,7 +57,7 @@
       <v-list dense color="grey lighten-4">
         <draggable v-model="items" group="items">
           <v-list-item v-for="(item, index) in items" :key="index">
-            <Item :id="item.id" />
+            <CardItem :id="item.id" />
           </v-list-item>
           <v-list-item v-if="addItemMode" class="my-2">
             <v-card class="mx-auto" width="270">
@@ -93,7 +93,7 @@
     </v-card>
 
     <!-- PIN: Confirmation modal for deleting board -->
-    <ConfirmModal
+    <ModalConfirm
       :title="`Delete '${list.title}' ?`"
       text="Can not restore list and items in list."
       :open="deleteListMode"
@@ -106,14 +106,14 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import draggable from 'vuedraggable';
-import ConfirmModal from '@/components/ConfirmModal.vue';
-import Item from '@/components/Item.vue';
+import ModalConfirm from '@/components/ModalConfirm.vue';
+import CardItem from '@/components/CardItem.vue';
 
 export default {
-  name: 'list',
+  name: 'CardList',
   components: {
-    ConfirmModal,
-    Item,
+    ModalConfirm,
+    CardItem,
     draggable,
   },
   props: {

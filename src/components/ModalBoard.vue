@@ -85,7 +85,7 @@
 
 <script>
 export default {
-  name: 'board-modal',
+  name: 'ModalBoard',
   props: {
     value: Object,
     open: Boolean,

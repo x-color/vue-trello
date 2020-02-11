@@ -16,24 +16,24 @@
         <v-card-subtitle class="py-2 text-truncate">{{ item.text }}</v-card-subtitle>
       </v-container>
     </v-card>
-    <ItemModal
+    <ModalItem
       v-model="editedItem"
       :open="editItemMode"
       @close="saveEditedItem"
       @delete="del"
-    ></ItemModal>
+    ></ModalItem>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
-import ItemModal from '@/components/ItemModal.vue';
+import ModalItem from '@/components/ModalItem.vue';
 import BaseTag from '@/components/BaseTag.vue';
 
 export default {
-  name: 'item',
+  name: 'CardItem',
   components: {
-    ItemModal,
+    ModalItem,
     BaseTag,
   },
   props: {

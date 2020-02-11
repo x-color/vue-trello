@@ -17,7 +17,7 @@
       <v-col v-for="(board, i) in boards" :key="i" cols="auto" class="item">
         <v-card dark>
           <router-link style="text-decoration: none" :to="`/board/${board.id}`">
-            <Board :id="board.id" />
+            <CardBoard :id="board.id" />
           </router-link>
         </v-card>
       </v-col>
@@ -35,7 +35,7 @@
     </draggable>
 
     <!-- PIN: Modal for creating new board -->
-    <BoardModal
+    <ModalBoard
       v-model="newBoard"
       :open="addBoardMode"
       @close="resetNewBoard"
@@ -47,14 +47,14 @@
 <script>
 import { mapActions, mapGetters } from 'vuex';
 import draggable from 'vuedraggable';
-import BoardModal from '@/components/BoardModal.vue';
-import Board from '@/components/Board.vue';
+import ModalBoard from '@/components/ModalBoard.vue';
+import CardBoard from '@/components/CardBoard.vue';
 
 export default {
-  name: 'boards-page',
+  name: 'PageBoards',
   components: {
-    Board,
-    BoardModal,
+    CardBoard,
+    ModalBoard,
     draggable,
   },
   computed: {
