@@ -41,12 +41,16 @@
 
       <!-- Lists -->
       <v-container>
-        <v-row class="flex-nowrap" dense justify="start">
-          <draggable class="row flex-nowrap row--dense justify-start" v-model="lists" group="lists">
-            <v-col v-for="(list, i) in lists" :key="i" cols="auto">
-              <List :id="list.id" />
-            </v-col>
-          </draggable>
+        <draggable
+          class="row flex-nowrap row--dense justify-start"
+          group="lists"
+          v-model="lists"
+          draggable=".item"
+        >
+          <!-- :disabled=".id" -->
+          <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
+            <List :id="list.id" />
+          </v-col>
 
           <!-- Add new list -->
           <v-col cols="auto">
@@ -84,7 +88,7 @@
               </v-card-title>
             </v-card>
           </v-col>
-        </v-row>
+        </draggable>
       </v-container>
 
       <ConfirmModal
