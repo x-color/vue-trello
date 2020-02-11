@@ -52,18 +52,12 @@
                     If remove it, tags line up `+`, `tag1`, `tag2`.
             -->
             <span>
-              <v-chip
+              <BaseTag
+                :tag="tag"
                 v-for="(tag, index) in tags"
-                :key="index"
-                :color="tag.color"
                 class="ma-1"
-                small
-                label
-                text-color="white"
-              >
-                <v-icon small left>mdi-label</v-icon>
-                {{ tag.title }}
-              </v-chip>
+                :key="index"
+              />
             </span>
 
             <!-- PIN: Tags Menu -->
@@ -181,6 +175,7 @@
 import Vue from 'vue';
 import { mapGetters } from 'vuex';
 import ConfirmModal from '@/components/ConfirmModal.vue';
+import BaseTag from '@/components/BaseTag.vue';
 
 export default {
   name: 'item-modal',
@@ -190,6 +185,7 @@ export default {
   },
   components: {
     ConfirmModal,
+    BaseTag,
   },
   computed: {
     ...mapGetters(['getTagById']),

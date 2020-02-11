@@ -4,18 +4,12 @@
       <v-container class="mx-auto py-1 px-0">
         <v-row v-if="item.tags.length" justify="start">
           <v-col cols="auto" class="py-0">
-            <v-chip
+            <BaseTag
+              :tag="tag"
               v-for="(tag, index) in tags"
+              class="ma-1"
               :key="index"
-              :color="tag.color"
-              class="ml-2"
-              small
-              label
-              text-color="white"
-            >
-              <v-icon small left>mdi-label</v-icon>
-              {{ tag.title }}
-            </v-chip>
+            />
           </v-col>
         </v-row>
         <v-card-title class="headline text-truncate py-3">{{ item.title }}</v-card-title>
@@ -34,11 +28,13 @@
 <script>
 import { mapGetters, mapActions } from 'vuex';
 import ItemModal from '@/components/ItemModal.vue';
+import BaseTag from '@/components/BaseTag.vue';
 
 export default {
   name: 'item',
   components: {
     ItemModal,
+    BaseTag,
   },
   props: {
     id: String,
