@@ -6,8 +6,13 @@
       </v-col>
     </v-row>
 
-    <v-row dense justify="start">
-      <v-col v-for="(board, i) in boards" :key="i" cols="auto">
+    <draggable
+      class="row flex-nowrap row--dense justify-start"
+      group="boards"
+      v-model="boards"
+      draggable=".item"
+    >
+      <v-col v-for="(board, i) in boards" :key="i" cols="auto" class="item">
         <v-card dark>
           <router-link style="text-decoration: none" :to="`/board/${board.id}`">
             <Board :id="board.id" />
@@ -25,7 +30,7 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-col>
-    </v-row>
+    </draggable>
 
     <BoardModal
       v-model="newBoard"
@@ -37,25 +42,41 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+import draggable from 'vuedraggable';
 import BoardModal from '@/components/BoardModal.vue';
 import Board from '@/components/Board.vue';
 
 export default {
-  name: 'boards',
+  name: 'boards-page',
   components: {
     Board,
     BoardModal,
+    draggable,
   },
   computed: {
-    boards() {
-      return this.$store.state.board.boards;
+    ...mapGetters(['getBoardsByUserId']),
+    user() {
+      return this.$store.state.user.user;
+    },
+    boards: {
+      get() {
+        return this.getBoardsByUserId;
+      },
+      set(newValue) {
+        const newUser = Object.assign(
+          { ...this.user },
+          { boards: newValue.map(board => board.id) },
+        );
+        this.editUser(newUser);
+      },
     },
   },
   methods: {
-    ...mapActions(['addBoard']),
+    ...mapActions(['addBoard', 'editUser']),
     addNewBoard() {
       this.addBoard({
+        userId: this.user.id,
         color: this.newBoard.color,
         text: this.newBoard.text,
         title: this.newBoard.title,

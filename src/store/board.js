@@ -11,27 +11,13 @@ import generateUuid from './utils';
 
 function state() {
   return {
-    boards: [{
-      id: '1',
-      userId: 1,
-      title: 'sample board',
-      text: '',
-      color: 'indigo',
-      lists: [],
-    }],
+    boards: [],
   };
 }
 
 const mutations = {
-  addBoard({ boards, userId }, { title, text, color }) {
-    boards.push({
-      id: generateUuid(),
-      userId,
-      title,
-      text,
-      color,
-      lists: [],
-    });
+  addBoard({ boards }, newBoard) {
+    boards.push(newBoard);
   },
   removeBoard(_state, id) {
     _state.boards = _state.boards.filter(board => board.id !== id);
@@ -47,13 +33,30 @@ const mutations = {
 };
 
 const actions = {
-  addBoard({ commit }, { title, text, color }) {
-    commit('addBoard', { title, text, color });
+  addBoard({ commit, dispatch, getters }, {
+    userId, title, text, color,
+  }) {
+    const newBoard = {
+      id: generateUuid(),
+      userId,
+      title,
+      text,
+      color,
+      lists: [],
+    };
+    commit('addBoard', newBoard);
+
+    const user = getters.getUser;
+    user.boards.push(newBoard.id);
+    dispatch('editUser', user);
   },
   removeBoard({ commit, getters, dispatch }, { id }) {
     getters.getListsByBoardId(id).forEach((list) => {
       dispatch('removeList', list);
     });
+    const user = getters.getUser;
+    user.boards = user.boards.filter(boardId => boardId !== id);
+    dispatch('editUser', user);
     commit('removeBoard', id);
   },
   editBoard({ commit }, board) {
@@ -63,7 +66,8 @@ const actions = {
 
 const getters = {
   getBoardById: ({ boards }) => id => boards.find(board => board.id === id),
-  getBoardsByUserId: ({ boards }) => userId => boards.filter(board => board.userId === userId),
+  // eslint-disable-next-line max-len
+  getBoardsByUserId: (_, _getters) => _getters.getUser.boards.map(boardId => _getters.getBoardById(boardId)),
 };
 
 export default {

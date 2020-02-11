@@ -1,23 +1,28 @@
 // interface User {
-//   id: '',
-//   name: ''
+//   id: string;
+//   name: string;
+//   boards: []string;
 // }
 
 function state() {
   return {
-    user: {},
+    user: {
+      id: '0',
+      name: 'user1',
+      boards: [],
+    },
   };
 }
 
 const mutations = {
-  rename({ user }, newName) {
-    user.name = newName;
+  editUser(_state, newUser) {
+    _state.user = newUser;
   },
 };
 
 const actions = {
-  rename({ commit }, newName) {
-    commit('rename', newName);
+  editUser({ commit }, newUser) {
+    commit('editUser', newUser);
   },
 };
 
