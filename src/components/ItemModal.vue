@@ -166,7 +166,7 @@
       </v-container>
     </v-card>
 
-    <!-- PIN: Delete confirmation modal -->
+    <!-- PIN: Confirmation modal for deleting item -->
     <ConfirmModal
       :title="`Delete '${value.title}' ?`"
       text="Can not restore this item."

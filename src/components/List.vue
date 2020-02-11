@@ -1,6 +1,7 @@
 <template>
   <div>
     <v-card class="mx-auto" width="300" color="grey lighten-4">
+      <!-- PIN: List -->
       <v-container>
         <v-row>
           <!-- PIN: List title -->
@@ -77,7 +78,7 @@
         </draggable>
       </v-list>
 
-      <!-- PIN: Add item button -->
+      <!-- PIN: Button for creating new item -->
       <v-card-actions>
         <v-btn
           class="mx-auto"
@@ -91,6 +92,7 @@
       </v-card-actions>
     </v-card>
 
+    <!-- PIN: Confirmation modal for deleting board -->
     <ConfirmModal
       :title="`Delete '${list.title}' ?`"
       text="Can not restore list and items in list."

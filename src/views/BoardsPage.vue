@@ -1,11 +1,13 @@
 <template>
   <v-container>
+    <!-- PIN: Title -->
     <v-row justify="start">
       <v-col cols="auto">
-        <h1 class="ma-3">Your Boards</h1>
+        <h1 class="ma-3">{{ user.name }}'s Boards</h1>
       </v-col>
     </v-row>
 
+    <!-- PIN: Boards -->
     <draggable
       class="row flex-nowrap row--dense justify-start"
       group="boards"
@@ -32,6 +34,7 @@
       </v-col>
     </draggable>
 
+    <!-- PIN: Modal for creating new board -->
     <BoardModal
       v-model="newBoard"
       :open="addBoardMode"

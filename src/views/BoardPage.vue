@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="board">
-      <!-- Board info -->
+      <!-- PIN: Board info -->
       <v-container>
         <v-row>
           <h1 class="text-center ma-3">{{ board.title }}</h1>
@@ -31,6 +31,8 @@
         <v-row style="height: 15px">
           <p class="mx-4">{{ board.text }}</p>
         </v-row>
+
+        <!-- PIN: Modal for editing board -->
         <BoardModal
           v-model="editedBoard"
           :open="editBoardMode"
@@ -39,7 +41,7 @@
         ></BoardModal>
       </v-container>
 
-      <!-- Lists -->
+      <!-- PIN: Lists -->
       <v-container>
         <draggable
           class="row flex-nowrap row--dense justify-start"
@@ -47,12 +49,11 @@
           v-model="lists"
           draggable=".item"
         >
-          <!-- :disabled=".id" -->
           <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
             <List :id="list.id" />
           </v-col>
 
-          <!-- Add new list -->
+          <!-- PIN: Button for creating new list -->
           <v-col cols="auto">
             <v-btn
               v-if="!addListMode"
@@ -65,7 +66,7 @@
               <v-icon>mdi-plus</v-icon>
             </v-btn>
 
-            <!-- New list form -->
+            <!-- PIN: Form for new list title -->
             <v-card
               v-if="addListMode"
               class="mx-auto"
@@ -91,6 +92,7 @@
         </draggable>
       </v-container>
 
+      <!-- PIN: Confirmation modal for deleting board -->
       <ConfirmModal
         :title="`Delete '${board.title}' ?`"
         text="Can not restore all data in board."
@@ -99,6 +101,8 @@
         @confirm="del()"
       />
     </div>
+
+    <!-- PIN: No board page -->
     <div v-else>
       <v-container>
         <v-row class="text-center" justify="center">
