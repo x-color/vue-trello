@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar color="primary" dark>
-      <router-link style="text-decoration: none" to="/">
+      <router-link style="text-decoration: none" to="/boards">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-toolbar-title class="diaplay-1 white--text" v-on="on">Vue Trello</v-toolbar-title>

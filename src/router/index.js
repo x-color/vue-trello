@@ -2,17 +2,23 @@ import Vue from 'vue';
 import VueRouter from 'vue-router';
 import PageBoards from '../views/PageBoards.vue';
 import PageBoard from '../views/PageBoard.vue';
+import PageHome from '../views/PageHome.vue';
 
 Vue.use(VueRouter);
 
 const routes = [
   {
-    path: '/',
+    path: '/boards',
     name: 'boards',
     component: PageBoards,
   },
   {
-    path: '/board/:id',
+    path: '/',
+    name: 'home',
+    component: PageHome,
+  },
+  {
+    path: '/boards/:id',
     name: 'board',
     component: PageBoard,
   },

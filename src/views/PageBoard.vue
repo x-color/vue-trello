@@ -112,7 +112,7 @@
           <v-col>
             <p>
               Please go to
-              <router-link to="/">Home</router-link>
+              <router-link to="/boards">Home</router-link>
             </p>
           </v-col>
         </v-row>
