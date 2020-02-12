@@ -86,6 +86,20 @@
 <script>
 export default {
   name: 'ModalBoard',
+  filters: {
+    replaceToHintText(text) {
+      if (!text) {
+        return 'Add description...';
+      }
+      return text;
+    },
+    replaceToHintTitle(text) {
+      if (!text) {
+        return 'No title...';
+      }
+      return text;
+    },
+  },
   props: {
     value: Object,
     open: Boolean,
@@ -123,20 +137,6 @@ export default {
       if (!this.isOpenedMenu) {
         this.$emit('save');
       }
-    },
-  },
-  filters: {
-    replaceToHintText(text) {
-      if (!text) {
-        return 'Add description...';
-      }
-      return text;
-    },
-    replaceToHintTitle(text) {
-      if (!text) {
-        return 'No title...';
-      }
-      return text;
     },
   },
 };

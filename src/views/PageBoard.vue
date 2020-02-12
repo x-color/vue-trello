@@ -154,28 +154,6 @@ export default {
       },
     },
   },
-  methods: {
-    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList']),
-    addNewList() {
-      const newTitle = this.newListTitle.trim();
-      if (newTitle) {
-        this.addList({
-          boardId: this.board.id,
-          title: this.newListTitle.trim(),
-        });
-      }
-      this.newListTitle = '';
-      this.addListMode = false;
-    },
-    saveEditedBoard() {
-      this.editBoard(this.editedBoard);
-      this.editBoardMode = false;
-    },
-    del() {
-      this.deleteBoardMode = false;
-      this.removeBoard(this.board);
-    },
-  },
   data() {
     return {
       addListMode: false,
@@ -201,6 +179,28 @@ export default {
         },
       ],
     };
+  },
+  methods: {
+    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList']),
+    addNewList() {
+      const newTitle = this.newListTitle.trim();
+      if (newTitle) {
+        this.addList({
+          boardId: this.board.id,
+          title: this.newListTitle.trim(),
+        });
+      }
+      this.newListTitle = '';
+      this.addListMode = false;
+    },
+    saveEditedBoard() {
+      this.editBoard(this.editedBoard);
+      this.editBoardMode = false;
+    },
+    del() {
+      this.deleteBoardMode = false;
+      this.removeBoard(this.board);
+    },
   },
 };
 </script>

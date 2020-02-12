@@ -179,13 +179,27 @@ import BaseTag from '@/components/BaseTag.vue';
 
 export default {
   name: 'ModalItem',
-  props: {
-    value: Object,
-    open: Boolean,
-  },
   components: {
     ModalConfirm,
     BaseTag,
+  },
+  filters: {
+    replaceToHintText(text) {
+      if (!text) {
+        return 'Add description...';
+      }
+      return text;
+    },
+    replaceToHintTitle(text) {
+      if (!text) {
+        return 'No title...';
+      }
+      return text;
+    },
+  },
+  props: {
+    value: Object,
+    open: Boolean,
   },
   computed: {
     ...mapGetters(['getTagById']),
@@ -241,20 +255,6 @@ export default {
     del() {
       this.deleteItemMode = false;
       this.$emit('delete');
-    },
-  },
-  filters: {
-    replaceToHintText(text) {
-      if (!text) {
-        return 'Add description...';
-      }
-      return text;
-    },
-    replaceToHintTitle(text) {
-      if (!text) {
-        return 'No title...';
-      }
-      return text;
     },
   },
 };

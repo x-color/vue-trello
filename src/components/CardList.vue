@@ -119,32 +119,6 @@ export default {
   props: {
     id: String,
   },
-  data() {
-    return {
-      editListMode: false,
-      deleteListMode: false,
-      addItemMode: false,
-      newListTitle: '',
-      newItemTitle: '',
-      menuItems: [
-        {
-          title: 'edit',
-          icon: 'mdi-pencil',
-          action: () => {
-            this.newListTitle = this.list.title;
-            this.editListMode = true;
-          },
-        },
-        {
-          title: 'delete',
-          icon: 'mdi-trash-can-outline',
-          action: () => {
-            this.deleteListMode = true;
-          },
-        },
-      ],
-    };
-  },
   computed: {
     ...mapGetters(['getListById', 'getItemsByListId', 'getItemById']),
     list() {
@@ -170,6 +144,32 @@ export default {
         }
       },
     },
+  },
+  data() {
+    return {
+      editListMode: false,
+      deleteListMode: false,
+      addItemMode: false,
+      newListTitle: '',
+      newItemTitle: '',
+      menuItems: [
+        {
+          title: 'edit',
+          icon: 'mdi-pencil',
+          action: () => {
+            this.newListTitle = this.list.title;
+            this.editListMode = true;
+          },
+        },
+        {
+          title: 'delete',
+          icon: 'mdi-trash-can-outline',
+          action: () => {
+            this.deleteListMode = true;
+          },
+        },
+      ],
+    };
   },
   methods: {
     ...mapActions(['editList', 'removeList', 'addItem', 'editItem', 'moveItemAcrossLists']),

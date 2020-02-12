@@ -20,20 +20,19 @@ import { mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'CardBoard',
-  components: {},
   props: {
     id: String,
-  },
-  data() {
-    return {
-      modal: false,
-    };
   },
   computed: {
     ...mapGetters(['getBoardById']),
     board() {
       return this.getBoardById(this.id);
     },
+  },
+  data() {
+    return {
+      modal: false,
+    };
   },
   methods: {
     ...mapActions(['editBoard']),

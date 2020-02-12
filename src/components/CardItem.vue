@@ -39,13 +39,6 @@ export default {
   props: {
     id: String,
   },
-  data() {
-    return {
-      editItemMode: false,
-      newItemTitle: '',
-      editedItem: { title: '', text: '', tags: [] },
-    };
-  },
   computed: {
     ...mapGetters(['getItemById', 'getTagById']),
     item() {
@@ -54,6 +47,13 @@ export default {
     tags() {
       return this.item.tags.map(tagId => this.getTagById(tagId));
     },
+  },
+  data() {
+    return {
+      editItemMode: false,
+      newItemTitle: '',
+      editedItem: { title: '', text: '', tags: [] },
+    };
   },
   methods: {
     ...mapActions(['editItem', 'removeItem']),

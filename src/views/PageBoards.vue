@@ -75,6 +75,12 @@ export default {
       },
     },
   },
+  data() {
+    return {
+      addBoardMode: false,
+      newBoard: { title: '', text: '', color: 'indigo' },
+    };
+  },
   methods: {
     ...mapActions(['addBoard', 'editUser']),
     addNewBoard() {
@@ -90,12 +96,6 @@ export default {
       this.newBoard = { title: '', text: '', color: 'indigo' };
       this.addBoardMode = false;
     },
-  },
-  data() {
-    return {
-      addBoardMode: false,
-      newBoard: { title: '', text: '', color: 'indigo' },
-    };
   },
 };
 </script>
