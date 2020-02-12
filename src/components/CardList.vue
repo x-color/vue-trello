@@ -18,7 +18,7 @@
                 :rules="[!!newListTitle || 'Required']"
                 @keypress.enter="saveListTitle()"
                 @blur="saveListTitle()"
-              ></v-text-field>
+              />
             </v-card-title>
             <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
           </v-col>
@@ -51,7 +51,7 @@
         </v-row>
       </v-container>
 
-      <v-divider class="mx-3"></v-divider>
+      <v-divider class="mx-3" />
 
       <!-- PIN: Items -->
       <v-list dense color="grey lighten-4">
@@ -72,7 +72,7 @@
                 :rules="[!!newItemTitle || 'Required']"
                 @keypress.enter="addNewItem"
                 @blur="addNewItem"
-              ></v-text-field>
+              />
             </v-card>
           </v-list-item>
         </draggable>

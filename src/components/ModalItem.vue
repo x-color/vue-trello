@@ -19,7 +19,7 @@
                 v-model="value.title"
                 autofocus
                 @blur="editTitleMode = false"
-              ></v-text-field>
+              />
             </v-card-title>
           </v-col>
 
@@ -41,7 +41,7 @@
                 dense
                 hide-details
                 @blur="editTextMode = false"
-              ></v-textarea>
+              />
             </v-card-text>
           </v-col>
 

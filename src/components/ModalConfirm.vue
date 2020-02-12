@@ -5,7 +5,7 @@
         <v-card-title class="headline">{{ title }}</v-card-title>
         <v-card-text>{{ text }}</v-card-text>
         <v-card-actions>
-          <v-spacer></v-spacer>
+          <v-spacer />
           <v-btn color="red darken-1" text @click="$emit('cancel')">Cancel</v-btn>
           <v-btn color="green darken-1" text @click="$emit('confirm')">Confirm</v-btn>
         </v-card-actions>

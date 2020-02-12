@@ -21,7 +21,7 @@
       :open="editItemMode"
       @close="saveEditedItem"
       @delete="del"
-    ></ModalItem>
+    />
   </div>
 </template>
 

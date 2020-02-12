@@ -13,7 +13,7 @@
                 placeholder="Title..."
                 v-model="value.title"
                 autofocus
-              ></v-text-field>
+              />
             </v-card-title>
           </v-col>
 
@@ -69,13 +69,13 @@
                 auto-grow
                 dense
                 hide-details
-              ></v-textarea>
+              />
             </v-card-text>
           </v-col>
         </v-row>
       </v-container>
       <v-card-actions>
-        <v-spacer></v-spacer>
+        <v-spacer />
         <v-btn text color="red" @click="close">CANCEL</v-btn>
         <v-btn text color="green" :disabled="!value.title" @click="save">CONFIRM</v-btn>
       </v-card-actions>

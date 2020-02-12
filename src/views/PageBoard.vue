@@ -38,7 +38,7 @@
           :open="editBoardMode"
           @close="editBoardMode = false"
           @save="saveEditedBoard"
-        ></ModalBoard>
+        />
       </v-container>
 
       <!-- PIN: Lists -->
@@ -85,7 +85,7 @@
                   autofocus
                   @keypress.enter="addNewList()"
                   @blur="addNewList()"
-                ></v-text-field>
+                />
               </v-card-title>
             </v-card>
           </v-col>
