@@ -9,6 +9,7 @@ function state() {
     user: {
       id: '0',
       name: 'user1',
+      login: true,
       boards: [],
     },
   };
