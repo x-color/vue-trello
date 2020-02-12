@@ -137,7 +137,7 @@ export default {
     draggable,
   },
   computed: {
-    ...mapGetters(['getBoardById', 'getListsByBoardId']),
+    ...mapGetters(['getBoardById', 'getListsByBoardId', 'getListById']),
     board() {
       return this.getBoardById(this.$route.params.id);
     },
@@ -155,7 +155,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addList', 'editBoard', 'removeBoard']),
+    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList']),
     addNewList() {
       const newTitle = this.newListTitle.trim();
       if (newTitle) {
@@ -168,13 +168,7 @@ export default {
       this.addListMode = false;
     },
     saveEditedBoard() {
-      this.editBoard({
-        id: this.board.id,
-        userId: this.board.userId,
-        color: this.editedBoard.color,
-        text: this.editedBoard.text,
-        title: this.editedBoard.title,
-      });
+      this.editBoard(this.editedBoard);
       this.editBoardMode = false;
     },
     del() {

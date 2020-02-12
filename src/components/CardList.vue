@@ -146,7 +146,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['getListById', 'getItemsByListId']),
+    ...mapGetters(['getListById', 'getItemsByListId', 'getItemById']),
     list() {
       return this.getListById(this.id);
     },
@@ -155,16 +155,24 @@ export default {
         return this.getItemsByListId(this.id);
       },
       set(newValue) {
-        const newList = Object.assign(
+        const toList = Object.assign(
           { ...this.list },
           { items: newValue.map(item => item.id) },
         );
-        this.editList(newList);
+        if (this.items.length === toList.items.length) {
+          // It Update this list if it moves item in this list.
+          this.editList(toList);
+        } else if (this.items.length < toList.items.length) {
+          // This process runs if it moves item to this list.
+          const newItemId = toList.items.find(newId => !this.list.items.includes(newId));
+          const item = this.getItemById(newItemId);
+          this.moveItemAcrossLists({ item, toList });
+        }
       },
     },
   },
   methods: {
-    ...mapActions(['editList', 'removeList', 'addItem']),
+    ...mapActions(['editList', 'removeList', 'addItem', 'editItem', 'moveItemAcrossLists']),
     addNewItem() {
       const newTitle = this.newItemTitle.trim();
       if (newTitle) {

@@ -57,6 +57,14 @@ const actions = {
   editItem({ commit }, newItem) {
     commit('editItem', newItem);
   },
+  moveItemAcrossLists({ commit, getters }, { item, toList }) {
+    const fromList = { ...getters.getListById(item.listId) };
+    fromList.items = fromList.items.filter(itemId => itemId !== item.id);
+    item.listId = toList.id;
+    commit('editList', fromList);
+    commit('editList', toList);
+    commit('editItem', item);
+  },
 };
 
 const getters = {
