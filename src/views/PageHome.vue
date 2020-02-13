@@ -9,7 +9,11 @@
 
     <v-row justify="center">
       <v-col cols="12" align="center">
-        <v-btn x-large color="primary" @click="login">LOGIN</v-btn>
+        <v-btn
+          x-large
+          color="primary"
+          @click="$router.push('/login')"
+        >Go To Login page</v-btn>
       </v-col>
     </v-row>
 
@@ -29,11 +33,5 @@
 <script>
 export default {
   name: 'PageHome',
-  methods: {
-    loginAndGoToPage() {
-      this.login({ username: 'test user', password: 'password' });
-      if (this.$store.state.user.user.login) { this.$router.push('/'); }
-    },
-  },
 };
 </script>

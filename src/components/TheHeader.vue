@@ -11,7 +11,7 @@
       </router-link>
 
       <v-spacer />
-      <v-menu v-if="$store.state.user.user.login" left bottom>
+      <v-menu left bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon v-on="on">
             <v-app-bar-nav-icon />
@@ -34,32 +34,49 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'TheHeader',
-  data() {
-    return {
-      menu: [
+  computed: {
+    menu() {
+      return [
         {
-          title: 'my page',
-          active: false,
-          action: () => {},
+          title: 'top page',
+          active: true,
+          action: () => {
+            this.jumpTo('/');
+          },
         },
         {
-          title: 'settings',
-          active: false,
-          action: () => {},
+          title: 'my boards',
+          active: this.$store.state.user.user.login,
+          action: () => {
+            this.jumpTo('/boards');
+          },
+        },
+        {
+          title: 'login',
+          active: !this.$store.state.user.user.login,
+          action: () => {
+            this.jumpTo('/login');
+          },
         },
         {
           title: 'logout',
-          active: true,
-          action: this.logout,
+          active: this.$store.state.user.user.login,
+          action: () => {
+            this.logout();
+            this.jumpTo('/');
+          },
         },
-      ],
-    };
+      ];
+    },
   },
   methods: {
-    logout() {
-      this.$store.state.user.user.login = false;
+    ...mapActions(['logout']),
+    jumpTo(url) {
+      this.$router.push(url);
     },
   },
 };
