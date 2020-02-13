@@ -27,11 +27,11 @@
             >
               <template v-slot:activator="{ on }">
                 <v-icon
-                  :color="iconColor(value.color)"
+                  :color="value.color"
                   class="ma-1"
                   x-large
                   v-on="on"
-                >{{ circleIcon(value.color) }}</v-icon>
+                >mdi-circle</v-icon>
               </template>
               <v-card>
                 <v-list dense subheader max-width="400">
@@ -47,9 +47,9 @@
                         <v-list-item class="px-0">
                           <v-icon
                             large
-                            :color="iconColor(color)"
+                            :color="color"
                             @click.stop="selectColor(color)"
-                          >{{ circleIcon(color) }}</v-icon>
+                          >mdi-circle</v-icon>
                         </v-list-item>
                       </v-col>
                     </v-row>
@@ -109,22 +109,10 @@ export default {
       editTitleMode: false,
       editTextMode: false,
       isOpenedMenu: false,
-      colors: ['white', 'indigo', 'red', 'orange', 'pink', 'lime'],
+      colors: ['indigo', 'red', 'orange', 'green', 'purple'],
     };
   },
   methods: {
-    circleIcon(color) {
-      if (color === 'white') {
-        return 'mdi-circle-outline';
-      }
-      return 'mdi-circle';
-    },
-    iconColor(color) {
-      if (color === 'white') {
-        return 'gray';
-      }
-      return color;
-    },
     selectColor(color) {
       this.value.color = color;
     },
