@@ -55,6 +55,9 @@ import { mapActions } from 'vuex';
 export default {
   name: 'PageLogin',
   data() {
+    if (this.$store.state.user.user.login) {
+      this.$router.push('/boards');
+    }
     return {
       show: false,
       isLoginFailed: false,
