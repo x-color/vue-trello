@@ -27,11 +27,11 @@ const mutations = {
       color,
     });
   },
-  removeTag(_state, id) {
-    _state.tags = _state.tags.filter(tag => tag.id !== id);
+  removeTag(st, id) {
+    st.tags = st.tags.filter(tag => tag.id !== id);
   },
-  editTag(_state, newTag) {
-    _state.tags = _state.tags.map((tag) => {
+  editTag(st, newTag) {
+    st.tags = st.tags.map((tag) => {
       if (tag.id === newTag.id) {
         return newTag;
       }
@@ -58,6 +58,7 @@ const actions = {
 
 const getters = {
   getTagById: ({ tags }) => id => tags.find(tag => tag.id === id),
+  tags: ({ tags }) => tags,
 };
 
 export default {

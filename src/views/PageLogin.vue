@@ -50,12 +50,15 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'PageLogin',
+  computed: {
+    ...mapGetters(['user']),
+  },
   data() {
-    if (this.$store.state.user.user.login) {
+    if (this.user.login) {
       this.$router.push('/boards');
     }
     return {

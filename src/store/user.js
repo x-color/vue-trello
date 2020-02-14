@@ -10,15 +10,15 @@ function state() {
       id: '0',
       name: 'testuser',
       login: false,
-      background: '',
+      color: '',
       boards: [],
     },
   };
 }
 
 const mutations = {
-  editUser(_state, newUser) {
-    _state.user = newUser;
+  editUser(st, newUser) {
+    st.user = newUser;
   },
 };
 
@@ -44,13 +44,13 @@ const actions = {
     loggedOutUser.login = false;
     commit('editUser', loggedOutUser);
   },
-  changeBgColor({ commit, state: st }, { color }) {
-    commit('editUser', Object.assign({ ...st.user }, { background: color }));
+  changeColor({ commit, state: st }, { color }) {
+    commit('editUser', Object.assign({ ...st.user }, { color }));
   },
 };
 
 const getters = {
-  getUser({ user }) {
+  user({ user }) {
     return user;
   },
 };

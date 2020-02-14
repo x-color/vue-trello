@@ -183,13 +183,13 @@ export default {
   watch: {
     'board.color': {
       handler(newValue) {
-        this.changeBgColor({ color: newValue });
+        this.changeColor({ color: newValue });
       },
       immediate: true,
     },
   },
   methods: {
-    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList', 'changeBgColor']),
+    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList', 'changeColor']),
     addNewList() {
       const newTitle = this.newListTitle.trim();
       if (newTitle) {

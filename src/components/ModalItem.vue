@@ -54,7 +54,7 @@
             <span>
               <BaseTag
                 :tag="tag"
-                v-for="(tag, index) in tags"
+                v-for="(tag, index) in selectedTags"
                 class="ma-1"
                 :key="index"
               />
@@ -75,7 +75,7 @@
                 <v-list dense subheader max-width="400">
                   <v-subheader>Tags</v-subheader>
                   <v-list-item
-                    v-for="(tag, index) in $store.state.tag.tags"
+                    v-for="(tag, index) in tags"
                     :key="index"
                     class="px-2"
                   >
@@ -202,8 +202,8 @@ export default {
     open: Boolean,
   },
   computed: {
-    ...mapGetters(['getTagById']),
-    tags() {
+    ...mapGetters(['getTagById', 'tags']),
+    selectedTags() {
       return this.value.tags.map(tagId => this.getTagById(tagId));
     },
   },

@@ -17,11 +17,11 @@ const mutations = {
   addList({ lists }, newList) {
     lists.push(newList);
   },
-  removeList(_state, id) {
-    _state.lists = _state.lists.filter(list => list.id !== id);
+  removeList(st, id) {
+    st.lists = st.lists.filter(list => list.id !== id);
   },
-  editList(_state, newList) {
-    _state.lists = _state.lists.map((list) => {
+  editList(st, newList) {
+    st.lists = st.lists.map((list) => {
       if (list.id === newList.id) {
         return newList;
       }
@@ -61,7 +61,7 @@ const actions = {
 const getters = {
   getListById: ({ lists }) => id => lists.find(list => list.id === id),
   // eslint-disable-next-line max-len
-  getListsByBoardId: (_, _getters) => boardId => _getters.getBoardById(boardId).lists.map(listId => _getters.getListById(listId)),
+  getListsByBoardId: (_, gtrs) => boardId => gtrs.getBoardById(boardId).lists.map(listId => gtrs.getListById(listId)),
 };
 
 export default {

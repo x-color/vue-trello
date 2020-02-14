@@ -19,11 +19,11 @@ const mutations = {
   addBoard({ boards }, newBoard) {
     boards.push(newBoard);
   },
-  removeBoard(_state, id) {
-    _state.boards = _state.boards.filter(board => board.id !== id);
+  removeBoard(st, id) {
+    st.boards = st.boards.filter(board => board.id !== id);
   },
-  editBoard(_state, newBoard) {
-    _state.boards = _state.boards.map((board) => {
+  editBoard(st, newBoard) {
+    st.boards = st.boards.map((board) => {
       if (board.id === newBoard.id) {
         return newBoard;
       }
@@ -46,15 +46,15 @@ const actions = {
     };
     commit('addBoard', newBoard);
 
-    const user = getters.getUser;
+    const user = { ...getters.user };
     user.boards.push(newBoard.id);
     dispatch('editUser', user);
   },
-  removeBoard({ commit, getters, dispatch }, { id }) {
+  removeBoard({ commit, dispatch, getters }, { id }) {
     getters.getListsByBoardId(id).forEach((list) => {
       dispatch('removeList', list);
     });
-    const user = getters.getUser;
+    const user = { ...getters.user };
     user.boards = user.boards.filter(boardId => boardId !== id);
     dispatch('editUser', user);
     commit('removeBoard', id);
@@ -67,7 +67,7 @@ const actions = {
 const getters = {
   getBoardById: ({ boards }) => id => boards.find(board => board.id === id),
   // eslint-disable-next-line max-len
-  getBoardsByUserId: (_, _getters) => _getters.getUser.boards.map(boardId => _getters.getBoardById(boardId)),
+  getBoardsByUserId: (_, gtrs) => gtrs.user.boards.map(boardId => gtrs.getBoardById(boardId)),
 };
 
 export default {

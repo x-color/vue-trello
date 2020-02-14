@@ -58,10 +58,7 @@ export default {
     draggable,
   },
   computed: {
-    ...mapGetters(['getBoardsByUserId']),
-    user() {
-      return this.$store.state.user.user;
-    },
+    ...mapGetters(['getBoardsByUserId', 'user']),
     boards: {
       get() {
         return this.getBoardsByUserId;

@@ -18,11 +18,11 @@ const mutations = {
   addItem({ items }, newItem) {
     items.push(newItem);
   },
-  removeItem(_state, id) {
-    _state.items = _state.items.filter(item => item.id !== id);
+  removeItem(st, id) {
+    st.items = st.items.filter(item => item.id !== id);
   },
-  editItem(_state, newItem) {
-    _state.items = _state.items.map((item) => {
+  editItem(st, newItem) {
+    st.items = st.items.map((item) => {
       if (item.id === newItem.id) {
         return newItem;
       }
@@ -70,7 +70,7 @@ const actions = {
 const getters = {
   getItemById: ({ items }) => id => items.find(item => item.id === id),
   // eslint-disable-next-line max-len
-  getItemsByListId: (_, _getters) => listId => _getters.getListById(listId).items.map(itemId => _getters.getItemById(itemId)),
+  getItemsByListId: (_, gtrs) => listId => gtrs.getListById(listId).items.map(itemId => gtrs.getItemById(itemId)),
 };
 
 export default {
