@@ -50,15 +50,14 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'PageLogin',
-  computed: {
-    ...mapGetters(['user']),
-  },
   data() {
-    if (this.user.login) {
+    // Access state.user directly. It does not use getter of store (getters.user).
+    // gettters and computed methods do not exist still this timing.
+    if (this.$store.state.user.user.login) {
       this.$router.push('/boards');
     }
     return {
