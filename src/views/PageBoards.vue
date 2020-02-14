@@ -16,7 +16,7 @@
     >
       <v-col v-for="(board, i) in boards" :key="i" cols="auto" class="item">
         <v-card dark>
-          <router-link style="text-decoration: none" :to="`/boards/${board.id}`">
+          <router-link :to="`/boards/${board.id}`" class="router-no-underline">
             <CardBoard :id="board.id" />
           </router-link>
         </v-card>
@@ -96,3 +96,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.router-no-underline {
+  text-decoration: none;
+}
+</style>

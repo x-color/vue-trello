@@ -28,7 +28,7 @@
             </v-menu>
           </div>
         </v-row>
-        <v-row style="height: 15px">
+        <v-row class="board-text">
           <p class="mx-4">{{ board.text }}</p>
         </v-row>
 
@@ -212,3 +212,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.board-text {
+  height: 15px;
+}
+</style>

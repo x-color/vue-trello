@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-app-bar :color="color" dark>
-      <router-link style="text-decoration: none" to="/boards">
+      <router-link to="/boards" class="router-no-underline">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
             <v-toolbar-title class="diaplay-1 white--text" v-on="on">Vue Trello</v-toolbar-title>
@@ -88,3 +88,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.router-no-underline {
+  text-decoration: none;
+}
+</style>

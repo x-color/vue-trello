@@ -83,8 +83,7 @@
                       :color="tag.color"
                       label
                       text-color="white"
-                      style="width: 100%"
-                      class="pl-0"
+                      class="pl-0 chip-width-max"
                       @click="toggleTag(tag)"
                     >
                       <v-container fluid>
@@ -259,3 +258,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.chip-width-max {
+  width: 100%;
+}
+</style>
