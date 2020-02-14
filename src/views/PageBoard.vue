@@ -180,8 +180,16 @@ export default {
       ],
     };
   },
+  watch: {
+    'board.color': {
+      handler(newValue) {
+        this.changeBgColor({ color: newValue });
+      },
+      immediate: true,
+    },
+  },
   methods: {
-    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList']),
+    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList', 'changeBgColor']),
     addNewList() {
       const newTitle = this.newListTitle.trim();
       if (newTitle) {

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar color="primary" dark>
+    <v-app-bar :color="color" dark>
       <router-link style="text-decoration: none" to="/boards">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -71,6 +71,12 @@ export default {
           },
         },
       ];
+    },
+    color() {
+      if (this.$route.path.startsWith('/boards/')) {
+        return this.$store.state.user.user.background;
+      }
+      return 'primary';
     },
   },
   methods: {

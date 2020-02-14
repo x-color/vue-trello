@@ -8,8 +8,9 @@ function state() {
   return {
     user: {
       id: '0',
-      name: 'test user',
-      login: true,
+      name: 'testuser',
+      login: false,
+      background: '',
       boards: [],
     },
   };
@@ -25,23 +26,26 @@ const actions = {
   editUser({ commit }, newUser) {
     commit('editUser', newUser);
   },
-  login({ commit, getters }, { username, password }) {
+  login({ commit, state: st }, { username, password }) {
     // Dummy login request
     if (!(username === 'testuser' && password === 'password')) {
       return false;
     }
     // Dummy logged in user data
-    const loggedInUser = { ...getters.getUser };
+    const loggedInUser = { ...st.user };
     loggedInUser.login = true;
     commit('editUser', loggedInUser);
     // Get boards data from API server...
     return true;
   },
-  logout({ commit, getters }) {
+  logout({ commit, state: st }) {
     // Dummy logged out process
-    const loggedOutUser = { ...getters.getUser };
+    const loggedOutUser = { ...st.user };
     loggedOutUser.login = false;
     commit('editUser', loggedOutUser);
+  },
+  changeBgColor({ commit, state: st }, { color }) {
+    commit('editUser', Object.assign({ ...st.user }, { background: color }));
   },
 };
 
