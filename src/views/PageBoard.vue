@@ -105,14 +105,14 @@ export default {
     },
   },
   methods: {
-    ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList', 'changeColor']),
+    ...mapActions(['addList', 'editBoard', 'deleteBoard', 'editList', 'changeColor']),
     saveEditedBoard() {
       this.editBoard(this.editedBoard);
       this.editBoardMode = false;
     },
     del() {
       this.deleteBoardMode = false;
-      this.removeBoard(this.board);
+      this.deleteBoard(this.board);
       this.$router.push('/boards', () => {});
     },
   },

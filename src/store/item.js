@@ -18,7 +18,7 @@ const mutations = {
   addItem({ items }, newItem) {
     items.push(newItem);
   },
-  removeItem(st, id) {
+  deleteItem(st, id) {
     st.items = st.items.filter(item => item.id !== id);
   },
   editItem(st, newItem) {
@@ -48,14 +48,14 @@ const actions = {
     list.items.push(newItem.id);
     commit('editList', list);
   },
-  removeItem({ commit, getters }, { id, listId }) {
+  deleteItem({ commit, getters }, { id, listId }) {
     const list = getters.getListById(listId);
     list.items = list.items.filter(itemId => itemId !== id);
     commit('editList', list);
-    commit('removeItem', id);
+    commit('deleteItem', id);
   },
-  removeItemInDeletedList({ commit }, { id }) {
-    commit('removeItem', id);
+  deleteItemInDeletedList({ commit }, { id }) {
+    commit('deleteItem', id);
   },
   editItem({ commit }, newItem) {
     commit('editItem', newItem);

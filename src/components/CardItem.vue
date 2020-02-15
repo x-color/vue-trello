@@ -56,7 +56,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['editItem', 'removeItem']),
+    ...mapActions(['editItem', 'deleteItem']),
     edit() {
       this.editedItem = Object.assign(
         { ...this.item },
@@ -79,7 +79,7 @@ export default {
     },
     del() {
       this.editItemMode = false;
-      this.removeItem(this.item);
+      this.deleteItem(this.item);
     },
   },
 };

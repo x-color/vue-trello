@@ -172,7 +172,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['editList', 'removeList', 'addItem', 'editItem', 'moveItemAcrossLists']),
+    ...mapActions(['editList', 'deleteList', 'addItem', 'editItem', 'moveItemAcrossLists']),
     addNewItem() {
       const newTitle = this.newItemTitle.trim();
       if (newTitle) {
@@ -186,7 +186,7 @@ export default {
     },
     del() {
       this.deleteListMode = false;
-      this.removeList(this.list);
+      this.deleteList(this.list);
     },
     saveListTitle() {
       const newTitle = this.newListTitle.trim();
