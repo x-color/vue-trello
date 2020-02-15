@@ -172,7 +172,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['editList', 'deleteList', 'addItem', 'editItem', 'moveItemAcrossLists']),
+    ...mapActions(['editList', 'deleteList', 'addItem', 'moveItemAcrossLists']),
     addNewItem() {
       const newTitle = this.newItemTitle.trim();
       if (newTitle) {
