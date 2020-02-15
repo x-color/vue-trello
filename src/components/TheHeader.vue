@@ -83,7 +83,7 @@ export default {
   methods: {
     ...mapActions(['logout']),
     jumpTo(url) {
-      this.$router.push(url);
+      this.$router.push(url, () => {});
     },
   },
 };

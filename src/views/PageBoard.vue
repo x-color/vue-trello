@@ -113,7 +113,7 @@ export default {
     del() {
       this.deleteBoardMode = false;
       this.removeBoard(this.board);
-      this.$router.push('/boards');
+      this.$router.push('/boards', () => {});
     },
   },
 };

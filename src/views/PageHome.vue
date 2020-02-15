@@ -12,7 +12,7 @@
         <v-btn
           x-large
           color="primary"
-          @click="$router.push('/login')"
+          @click="$router.push('/login', ()=>{})"
         >Go To Login page</v-btn>
       </v-col>
     </v-row>

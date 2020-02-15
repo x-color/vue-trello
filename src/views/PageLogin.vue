@@ -58,7 +58,7 @@ export default {
     // Access state.user directly. It does not use getter of store (getters.user).
     // gettters and computed methods do not exist still this timing.
     if (this.$store.state.user.user.login) {
-      this.$router.push('/boards');
+      this.$router.push('/boards', () => {});
     }
     return {
       show: false,
@@ -76,7 +76,7 @@ export default {
       this.isLoginFailed = false;
       this.login({ username: this.username, password: this.password }).then((loggedIn) => {
         if (loggedIn) {
-          this.$router.push('/boards');
+          this.$router.push('/boards', () => {});
         } else {
           this.isLoginFailed = true;
         }
