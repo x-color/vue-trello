@@ -50,7 +50,7 @@ export default {
           },
         },
         {
-          title: 'my boards',
+          title: 'home',
           active: this.user.login,
           action: () => {
             this.jumpTo('/boards');
