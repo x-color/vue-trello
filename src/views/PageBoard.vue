@@ -1,74 +1,55 @@
 <template>
   <div>
-    <div v-if="board">
-      <!-- PIN: Board info -->
-      <v-container>
-        <v-row>
-          <h1 class="text-center ma-3">{{ board.title }}</h1>
-          <div class="text-center my-auto">
-            <v-menu offset-y>
-              <template v-slot:activator="{ on }">
-                <v-btn outlined small text dark v-on="on">
-                  <v-icon color="black">mdi-dots-horizontal</v-icon>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  class="pr-1"
-                  v-for="(item, index) in menuItems"
-                  :key="index"
-                  @click="item.action()"
-                >
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-avatar class="mx-0">
-                    <v-icon small>{{ item.icon }}</v-icon>
-                  </v-list-item-avatar>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </v-row>
-        <v-row class="board-text">
-          <p class="mx-4">{{ board.text }}</p>
-        </v-row>
+    <!-- PIN: Board info -->
+    <v-container>
+      <v-row>
+        <h1 class="text-center ma-3">{{ board.title }}</h1>
+        <div class="text-center my-auto">
+          <v-menu offset-y>
+            <template v-slot:activator="{ on }">
+              <v-btn outlined small text dark v-on="on">
+                <v-icon color="black">mdi-dots-horizontal</v-icon>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item
+                class="pr-1"
+                v-for="(item, index) in menuItems"
+                :key="index"
+                @click="item.action()"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                <v-list-item-avatar class="mx-0">
+                  <v-icon small>{{ item.icon }}</v-icon>
+                </v-list-item-avatar>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </v-row>
+      <v-row class="board-text">
+        <p class="mx-4">{{ board.text }}</p>
+      </v-row>
 
-        <TheLists :id="board.id"/>
+      <TheLists :id="board.id" />
 
-        <!-- PIN: Modal for editing board -->
-        <ModalBoard
-          v-model="editedBoard"
-          :open="editBoardMode"
-          @close="editBoardMode = false"
-          @save="saveEditedBoard"
-        />
-      </v-container>
-
-      <!-- PIN: Confirmation modal for deleting board -->
-      <ModalConfirm
-        :title="`Delete '${board.title}' ?`"
-        text="Can not restore all data in board."
-        :open="deleteBoardMode"
-        @cancel="deleteBoardMode = false"
-        @confirm="del()"
+      <!-- PIN: Modal for editing board -->
+      <ModalBoard
+        v-model="editedBoard"
+        :open="editBoardMode"
+        @close="editBoardMode = false"
+        @save="saveEditedBoard"
       />
-    </div>
+    </v-container>
 
-    <!-- PIN: No board page -->
-    <div v-else>
-      <v-container>
-        <v-row class="text-center" justify="center">
-          <v-col cols="12">
-            <h1>This Board does not exist.</h1>
-          </v-col>
-          <v-col>
-            <p>
-              Please go to
-              <router-link to="/boards">Home</router-link>
-            </p>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
+    <!-- PIN: Confirmation modal for deleting board -->
+    <ModalConfirm
+      :title="`Delete '${board.title}' ?`"
+      text="Can not restore all data in board."
+      :open="deleteBoardMode"
+      @cancel="deleteBoardMode = false"
+      @confirm="del()"
+    />
   </div>
 </template>
 
@@ -132,6 +113,7 @@ export default {
     del() {
       this.deleteBoardMode = false;
       this.removeBoard(this.board);
+      this.$router.push('/boards');
     },
   },
 };
