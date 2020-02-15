@@ -32,7 +32,7 @@ const mutations = {
 };
 
 const actions = {
-  addItem({ commit, dispatch, getters }, {
+  addItem({ commit, getters }, {
     listId, title, text = '', tags = [],
   }) {
     const newItem = {
@@ -46,7 +46,7 @@ const actions = {
 
     const list = getters.getListById(listId);
     list.items.push(newItem.id);
-    dispatch('editList', list);
+    commit('editList', list);
   },
   removeItem({ commit, getters }, { id, listId }) {
     const list = getters.getListById(listId);

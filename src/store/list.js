@@ -31,7 +31,7 @@ const mutations = {
 };
 
 const actions = {
-  addList({ commit, dispatch, getters }, { title, boardId }) {
+  addList({ commit, getters }, { title, boardId }) {
     const newList = {
       id: generateUuid(),
       boardId,
@@ -42,7 +42,7 @@ const actions = {
 
     const board = getters.getBoardById(boardId);
     board.lists.push(newList.id);
-    dispatch('editBoard', board);
+    commit('editBoard', board);
   },
   removeList({ commit, getters, dispatch }, { id, boardId }) {
     getters.getItemsByListId(id).forEach((item) => {

@@ -33,7 +33,7 @@ const mutations = {
 };
 
 const actions = {
-  addBoard({ commit, dispatch, getters }, {
+  addBoard({ commit, getters }, {
     userId, title, text, color,
   }) {
     const newBoard = {
@@ -48,7 +48,7 @@ const actions = {
 
     const user = { ...getters.user };
     user.boards.push(newBoard.id);
-    dispatch('editUser', user);
+    commit('editUser', user);
   },
   removeBoard({ commit, dispatch, getters }, { id }) {
     getters.getListsByBoardId(id).forEach((list) => {
@@ -56,7 +56,7 @@ const actions = {
     });
     const user = { ...getters.user };
     user.boards = user.boards.filter(boardId => boardId !== id);
-    dispatch('editUser', user);
+    commit('editUser', user);
     commit('removeBoard', id);
   },
   editBoard({ commit }, board) {
