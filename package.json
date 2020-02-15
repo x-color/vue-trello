@@ -1,11 +1,14 @@
 {
   "name": "vue-trello",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "A simple Trello clone with Vue.js",
+  "author": "x-color",
+  "license": "MIT",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "test:unit": "vue-cli-service test:unit",
+    "test:unit": "echo 'No test code!!'",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
