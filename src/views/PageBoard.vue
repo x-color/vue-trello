@@ -32,6 +32,8 @@
           <p class="mx-4">{{ board.text }}</p>
         </v-row>
 
+        <TheLists :id="board.id"/>
+
         <!-- PIN: Modal for editing board -->
         <ModalBoard
           v-model="editedBoard"
@@ -39,57 +41,6 @@
           @close="editBoardMode = false"
           @save="saveEditedBoard"
         />
-      </v-container>
-
-      <!-- PIN: Lists -->
-      <v-container>
-        <draggable
-          class="row flex-nowrap row--dense justify-start"
-          group="lists"
-          v-model="lists"
-          draggable=".item"
-        >
-          <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
-            <CardList :id="list.id" />
-          </v-col>
-
-          <!-- PIN: Button for creating new list -->
-          <v-col cols="auto">
-            <v-btn
-              v-if="!addListMode"
-              class="mx-auto"
-              width="300"
-              height="100"
-              color="grey lighten-2"
-              @click="addListMode = true"
-            >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-
-            <!-- PIN: Form for new list title -->
-            <v-card
-              v-if="addListMode"
-              class="mx-auto"
-              width="300"
-              color="grey lighten-4"
-            >
-              <v-card-title>
-                <v-text-field
-                  class="headline"
-                  v-model="newListTitle"
-                  v-if="addListMode"
-                  dense
-                  full-width
-                  label="New List"
-                  single-line
-                  autofocus
-                  @keypress.enter="addNewList()"
-                  @blur="addNewList()"
-                />
-              </v-card-title>
-            </v-card>
-          </v-col>
-        </draggable>
       </v-container>
 
       <!-- PIN: Confirmation modal for deleting board -->
@@ -123,43 +74,27 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
-import draggable from 'vuedraggable';
-import CardList from '@/components/CardList.vue';
 import ModalBoard from '@/components/ModalBoard.vue';
 import ModalConfirm from '@/components/ModalConfirm.vue';
+import TheLists from '@/components/TheLists.vue';
 
 export default {
   name: 'PageBoard',
   components: {
-    CardList,
     ModalBoard,
     ModalConfirm,
-    draggable,
+    TheLists,
   },
   computed: {
-    ...mapGetters(['getBoardById', 'getListsByBoardId', 'getListById']),
+    ...mapGetters(['getBoardById']),
     board() {
       return this.getBoardById(this.$route.params.id);
-    },
-    lists: {
-      get() {
-        return this.getListsByBoardId(this.$route.params.id);
-      },
-      set(newValue) {
-        const newBoard = Object.assign(
-          { ...this.board },
-          { lists: newValue.map(list => list.id) },
-        );
-        this.editBoard(newBoard);
-      },
     },
   },
   data() {
     return {
-      addListMode: false,
       editBoardMode: false,
       deleteBoardMode: false,
-      newListTitle: '',
       editedBoard: {},
       menuItems: [
         {
@@ -190,17 +125,6 @@ export default {
   },
   methods: {
     ...mapActions(['addList', 'editBoard', 'removeBoard', 'editList', 'changeColor']),
-    addNewList() {
-      const newTitle = this.newListTitle.trim();
-      if (newTitle) {
-        this.addList({
-          boardId: this.board.id,
-          title: this.newListTitle.trim(),
-        });
-      }
-      this.newListTitle = '';
-      this.addListMode = false;
-    },
     saveEditedBoard() {
       this.editBoard(this.editedBoard);
       this.editBoardMode = false;
