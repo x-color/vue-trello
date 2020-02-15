@@ -44,13 +44,19 @@ const actions = {
     board.lists.push(newList.id);
     commit('editBoard', board);
   },
-  removeList({ commit, getters, dispatch }, { id, boardId }) {
+  removeList({ commit, dispatch, getters }, { id, boardId }) {
     getters.getItemsByListId(id).forEach((item) => {
-      dispatch('removeItem', item);
+      dispatch('removeItemInDeletedList', item);
     });
     const board = getters.getBoardById(boardId);
     board.lists = board.lists.filter(listId => listId !== id);
     commit('editBoard', board);
+    commit('removeList', id);
+  },
+  removeListIndeletedBoard({ commit, dispatch, getters }, { id }) {
+    getters.getItemsByListId(id).forEach((item) => {
+      dispatch('removeItemInDeletedList', item);
+    });
     commit('removeList', id);
   },
   editList({ commit }, newList) {

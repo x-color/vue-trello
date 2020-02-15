@@ -52,7 +52,7 @@ const actions = {
   },
   removeBoard({ commit, dispatch, getters }, { id }) {
     getters.getListsByBoardId(id).forEach((list) => {
-      dispatch('removeList', list);
+      dispatch('removeListIndeletedBoard', list);
     });
     const user = { ...getters.user };
     user.boards = user.boards.filter(boardId => boardId !== id);

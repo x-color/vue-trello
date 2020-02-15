@@ -54,6 +54,9 @@ const actions = {
     commit('editList', list);
     commit('removeItem', id);
   },
+  removeItemInDeletedList({ commit }, { id }) {
+    commit('removeItem', id);
+  },
   editItem({ commit }, newItem) {
     commit('editItem', newItem);
   },
