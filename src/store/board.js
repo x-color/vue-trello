@@ -66,7 +66,6 @@ const actions = {
 
 const getters = {
   getBoardById: ({ boards }) => id => boards.find(board => board.id === id),
-  // eslint-disable-next-line max-len
   getBoardsByUserId: (_, gtrs) => gtrs.user.boards.map(boardId => gtrs.getBoardById(boardId)),
 };
 
