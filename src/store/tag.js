@@ -9,52 +9,13 @@ import generateUuid from './utils';
 function state() {
   return {
     tags: [
-      { id: '1', title: 'p1', color: 'red' },
-      { id: '2', title: 'p2', color: 'orange' },
-      { id: '3', title: 'p3', color: 'green' },
-      { id: '4', title: 'p4', color: 'blue' },
+      { id: generateUuid(), title: 'p1', color: 'red' },
+      { id: generateUuid(), title: 'p2', color: 'orange' },
+      { id: generateUuid(), title: 'p3', color: 'green' },
+      { id: generateUuid(), title: 'p4', color: 'blue' },
     ],
   };
 }
-
-const mutations = {
-  addTag({ tags }, {
-    title, color,
-  }) {
-    tags.push({
-      id: generateUuid(),
-      title,
-      color,
-    });
-  },
-  removeTag(st, id) {
-    st.tags = st.tags.filter(tag => tag.id !== id);
-  },
-  editTag(st, newTag) {
-    st.tags = st.tags.map((tag) => {
-      if (tag.id === newTag.id) {
-        return newTag;
-      }
-      return tag;
-    });
-  },
-};
-
-const actions = {
-  addTag({ commit }, {
-    title, color = 'white',
-  }) {
-    commit('addTag', {
-      title, color,
-    });
-  },
-  removeTag({ commit }, { id }) {
-    commit('removeTag', id);
-  },
-  editTag({ commit }, newTag) {
-    commit('editTag', newTag);
-  },
-};
 
 const getters = {
   getTagById: ({ tags }) => id => tags.find(tag => tag.id === id),
@@ -63,7 +24,5 @@ const getters = {
 
 export default {
   state,
-  mutations,
-  actions,
   getters,
 };
