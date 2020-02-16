@@ -31,10 +31,10 @@
         <p class="mx-4">{{ board.text }}</p>
       </v-row>
 
-      <TheLists :id="board.id" />
+      <the-lists :id="board.id" />
 
       <!-- PIN: Modal for editing board -->
-      <ModalBoard
+      <modal-board
         v-model="editedBoard"
         :open="editBoardMode"
         @close="editBoardMode = false"
@@ -43,7 +43,7 @@
     </v-container>
 
     <!-- PIN: Confirmation modal for deleting board -->
-    <ModalConfirm
+    <modal-confirm
       :title="`Delete '${board.title}' ?`"
       text="Can not restore all data in board."
       :open="deleteBoardMode"

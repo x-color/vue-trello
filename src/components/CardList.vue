@@ -57,7 +57,7 @@
       <v-list dense color="grey lighten-4">
         <draggable v-model="items" group="items">
           <v-list-item v-for="(item, index) in items" :key="index">
-            <CardItem :id="item.id" />
+            <card-item :id="item.id" />
           </v-list-item>
           <v-list-item v-if="addItemMode" class="my-2">
             <v-card class="mx-auto" width="270">
@@ -93,7 +93,7 @@
     </v-card>
 
     <!-- PIN: Confirmation modal for deleting board -->
-    <ModalConfirm
+    <modal-confirm
       :title="`Delete '${list.title}' ?`"
       text="Can not restore list and items in list."
       :open="deleteListMode"

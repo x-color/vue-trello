@@ -6,8 +6,7 @@
         <h1 class="ma-3">{{ user.name }}'s Boards</h1>
       </v-col>
     </v-row>
-
-    <TheBoards />
+    <the-boards />
   </v-container>
 </template>
 

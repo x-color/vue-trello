@@ -8,7 +8,7 @@
       draggable=".item"
     >
       <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
-        <CardList :id="list.id" />
+        <card-list :id="list.id" />
       </v-col>
 
       <!-- PIN: Button for creating new list -->

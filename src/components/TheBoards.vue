@@ -10,7 +10,7 @@
       <v-col v-for="(board, i) in boards" :key="i" cols="auto" class="item">
         <v-card dark>
           <router-link :to="`/boards/${board.id}`" class="router-no-underline">
-            <CardBoard :id="board.id" />
+            <card-board :id="board.id" />
           </router-link>
         </v-card>
       </v-col>
@@ -28,7 +28,7 @@
     </draggable>
 
     <!-- PIN: Modal for creating new board -->
-    <ModalBoard
+    <modal-board
       v-model="newBoard"
       :open="addBoardMode"
       @close="resetNewBoard"

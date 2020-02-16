@@ -52,7 +52,7 @@
                     If remove it, tags line up `+`, `tag1`, `tag2`.
             -->
             <span>
-              <BaseTag
+              <base-tag
                 :tag="tag"
                 v-for="(tag, index) in selectedTags"
                 class="ma-1"
@@ -160,7 +160,7 @@
     </v-card>
 
     <!-- PIN: Confirmation modal for deleting item -->
-    <ModalConfirm
+    <modal-confirm
       :title="`Delete '${value.title}' ?`"
       text="Can not restore this item."
       :open="deleteItemMode"

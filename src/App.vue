@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <TheHeader />
+    <the-header />
     <v-content class="overflow-x-auto">
       <router-view />
     </v-content>

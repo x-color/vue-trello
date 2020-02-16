@@ -4,7 +4,7 @@
       <v-container class="mx-auto py-1 px-0">
         <v-row v-if="item.tags.length" justify="start">
           <v-col cols="auto" class="py-0">
-            <BaseTag
+            <base-tag
               :tag="tag"
               v-for="(tag, index) in tags"
               class="ma-1"
@@ -16,7 +16,7 @@
         <v-card-subtitle class="py-2 text-truncate">{{ item.text }}</v-card-subtitle>
       </v-container>
     </v-card>
-    <ModalItem
+    <modal-item
       v-model="editedItem"
       :open="editItemMode"
       @close="saveEditedItem"
