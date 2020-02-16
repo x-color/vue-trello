@@ -2,6 +2,8 @@
 
 A simple Trello clone with Vue.js.
 
+![demo](./resources/demo.gif)
+
 ## Demo Page
 
 https://x-color.github.io/vue-trello/
