@@ -4,7 +4,19 @@
       <router-link to="/boards" class="router-no-underline">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
-            <v-toolbar-title class="diaplay-1 white--text" v-on="on">Vue Trello</v-toolbar-title>
+            <v-toolbar-title class="diaplay-1 white--text" v-on="on">
+              <v-container>
+                <v-row justify="start">
+                  <v-col cols="auto" class="px-2">
+                    <v-img
+                      alt="Logo"
+                      src="@/assets/logo.png"
+                    />
+                  </v-col>
+                  <v-col cols="auto" class="px-0 pt-3">Vue Trello</v-col>
+                </v-row>
+              </v-container>
+            </v-toolbar-title>
           </template>
           <span>Home</span>
         </v-tooltip>
