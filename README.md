@@ -1,29 +1,15 @@
-# vue-trello
+# Vue Trello
 
-## Project setup
-```
-npm install
-```
+A simple Trello clone with Vue.js.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## Using
 
-### Compiles and minifies for production
-```
-npm run build
-```
+- [Vue.js](https://github.com/vuejs/vue)
+- [Vuex](https://github.com/vuejs/vuex)
+- [Vue Router](https://github.com/vuejs/vue-router)
+- [Vuetify](https://github.com/vuetifyjs/vuetify)
+- [Vue.Draggable](https://github.com/SortableJS/Vue.Draggable)
 
-### Run your unit tests
-```
-npm run test:unit
-```
+## LICENCE
 
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+MIT
