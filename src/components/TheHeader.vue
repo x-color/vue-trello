@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-app-bar :color="color" dark>
+    <v-app-bar :color="color" dark fixed>
       <router-link to="/boards" class="router-no-underline">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
