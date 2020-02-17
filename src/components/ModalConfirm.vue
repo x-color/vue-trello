@@ -1,6 +1,6 @@
 <template>
   <v-row justify="center">
-    <v-dialog v-model="open" max-width="290">
+    <v-dialog v-model="open" max-width="290" @click:outside="$emit('cancel')">
       <v-card>
         <v-card-title class="headline">{{ title }}</v-card-title>
         <v-card-text>{{ text }}</v-card-text>
@@ -20,6 +20,14 @@ export default {
     title: String,
     text: String,
     open: Boolean,
+  },
+  computed: {
+    dialog: {
+      get() {
+        return this.open;
+      },
+      set() {},
+    },
   },
 };
 </script>
