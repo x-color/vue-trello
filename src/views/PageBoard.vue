@@ -16,7 +16,7 @@
                 class="pr-1"
                 v-for="(item, index) in menuItems"
                 :key="index"
-                @click="item.action()"
+                @click="item.action"
               >
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                 <v-list-item-avatar class="mx-0">
@@ -48,7 +48,7 @@
       text="Can not restore all data in board."
       :open="deleteBoardMode"
       @cancel="deleteBoardMode = false"
-      @confirm="del()"
+      @confirm="del"
     />
   </div>
 </template>

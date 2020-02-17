@@ -165,7 +165,7 @@
       text="Can not restore this item."
       :open="deleteItemMode"
       @cancel="deleteItemMode = false"
-      @confirm="del()"
+      @confirm="del"
     />
   </v-dialog>
 </template>

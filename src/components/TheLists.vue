@@ -42,8 +42,8 @@
               label="New List"
               single-line
               autofocus
-              @keypress.enter="addNewList()"
-              @blur="addNewList()"
+              @keypress.enter="addNewList"
+              @blur="addNewList"
             />
           </v-card-title>
         </v-card>

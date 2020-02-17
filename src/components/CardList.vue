@@ -16,8 +16,8 @@
                 single-line
                 autofocus
                 :rules="[!!newListTitle || 'Required']"
-                @keypress.enter="saveListTitle()"
-                @blur="saveListTitle()"
+                @keypress.enter="saveListTitle"
+                @blur="saveListTitle"
               />
             </v-card-title>
             <v-card-title v-else class="headline">{{ list.title }}</v-card-title>
@@ -37,7 +37,7 @@
                     class="pr-1"
                     v-for="(item, index) in menuItems"
                     :key="index"
-                    @click="item.action()"
+                    @click="item.action"
                   >
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                     <v-list-item-avatar class="mx-0">
