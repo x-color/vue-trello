@@ -7,6 +7,7 @@ type Board struct {
 	Title  string
 	Text   string
 	Color  Color
+	Lists  Lists
 }
 
 // Boards defines a slice of Board

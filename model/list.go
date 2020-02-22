@@ -6,6 +6,7 @@ type List struct {
 	BoardID string
 	UserID  string
 	Title   string
+	Items   Items
 }
 
 // Lists defines a slice of List
