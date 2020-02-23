@@ -49,7 +49,7 @@ func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 	return item, nil
 }
 
-// Delete removes item in repogitory.
+// Delete removes Item in repogitory.
 func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
 		return model.InvalidContentError{
@@ -64,7 +64,7 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 	return nil
 }
 
-// Update replaces item and returns new item.
+// Update replaces a Item and returns new Item.
 func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 	if err := i.validateItem(item); err != nil {
 		return model.Item{}, nil
