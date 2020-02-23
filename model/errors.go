@@ -34,6 +34,22 @@ func (e InvalidContentError) Unwrap() error {
 	return e.Err
 }
 
+// ConflictError is occured if a content already exists.
+type ConflictError struct {
+	ID  string
+	Act string
+	Err error
+}
+
+func (e ConflictError) Error() string {
+	return fmt.Sprintf("%s: %s alredy exists", e.Act, e.ID)
+}
+
+// Unwrap returns a error wrapped by ConflictError.
+func (e ConflictError) Unwrap() error {
+	return e.Err
+}
+
 // ServerError is occured if a error is occured in server and not bad request.
 type ServerError struct {
 	ID  string
