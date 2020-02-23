@@ -22,15 +22,15 @@ type ItemInteractor struct {
 
 // NewItemInteractor generates new interactor for a Item.
 func NewItemInteractor(
-	ItemRepo ItemRepogitory,
-	ListRepo ListRepogitory,
-	TagRepo TagRepogitory,
+	itemRepo ItemRepogitory,
+	listRepo ListRepogitory,
+	tagRepo TagRepogitory,
 	logger Logger,
 ) (ItemInteractor, error) {
 	i := ItemInteractor{
-		itemRepo: ItemRepo,
-		listRepo: ListRepo,
-		tagRepo:  TagRepo,
+		itemRepo: itemRepo,
+		listRepo: listRepo,
+		tagRepo:  tagRepo,
 		logger:   logger,
 	}
 	return i, nil
