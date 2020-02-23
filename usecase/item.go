@@ -52,7 +52,11 @@ func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 // Delete removes item in repogitory.
 func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
-		return new(ErrGen).InvalidContentError(nil, item.ID, "delete item")
+		return model.InvalidContentError{
+			Err: nil,
+			ID:  item.ID,
+			Act: "validate item",
+		}
 	}
 	if err := i.itemRepo.Delete(item); err != nil {
 		return err
@@ -74,7 +78,11 @@ func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 
 func (i *ItemInteractor) validateItem(item model.Item) error {
 	if item.ID == "" || item.Title == "" || item.ListID == "" || item.UserID == "" {
-		return new(ErrGen).InvalidContentError(nil, item.ID, "validate contents")
+		return model.InvalidContentError{
+			Err: nil,
+			ID:  item.ID,
+			Act: "validate contents",
+		}
 	}
 	_, err := i.listRepo.Find(model.List{ID: item.ListID})
 	if err != nil {
@@ -96,7 +104,11 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 			}
 		}
 		if !isValid {
-			return new(ErrGen).InvalidContentError(nil, item.ID, "validate tags")
+			return model.InvalidContentError{
+				Err: nil,
+				ID:  item.ID,
+				Act: "validate tags",
+			}
 		}
 	}
 	return nil
