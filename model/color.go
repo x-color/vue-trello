@@ -11,8 +11,11 @@ const (
 	YELLOW Color = "yellow"
 )
 
+// Colors defines a slice of Color.
+type Colors []Color
+
 // COLORS includes Color literals.
-const COLORS = []Color{
+var COLORS = Colors{
 	RED,
 	BLUE,
 	GREEN,
