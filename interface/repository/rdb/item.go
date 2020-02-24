@@ -31,7 +31,14 @@ func (m *ItemDBManager) Update(item model.Item) error {
 			Act: "validate item",
 		}
 	}
-	if err := m.db.Save(&item).Error; err != nil {
+
+	err := m.db.Model(&item).Where(&model.Item{ID: item.ID, UserID: item.UserID}).Updates(map[string]interface{}{
+		"title": item.Title,
+		"text":  convertData(item.Text),
+		"tags":  item.Tags,
+	}).Error
+
+	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
@@ -57,7 +64,7 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 			Act: "validate item",
 		}
 	}
-	if err := m.db.Delete(&model.Item{ID: item.ID}).Error; err != nil {
+	if err := m.db.Where(&model.Item{ID: item.ID, UserID: item.UserID}).Delete(&item).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
@@ -77,7 +84,7 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 // Find gets a Item had specific ID from DB.
 func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
 	r := model.Item{}
-	if err := m.db.Where(&model.Item{ID: item.ID}).First(&r).Error; err != nil {
+	if err := m.db.Where(&model.Item{ID: item.ID, UserID: item.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.Item{}, model.NotFoundError{
 				Err: err,
@@ -104,7 +111,7 @@ func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
 		}
 	}
 	r := model.Items{}
-	if err := m.db.Where(&model.Item{ListID: list.ID}).Find(r).Error; err != nil {
+	if err := m.db.Where(&model.Item{ListID: list.ID, UserID: list.UserID}).Find(r).Error; err != nil {
 		return model.Items{}, model.ServerError{
 			Err: err,
 			ID:  list.ID,

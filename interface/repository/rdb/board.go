@@ -31,7 +31,14 @@ func (m *BoardDBManager) Update(board model.Board) error {
 			Act: "validate board",
 		}
 	}
-	if err := m.db.Save(&board).Error; err != nil {
+
+	err := m.db.Model(&board).Where(&model.Board{ID: board.ID, UserID: board.UserID}).Updates(map[string]interface{}{
+		"title": board.Title,
+		"text":  convertData(board.Text),
+		"color": board.Color,
+	}).Error
+
+	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
@@ -60,7 +67,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 
 	tx := m.db.Begin()
 
-	if err := tx.Delete(&model.Board{ID: board.ID}).Error; err != nil {
+	if err := tx.Where(&model.Board{ID: board.ID, UserID: board.UserID}).Delete(&board).Error; err != nil {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
@@ -106,7 +113,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 // Find gets a Board had specific ID from DB.
 func (m *BoardDBManager) Find(board model.Board) (model.Board, error) {
 	r := model.Board{}
-	if err := m.db.Where(&model.Board{ID: board.ID}).First(&r).Error; err != nil {
+	if err := m.db.Where(&model.Board{ID: board.ID, UserID: board.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.Board{}, model.NotFoundError{
 				Err: err,
@@ -141,4 +148,11 @@ func (m *BoardDBManager) FindBoards(user model.User) (model.Boards, error) {
 		}
 	}
 	return r, nil
+}
+
+func convertData(data string) interface{} {
+	if data == "" {
+		return gorm.Expr("NULL")
+	}
+	return data
 }

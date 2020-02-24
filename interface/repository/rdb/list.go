@@ -31,7 +31,12 @@ func (m *ListDBManager) Update(list model.List) error {
 			Act: "validate list",
 		}
 	}
-	if err := m.db.Save(&list).Error; err != nil {
+
+	err := m.db.Model(&list).Where(&model.List{ID: list.ID, UserID: list.UserID}).Updates(map[string]interface{}{
+		"title": list.Title,
+	}).Error
+
+	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
@@ -60,7 +65,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 
 	tx := m.db.Begin()
 
-	if err := tx.Delete(&model.List{ID: list.ID}).Error; err != nil {
+	if err := tx.Where(&model.List{ID: list.ID, UserID: list.UserID}).Delete(&list).Error; err != nil {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
@@ -92,7 +97,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 // Find gets a List had specific ID from DB.
 func (m *ListDBManager) Find(list model.List) (model.List, error) {
 	r := model.List{}
-	if err := m.db.Where(&model.List{ID: list.ID}).First(&r).Error; err != nil {
+	if err := m.db.Where(&model.List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.List{}, model.NotFoundError{
 				Err: err,
@@ -119,7 +124,7 @@ func (m *ListDBManager) FindLists(board model.Board) (model.Lists, error) {
 		}
 	}
 	r := model.Lists{}
-	if err := m.db.Where(&model.List{BoardID: board.ID}).Find(r).Error; err != nil {
+	if err := m.db.Where(&model.List{BoardID: board.ID, UserID: board.UserID}).Find(r).Error; err != nil {
 		return model.Lists{}, model.ServerError{
 			Err: err,
 			ID:  board.ID,
