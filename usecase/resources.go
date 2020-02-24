@@ -11,13 +11,13 @@ type ResourseUsecase interface {
 
 // ResourceInteractor includes repogitories and a logger.
 type ResourceInteractor struct {
-	tagRepo TagRepogitory
+	tagRepo TagRepository
 	logger  Logger
 }
 
 // NewResourceInteractor generates new interactor for resources.
 func NewResourceInteractor(
-	tagRepo TagRepogitory,
+	tagRepo TagRepository,
 	logger Logger,
 ) (ResourceInteractor, error) {
 	i := ResourceInteractor{

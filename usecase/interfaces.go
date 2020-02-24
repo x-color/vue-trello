@@ -11,8 +11,8 @@ type Logger interface {
 	Error(msg string)
 }
 
-// ItemRepogitory is interface. It defines CURD methods for Item.
-type ItemRepogitory interface {
+// ItemRepository is interface. It defines CURD methods for Item.
+type ItemRepository interface {
 	Create(item model.Item) error
 	Update(item model.Item) error
 	Delete(item model.Item) error
@@ -20,8 +20,8 @@ type ItemRepogitory interface {
 	FindItems(list model.List) (model.Items, error)
 }
 
-// ListRepogitory is interface. It defines CURD methods for List.
-type ListRepogitory interface {
+// ListRepository is interface. It defines CURD methods for List.
+type ListRepository interface {
 	Create(list model.List) error
 	Update(list model.List) error
 	Delete(list model.List) error
@@ -29,8 +29,8 @@ type ListRepogitory interface {
 	FindLists(board model.Board) (model.Lists, error)
 }
 
-// BoardRepogitory is interface. It defines CURD methods for Board.
-type BoardRepogitory interface {
+// BoardRepository is interface. It defines CURD methods for Board.
+type BoardRepository interface {
 	Create(board model.Board) error
 	Update(board model.Board) error
 	Delete(board model.Board) error
@@ -38,14 +38,14 @@ type BoardRepogitory interface {
 	FindBoards(user model.User) (model.Boards, error)
 }
 
-// UserRepogitory is interface. It defines CR methods for User.
-type UserRepogitory interface {
+// UserRepository is interface. It defines CR methods for User.
+type UserRepository interface {
 	Create(user model.User) error
 	Find(user model.User) (model.User, error)
 }
 
-// TagRepogitory is interface. It defines CR methods for Tag.
-type TagRepogitory interface {
+// TagRepository is interface. It defines CR methods for Tag.
+type TagRepository interface {
 	Create(tag model.Tag) error
 	FindAll() (model.Tags, error)
 }

@@ -21,7 +21,7 @@
       <v-col cols="12" align="center">
         <p class="my-auto">
           Here is
-          <a href="https://github.com/x-color/vue-trello">repogitory</a>
+          <a href="https://github.com/x-color/vue-trello">repository</a>
           Create by
           <a href="https://github.com/x-color">x-color</a>
         </p>

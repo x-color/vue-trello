@@ -15,17 +15,17 @@ type BoardUsecase interface {
 
 // BoardInteractor includes repogitories and a logger.
 type BoardInteractor struct {
-	boardRepo BoardRepogitory
-	listRepo  ListRepogitory
-	itemRepo  ItemRepogitory
+	boardRepo BoardRepository
+	listRepo  ListRepository
+	itemRepo  ItemRepository
 	logger    Logger
 }
 
 // NewBoardInteractor generates new interactor for a Board.
 func NewBoardInteractor(
-	boardRepo BoardRepogitory,
-	listRepo ListRepogitory,
-	itemRepo ItemRepogitory,
+	boardRepo BoardRepository,
+	listRepo ListRepository,
+	itemRepo ItemRepository,
 	logger Logger,
 ) (BoardInteractor, error) {
 	i := BoardInteractor{
@@ -37,7 +37,7 @@ func NewBoardInteractor(
 	return i, nil
 }
 
-// Create saves new Board to a repogitory and returns created Board.
+// Create saves new Board to a repository and returns created Board.
 func (i *BoardInteractor) Create(board model.Board) (model.Board, error) {
 	board.ID = uuid.New().String()
 	if err := i.validateBoard(board); err != nil {
@@ -50,7 +50,7 @@ func (i *BoardInteractor) Create(board model.Board) (model.Board, error) {
 	return board, nil
 }
 
-// Delete removes Board in repogitory.
+// Delete removes Board in repository.
 func (i *BoardInteractor) Delete(board model.Board) error {
 	if board.ID == "" {
 		return model.InvalidContentError{

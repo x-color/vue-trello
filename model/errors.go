@@ -2,7 +2,7 @@ package model
 
 import "fmt"
 
-// NotFoundError is occured if a content is not in a repogitory.
+// NotFoundError is occured if a content is not in a repository.
 type NotFoundError struct {
 	ID  string
 	Act string

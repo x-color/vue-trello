@@ -14,17 +14,17 @@ type ItemUsecase interface {
 
 // ItemInteractor includes repogitories and a logger.
 type ItemInteractor struct {
-	itemRepo ItemRepogitory
-	listRepo ListRepogitory
-	tagRepo  TagRepogitory
+	itemRepo ItemRepository
+	listRepo ListRepository
+	tagRepo  TagRepository
 	logger   Logger
 }
 
 // NewItemInteractor generates new interactor for a Item.
 func NewItemInteractor(
-	itemRepo ItemRepogitory,
-	listRepo ListRepogitory,
-	tagRepo TagRepogitory,
+	itemRepo ItemRepository,
+	listRepo ListRepository,
+	tagRepo TagRepository,
 	logger Logger,
 ) (ItemInteractor, error) {
 	i := ItemInteractor{
@@ -36,7 +36,7 @@ func NewItemInteractor(
 	return i, nil
 }
 
-// Create saves new Item to a repogitory and returns created Item.
+// Create saves new Item to a repository and returns created Item.
 func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 	item.ID = uuid.New().String()
 	if err := i.validateItem(item); err != nil {
@@ -49,7 +49,7 @@ func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 	return item, nil
 }
 
-// Delete removes Item in repogitory.
+// Delete removes Item in repository.
 func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
 		return model.InvalidContentError{

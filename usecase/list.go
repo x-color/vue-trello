@@ -14,15 +14,15 @@ type ListUsecase interface {
 
 // ListInteractor includes repogitories and a logger.
 type ListInteractor struct {
-	listRepo  ListRepogitory
-	boardRepo BoardRepogitory
+	listRepo  ListRepository
+	boardRepo BoardRepository
 	logger    Logger
 }
 
 // NewListInteractor generates new interactor for a List.
 func NewListInteractor(
-	listRepo ListRepogitory,
-	boardRepo BoardRepogitory,
+	listRepo ListRepository,
+	boardRepo BoardRepository,
 	logger Logger,
 ) (ListInteractor, error) {
 	i := ListInteractor{
@@ -33,7 +33,7 @@ func NewListInteractor(
 	return i, nil
 }
 
-// Create saves new List to a repogitory and returns created List.
+// Create saves new List to a repository and returns created List.
 func (i *ListInteractor) Create(list model.List) (model.List, error) {
 	list.ID = uuid.New().String()
 	if err := i.validateList(list); err != nil {
@@ -46,7 +46,7 @@ func (i *ListInteractor) Create(list model.List) (model.List, error) {
 	return list, nil
 }
 
-// Delete removes List in repogitory.
+// Delete removes List in repository.
 func (i *ListInteractor) Delete(list model.List) error {
 	if list.ID == "" {
 		return model.InvalidContentError{

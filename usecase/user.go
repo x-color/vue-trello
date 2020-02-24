@@ -20,13 +20,13 @@ type UserUsecase interface {
 
 // UserInteractor includes repogitories and a logger.
 type UserInteractor struct {
-	userRepo UserRepogitory
+	userRepo UserRepository
 	logger   Logger
 }
 
 // NewUserInteractor generates new interactor for a User.
 func NewUserInteractor(
-	userRepo UserRepogitory,
+	userRepo UserRepository,
 	logger Logger,
 ) (UserInteractor, error) {
 	i := UserInteractor{
@@ -36,7 +36,7 @@ func NewUserInteractor(
 	return i, nil
 }
 
-// SignUp registers new User to repogitory.
+// SignUp registers new User to repository.
 func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	if user.Name == "" || user.Password == "" {
 		return model.User{}, model.InvalidContentError{
