@@ -53,8 +53,8 @@ func NewRouter(b InteraBox) *echo.Echo {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	e.Static("/", "web/public/")
-	e.File("/", "web/public/index.html")
+	e.Static("/", "web/dist")
+	e.File("/", "web/dist/index.html")
 
 	e.POST("/signup", userHandler.SignUp)
 	e.POST("/signin", userHandler.SignIn)
