@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/jinzhu/gorm"
+	"github.com/x-color/vue-trello/model"
 
 	// SQLite driver
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
@@ -34,4 +35,24 @@ func NewDBManager() (DBManager, error) {
 		TagDBManager:   newTagDBManager(db),
 	}
 	return dbm, nil
+}
+
+func convertData(data interface{}) interface{} {
+	if data == nil {
+		return gorm.Expr("NULL")
+	}
+	return data
+}
+
+func validatePrimaryKeys(targetName string, keys ...string) error {
+	for _, k := range keys {
+		if k == "" {
+			return model.NotFoundError{
+				Err: nil,
+				ID:  "(No ID)",
+				Act: "validate " + targetName,
+			}
+		}
+	}
+	return nil
 }

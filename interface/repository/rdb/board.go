@@ -63,6 +63,10 @@ func newBoardDBManager(db *gorm.DB) BoardDBManager {
 
 // Create registers a Board to DB.
 func (m *BoardDBManager) Create(board model.Board) error {
+	if err := validatePrimaryKeys("board", board.ID, board.UserID); err != nil {
+		return err
+	}
+
 	b := Board{}
 	b.convertFrom(board)
 	if err := m.db.Create(&b).Error; err != nil {
@@ -77,12 +81,8 @@ func (m *BoardDBManager) Create(board model.Board) error {
 
 // Update updates all fields of specific Board in DB.
 func (m *BoardDBManager) Update(board model.Board) error {
-	if validatePrimaryKey(board.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate board",
-		}
+	if err := validatePrimaryKeys("board", board.ID, board.UserID); err != nil {
+		return err
 	}
 
 	b := Board{}
@@ -112,12 +112,8 @@ func (m *BoardDBManager) Update(board model.Board) error {
 
 // Delete removes a Board from DB.
 func (m *BoardDBManager) Delete(board model.Board) error {
-	if validatePrimaryKey(board.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate board",
-		}
+	if err := validatePrimaryKeys("board", board.ID, board.UserID); err != nil {
+		return err
 	}
 
 	b := Board{}
@@ -170,6 +166,10 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 
 // Find gets a Board had specific ID from DB.
 func (m *BoardDBManager) Find(board model.Board) (model.Board, error) {
+	if err := validatePrimaryKeys("board", board.ID, board.UserID); err != nil {
+		return model.Board{}, err
+	}
+
 	r := Board{}
 	if err := m.db.Where(&Board{ID: board.ID, UserID: board.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -190,13 +190,10 @@ func (m *BoardDBManager) Find(board model.Board) (model.Board, error) {
 
 // FindBoards gets User's all Boards from DB.
 func (m *BoardDBManager) FindBoards(user model.User) (model.Boards, error) {
-	if validatePrimaryKey(user.ID) {
-		return model.Boards{}, model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate board",
-		}
+	if err := validatePrimaryKeys("user", user.ID); err != nil {
+		return model.Boards{}, err
 	}
+
 	r := Boards{}
 	if err := m.db.Where(&Board{UserID: user.ID}).Find(&r).Error; err != nil {
 		return model.Boards{}, model.ServerError{
@@ -211,11 +208,4 @@ func (m *BoardDBManager) FindBoards(user model.User) (model.Boards, error) {
 		boards = append(boards, rb.convertTo())
 	}
 	return boards, nil
-}
-
-func convertData(data interface{}) interface{} {
-	if data == nil {
-		return gorm.Expr("NULL")
-	}
-	return data
 }

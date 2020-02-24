@@ -81,6 +81,10 @@ func newItemDBManager(db *gorm.DB) ItemDBManager {
 
 // Create registers a Item to DB.
 func (m *ItemDBManager) Create(item model.Item) error {
+	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
+		return err
+	}
+
 	i := Item{}
 	i.convertFrom(item)
 
@@ -96,12 +100,8 @@ func (m *ItemDBManager) Create(item model.Item) error {
 
 // Update updates all fields of specific Item in DB.
 func (m *ItemDBManager) Update(item model.Item) error {
-	if validatePrimaryKey(item.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate item",
-		}
+	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
+		return err
 	}
 
 	i := Item{}
@@ -132,12 +132,8 @@ func (m *ItemDBManager) Update(item model.Item) error {
 
 // Delete removes a Item from DB.
 func (m *ItemDBManager) Delete(item model.Item) error {
-	if validatePrimaryKey(item.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate item",
-		}
+	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
+		return err
 	}
 
 	i := Item{}
@@ -162,6 +158,10 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 
 // Find gets a Item had specific ID from DB.
 func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
+	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
+		return model.Item{}, err
+	}
+
 	r := Item{}
 	if err := m.db.Where(&Item{ID: item.ID, UserID: item.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -182,13 +182,10 @@ func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
 
 // FindItems gets all Items in a specific List from DB.
 func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
-	if validatePrimaryKey(list.ID) {
-		return model.Items{}, model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate list",
-		}
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return model.Items{}, err
 	}
+
 	r := Items{}
 	if err := m.db.Where(&Item{ListID: list.ID, UserID: list.UserID}).Find(r).Error; err != nil {
 		return model.Items{}, model.ServerError{
@@ -204,8 +201,4 @@ func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
 	}
 
 	return items, nil
-}
-
-func validatePrimaryKey(key string) bool {
-	return key != ""
 }

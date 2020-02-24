@@ -52,6 +52,10 @@ func newListDBManager(db *gorm.DB) ListDBManager {
 
 // Create registers a List to DB.
 func (m *ListDBManager) Create(list model.List) error {
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return err
+	}
+
 	l := List{}
 	l.convertFrom(list)
 
@@ -67,12 +71,8 @@ func (m *ListDBManager) Create(list model.List) error {
 
 // Update updates all fields of specific List in DB.
 func (m *ListDBManager) Update(list model.List) error {
-	if validatePrimaryKey(list.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate list",
-		}
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return err
 	}
 
 	l := List{}
@@ -100,12 +100,8 @@ func (m *ListDBManager) Update(list model.List) error {
 
 // Delete removes a List from DB.
 func (m *ListDBManager) Delete(list model.List) error {
-	if validatePrimaryKey(list.ID) {
-		return model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate list",
-		}
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return err
 	}
 
 	l := List{}
@@ -144,6 +140,10 @@ func (m *ListDBManager) Delete(list model.List) error {
 
 // Find gets a List had specific ID from DB.
 func (m *ListDBManager) Find(list model.List) (model.List, error) {
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return model.List{}, err
+	}
+
 	r := List{}
 	if err := m.db.Where(&List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
@@ -164,13 +164,10 @@ func (m *ListDBManager) Find(list model.List) (model.List, error) {
 
 // FindLists gets all Lists in a specific board from DB.
 func (m *ListDBManager) FindLists(board model.Board) (model.Lists, error) {
-	if validatePrimaryKey(board.ID) {
-		return model.Lists{}, model.NotFoundError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "validate list",
-		}
+	if err := validatePrimaryKeys("board", board.ID, board.UserID); err != nil {
+		return model.Lists{}, err
 	}
+
 	r := Lists{}
 	if err := m.db.Where(&List{BoardID: board.ID, UserID: board.UserID}).Find(&r).Error; err != nil {
 		return model.Lists{}, model.ServerError{

@@ -50,6 +50,10 @@ func newUserDBManager(db *gorm.DB) UserDBManager {
 
 // Create registers a User to DB.
 func (m *UserDBManager) Create(user model.User) error {
+	if err := validatePrimaryKeys("user", user.ID); err != nil {
+		return err
+	}
+
 	u := User{}
 	u.convertFrom(user)
 

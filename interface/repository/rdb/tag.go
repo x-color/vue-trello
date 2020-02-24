@@ -46,6 +46,10 @@ func newTagDBManager(db *gorm.DB) TagDBManager {
 
 // Create registers a Tag to DB.
 func (m *TagDBManager) Create(tag model.Tag) error {
+	if err := validatePrimaryKeys("tag", tag.ID); err != nil {
+		return err
+	}
+
 	t := Tag{}
 	t.convertFrom(tag)
 
