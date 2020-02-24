@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -59,12 +58,7 @@ func (h *UserHandler) SignUp(c echo.Context) error {
 
 	u, err := h.interactor.SignUp(user.convertTo())
 	if err != nil {
-		if errors.Is(err, model.ConflictError{}) {
-			return c.JSON(http.StatusConflict, map[string]string{
-				"message": user.Name + " already exists",
-			})
-		}
-		return echo.ErrInternalServerError
+		return convertToHttpError(c, err)
 	}
 
 	r := User{}
@@ -81,10 +75,7 @@ func (h *UserHandler) SignIn(c echo.Context) error {
 
 	u, err := h.interactor.SignIn(user.convertTo())
 	if err != nil {
-		if errors.Is(err, model.NotFoundError{}) {
-			return echo.ErrUnauthorized
-		}
-		return echo.ErrInternalServerError
+		return convertToHttpError(c, err)
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
