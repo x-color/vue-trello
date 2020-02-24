@@ -1,9 +1,42 @@
 package rdb
 
 import (
+	"time"
+
 	"github.com/jinzhu/gorm"
 	"github.com/x-color/vue-trello/model"
 )
+
+// List is List data model for DB.
+type List struct {
+	ID        string `gorm:"primary_key"`
+	UserID    string `gorm:"primary_key"`
+	BoardID   string
+	Title     string
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt *time.Time
+}
+
+func (l *List) convertFrom(list model.List) {
+	l.ID = list.ID
+	l.UserID = list.UserID
+	l.BoardID = list.BoardID
+	l.Title = list.Title
+}
+
+func (l *List) convertTo() model.List {
+	list := model.List{
+		ID:      l.ID,
+		UserID:  l.UserID,
+		BoardID: l.BoardID,
+		Title:   l.Title,
+	}
+	return list
+}
+
+// Lists is a slice of List data model.
+type Lists []List
 
 // ListDBManager is DB manager for List.
 type ListDBManager struct {
@@ -12,10 +45,13 @@ type ListDBManager struct {
 
 // Create registers a List to DB.
 func (m *ListDBManager) Create(list model.List) error {
-	if err := m.db.Create(&list).Error; err != nil {
+	l := List{}
+	l.convertFrom(list)
+
+	if err := m.db.Create(&l).Error; err != nil {
 		return model.ServerError{
 			Err: err,
-			ID:  list.ID,
+			ID:  l.ID,
 			Act: "create list",
 		}
 	}
@@ -32,7 +68,9 @@ func (m *ListDBManager) Update(list model.List) error {
 		}
 	}
 
-	err := m.db.Model(&list).Where(&model.List{ID: list.ID, UserID: list.UserID}).Updates(map[string]interface{}{
+	l := List{}
+	l.convertFrom(list)
+	err := m.db.Model(&l).Updates(map[string]interface{}{
 		"title": list.Title,
 	}).Error
 
@@ -40,13 +78,13 @@ func (m *ListDBManager) Update(list model.List) error {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
-				ID:  list.ID,
+				ID:  l.ID,
 				Act: "update list",
 			}
 		}
 		return model.ServerError{
 			Err: err,
-			ID:  list.ID,
+			ID:  l.ID,
 			Act: "update list",
 		}
 	}
@@ -63,29 +101,32 @@ func (m *ListDBManager) Delete(list model.List) error {
 		}
 	}
 
+	l := List{}
+	l.convertFrom(list)
+
 	tx := m.db.Begin()
 
-	if err := tx.Where(&model.List{ID: list.ID, UserID: list.UserID}).Delete(&list).Error; err != nil {
+	if err := tx.Delete(&l).Error; err != nil {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				Err: err,
-				ID:  list.ID,
+				ID:  l.ID,
 				Act: "delete list",
 			}
 		}
 		return model.ServerError{
 			Err: err,
-			ID:  list.ID,
+			ID:  l.ID,
 			Act: "delete list",
 		}
 	}
 
-	if err := tx.Where(&model.Item{ListID: list.ID}).Delete(model.List{}).Error; err != nil {
+	if err := tx.Where(&Item{ListID: l.ID}).Delete(List{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
 			Err: err,
-			ID:  list.ID,
+			ID:  l.ID,
 			Act: "delete list",
 		}
 	}
@@ -96,8 +137,8 @@ func (m *ListDBManager) Delete(list model.List) error {
 
 // Find gets a List had specific ID from DB.
 func (m *ListDBManager) Find(list model.List) (model.List, error) {
-	r := model.List{}
-	if err := m.db.Where(&model.List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
+	r := List{}
+	if err := m.db.Where(&List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.List{}, model.NotFoundError{
 				Err: err,
@@ -111,7 +152,7 @@ func (m *ListDBManager) Find(list model.List) (model.List, error) {
 			Act: "find list",
 		}
 	}
-	return r, nil
+	return r.convertTo(), nil
 }
 
 // FindLists gets all Lists in a specific board from DB.
@@ -123,13 +164,19 @@ func (m *ListDBManager) FindLists(board model.Board) (model.Lists, error) {
 			Act: "validate list",
 		}
 	}
-	r := model.Lists{}
-	if err := m.db.Where(&model.List{BoardID: board.ID, UserID: board.UserID}).Find(r).Error; err != nil {
+	r := Lists{}
+	if err := m.db.Where(&List{BoardID: board.ID, UserID: board.UserID}).Find(&r).Error; err != nil {
 		return model.Lists{}, model.ServerError{
 			Err: err,
 			ID:  board.ID,
 			Act: "find lists in board",
 		}
 	}
-	return r, nil
+
+	lists := model.Lists{}
+	for _, rl := range r {
+		lists = append(lists, rl.convertTo())
+	}
+
+	return lists, nil
 }
