@@ -58,7 +58,7 @@ func (h *UserHandler) SignUp(c echo.Context) error {
 
 	u, err := h.interactor.SignUp(user.convertTo())
 	if err != nil {
-		return convertToHttpError(c, err)
+		return convertToHTTPError(c, err)
 	}
 
 	r := User{}
@@ -75,7 +75,7 @@ func (h *UserHandler) SignIn(c echo.Context) error {
 
 	u, err := h.interactor.SignIn(user.convertTo())
 	if err != nil {
-		return convertToHttpError(c, err)
+		return convertToHTTPError(c, err)
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{

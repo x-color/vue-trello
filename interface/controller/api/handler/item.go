@@ -71,7 +71,7 @@ func (h *ItemHandler) Create(c echo.Context) error {
 
 	i, err := h.intractor.Create(item)
 	if err != nil {
-		return convertToHttpError(c, err)
+		return convertToHTTPError(c, err)
 	}
 
 	resItem := Item{}
@@ -93,7 +93,7 @@ func (h *ItemHandler) Update(c echo.Context) error {
 
 	i, err := h.intractor.Update(item)
 	if err != nil {
-		return convertToHttpError(c, err)
+		return convertToHTTPError(c, err)
 	}
 
 	resItem := Item{}
@@ -115,7 +115,7 @@ func (h *ItemHandler) Delete(c echo.Context) error {
 
 	err := h.intractor.Delete(item)
 	if err != nil {
-		return convertToHttpError(c, err)
+		return convertToHTTPError(c, err)
 	}
 
 	return c.JSON(http.StatusNoContent, nil)

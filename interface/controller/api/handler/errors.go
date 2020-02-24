@@ -8,7 +8,7 @@ import (
 	"github.com/x-color/vue-trello/model"
 )
 
-func convertToHttpError(c echo.Context, err error) error {
+func convertToHTTPError(c echo.Context, err error) error {
 	switch {
 	case errors.Is(err, model.ConflictError{}):
 		return echo.NewHTTPError(http.StatusConflict, "resourse already exists")
