@@ -19,6 +19,6 @@ func convertToHTTPError(c echo.Context, err error) error {
 	case errors.Is(err, model.ServerError{}):
 		return echo.ErrInternalServerError
 	default:
-		return nil
+		return echo.ErrInternalServerError
 	}
 }
