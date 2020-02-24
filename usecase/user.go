@@ -14,8 +14,8 @@ var SECRET = []byte("secret")
 
 // UserUsecase is interface. It defines to control a User authentication.
 type UserUsecase interface {
-	SignUp(item model.User) (model.User, error)
-	Login(item model.User) (model.User, error)
+	SignUp(user model.User) (model.User, error)
+	Login(user model.User) (model.User, error)
 }
 
 // UserInteractor includes repogitories and a logger.
