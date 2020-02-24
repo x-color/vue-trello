@@ -41,7 +41,7 @@ type BoardRepository interface {
 // UserRepository is interface. It defines CR methods for User.
 type UserRepository interface {
 	Create(user model.User) error
-	Find(user model.User) (model.User, error)
+	FindByName(user model.User) (model.User, error)
 }
 
 // TagRepository is interface. It defines CR methods for Tag.

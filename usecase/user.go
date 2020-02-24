@@ -46,7 +46,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 		}
 	}
 
-	u, err := i.userRepo.Find(model.User{Name: user.Name})
+	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
 	if err != nil && !errors.Is(err, model.NotFoundError{}) {
 		return model.User{}, err
 	}
@@ -67,7 +67,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 
 // SignIn returns JWT if a user succeds at authentication.
 func (i *UserInteractor) SignIn(user model.User) (string, error) {
-	u, err := i.userRepo.Find(model.User{Name: user.Name})
+	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
 	if err != nil {
 		return "", err
 	}
