@@ -11,7 +11,7 @@ import (
 func convertToHTTPError(c echo.Context, err error) error {
 	switch {
 	case errors.Is(err, model.ConflictError{}):
-		return echo.NewHTTPError(http.StatusConflict, "resourse already exists")
+		return echo.NewHTTPError(http.StatusConflict, "resource already exists")
 	case errors.Is(err, model.InvalidContentError{}):
 		return echo.ErrBadRequest
 	case errors.Is(err, model.NotFoundError{}):

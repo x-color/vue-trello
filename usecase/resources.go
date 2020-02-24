@@ -4,8 +4,8 @@ import (
 	"github.com/x-color/vue-trello/model"
 )
 
-// ResourseUsecase is interface. It defines getter for tags and colors.
-type ResourseUsecase interface {
+// ResourceUsecase is interface. It defines getter for tags and colors.
+type ResourceUsecase interface {
 	GetAllTagsandColors() (model.Tags, model.Colors, error)
 }
 
