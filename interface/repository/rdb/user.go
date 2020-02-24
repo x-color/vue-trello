@@ -41,6 +41,13 @@ type UserDBManager struct {
 	db *gorm.DB
 }
 
+func newUserDBManager(db *gorm.DB) UserDBManager {
+	db.AutoMigrate(&User{})
+	return UserDBManager{
+		db: db,
+	}
+}
+
 // Create registers a User to DB.
 func (m *UserDBManager) Create(user model.User) error {
 	u := User{}

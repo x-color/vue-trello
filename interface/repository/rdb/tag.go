@@ -37,6 +37,13 @@ type TagDBManager struct {
 	db *gorm.DB
 }
 
+func newTagDBManager(db *gorm.DB) TagDBManager {
+	db.AutoMigrate(&Tag{})
+	return TagDBManager{
+		db: db,
+	}
+}
+
 // Create registers a Tag to DB.
 func (m *TagDBManager) Create(tag model.Tag) error {
 	t := Tag{}

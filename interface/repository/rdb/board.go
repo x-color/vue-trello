@@ -54,6 +54,13 @@ type BoardDBManager struct {
 	db *gorm.DB
 }
 
+func newBoardDBManager(db *gorm.DB) BoardDBManager {
+	db.AutoMigrate(&Board{})
+	return BoardDBManager{
+		db: db,
+	}
+}
+
 // Create registers a Board to DB.
 func (m *BoardDBManager) Create(board model.Board) error {
 	b := Board{}

@@ -43,6 +43,13 @@ type ListDBManager struct {
 	db *gorm.DB
 }
 
+func newListDBManager(db *gorm.DB) ListDBManager {
+	db.AutoMigrate(&List{})
+	return ListDBManager{
+		db: db,
+	}
+}
+
 // Create registers a List to DB.
 func (m *ListDBManager) Create(list model.List) error {
 	l := List{}

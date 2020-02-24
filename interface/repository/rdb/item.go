@@ -72,6 +72,13 @@ type ItemDBManager struct {
 	db *gorm.DB
 }
 
+func newItemDBManager(db *gorm.DB) ItemDBManager {
+	db.AutoMigrate(&Item{})
+	return ItemDBManager{
+		db: db,
+	}
+}
+
 // Create registers a Item to DB.
 func (m *ItemDBManager) Create(item model.Item) error {
 	i := Item{}
