@@ -109,7 +109,7 @@ func (m *ListDBManager) Find(list model.List) (model.List, error) {
 	return r, nil
 }
 
-// FindLists gets all List in a specific board from DB.
+// FindLists gets all Lists in a specific board from DB.
 func (m *ListDBManager) FindLists(board model.Board) (model.Lists, error) {
 	if validatePrimaryKey(board.ID) {
 		return model.Lists{}, model.NotFoundError{

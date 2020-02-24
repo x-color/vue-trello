@@ -94,7 +94,7 @@ func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
 	return r, nil
 }
 
-// FindItems gets all Item in a specific List from DB.
+// FindItems gets all Items in a specific List from DB.
 func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
 	if validatePrimaryKey(list.ID) {
 		return model.Items{}, model.NotFoundError{
