@@ -53,8 +53,8 @@ type ItemHandler struct {
 }
 
 // NewItemHandler returns a new ItemHandler.
-func NewItemHandler(i usecase.ItemUsecase) *ItemHandler {
-	return &ItemHandler{
+func NewItemHandler(i usecase.ItemUsecase) ItemHandler {
+	return ItemHandler{
 		intractor: i,
 	}
 }
