@@ -13,6 +13,7 @@ type List struct {
 	ID      string `json:"id"`
 	BoardID string `json:"board_id"`
 	Title   string `json:"title"`
+	Items   []Item `json:"items"`
 }
 
 func (l *List) convertTo() model.List {
@@ -29,6 +30,13 @@ func (l *List) convertFrom(list model.List) {
 	l.ID = list.ID
 	l.BoardID = list.BoardID
 	l.Title = list.Title
+	items := []Item{}
+	for _, i := range list.Items {
+		item := Item{}
+		item.convertFrom(i)
+		items = append(items, item)
+	}
+	l.Items = items
 }
 
 // ListHandler includes a interactor for List usecase.
