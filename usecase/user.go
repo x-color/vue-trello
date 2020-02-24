@@ -2,20 +2,15 @@ package usecase
 
 import (
 	"errors"
-	"time"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
 	"github.com/x-color/vue-trello/model"
 )
 
-//SECRET uses to encode token for JWT.
-var SECRET = []byte("secret")
-
 // UserUsecase is interface. It defines to control a User authentication.
 type UserUsecase interface {
 	SignUp(user model.User) (model.User, error)
-	Login(user model.User) (model.User, error)
+	SignIn(user model.User) (model.User, error)
 }
 
 // UserInteractor includes repogitories and a logger.
@@ -38,14 +33,6 @@ func NewUserInteractor(
 
 // SignUp registers new User to repository.
 func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
-	if user.Name == "" || user.Password == "" {
-		return model.User{}, model.InvalidContentError{
-			Err: nil,
-			ID:  "(No ID)",
-			Act: "sigh up",
-		}
-	}
-
 	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
 	if err != nil && !errors.Is(err, model.NotFoundError{}) {
 		return model.User{}, err
@@ -65,31 +52,19 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	return user, nil
 }
 
-// SignIn returns JWT if a user succeds at authentication.
-func (i *UserInteractor) SignIn(user model.User) (string, error) {
+// SignIn returns User data if a user succeds at authentication.
+func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
 	if err != nil {
-		return "", err
+		return model.User{}, err
 	}
 	if user.Password != u.Password {
-		return "", model.NotFoundError{
+		return model.User{}, model.NotFoundError{
 			Err: nil,
 			ID:  u.ID,
 			Act: "signin user",
 		}
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
-		Subject:   u.ID,
-		ExpiresAt: time.Now().Add(time.Hour * 72).Unix(),
-	})
-	t, err := token.SignedString(SECRET)
-	if err != nil {
-		return "", model.ServerError{
-			Err: err,
-			ID:  u.ID,
-			Act: "issue token",
-		}
-	}
-	return t, nil
+	return u, nil
 }
