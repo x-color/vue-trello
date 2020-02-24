@@ -8,6 +8,7 @@ import (
 // BoardUsecase is interface. It defines to control a Board.
 type BoardUsecase interface {
 	Get(board model.Board) (model.Board, error)
+	GetBoards(user model.User) (model.Boards, error)
 	Create(board model.Board) (model.Board, error)
 	Delete(board model.Board) error
 	Update(board model.Board) (model.Board, error)
