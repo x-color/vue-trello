@@ -18,6 +18,12 @@ func (e NotFoundError) Unwrap() error {
 	return e.Err
 }
 
+// Is checks target is NotFoundError.
+func (e NotFoundError) Is(target error) bool {
+	_, ok := target.(NotFoundError)
+	return ok
+}
+
 // InvalidContentError is occured if a content is invalid.
 type InvalidContentError struct {
 	ID  string
@@ -32,6 +38,12 @@ func (e InvalidContentError) Error() string {
 // Unwrap returns a error wrapped by InvalidContentError.
 func (e InvalidContentError) Unwrap() error {
 	return e.Err
+}
+
+// Is checks target is InvalidContentError.
+func (e InvalidContentError) Is(target error) bool {
+	_, ok := target.(InvalidContentError)
+	return ok
 }
 
 // ConflictError is occured if a content already exists.
@@ -50,6 +62,12 @@ func (e ConflictError) Unwrap() error {
 	return e.Err
 }
 
+// Is checks target is ConflictError.
+func (e ConflictError) Is(target error) bool {
+	_, ok := target.(ConflictError)
+	return ok
+}
+
 // ServerError is occured if a error is occured in server and not bad request.
 type ServerError struct {
 	ID  string
@@ -64,4 +82,10 @@ func (e ServerError) Error() string {
 // Unwrap returns a error wrapped by ServerError.
 func (e ServerError) Unwrap() error {
 	return e.Err
+}
+
+// Is checks target is ServerError.
+func (e ServerError) Is(target error) bool {
+	_, ok := target.(ServerError)
+	return ok
 }
