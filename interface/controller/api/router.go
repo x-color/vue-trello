@@ -58,11 +58,13 @@ func NewRouter(b InteraBox) *echo.Echo {
 
 	e.POST("/signup", userHandler.SignUp)
 	e.POST("/signin", userHandler.SignIn)
+	e.GET("/signout", userHandler.SignOut)
 
 	api := e.Group("/api")
 	api.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		Claims:     &jwt.StandardClaims{},
-		SigningKey: handler.SECRET,
+		Claims:      &jwt.StandardClaims{},
+		SigningKey:  handler.SECRET,
+		TokenLookup: "cookie:token",
 	}))
 	api.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
 		TokenLookup: "header:X-XSRF-TOKEN",

@@ -66,7 +66,7 @@ func (h *UserHandler) SignUp(c echo.Context) error {
 	return c.JSON(http.StatusCreated, r)
 }
 
-// SignIn is http handler to signin process.
+// SignIn is http handler to sign in process.
 func (h *UserHandler) SignIn(c echo.Context) error {
 	user := User{}
 	if err := c.Bind(&user); err != nil {
@@ -88,8 +88,47 @@ func (h *UserHandler) SignIn(c echo.Context) error {
 		return echo.ErrInternalServerError
 	}
 
+	cookie := new(http.Cookie)
+	cookie.Name = "token"
+	cookie.Value = t
+	cookie.HttpOnly = true
+	// NOTE: It should activate Secure attribute of Cookie.
+	//		 But this code is sample, it does not set this attribute and TLS.
+	// cookie.Secure = true
+	cookie.SameSite = http.SameSiteStrictMode
+	cookie.Expires = time.Now().Add(72 * time.Hour)
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+
 	return c.JSON(http.StatusOK, map[string]string{
-		"token": t,
+		"message": "Sign in",
+	})
+}
+
+// SignOut is http handler to sign out process.
+func (h *UserHandler) SignOut(c echo.Context) error {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.StandardClaims{
+		ExpiresAt: time.Now().Unix(),
+	})
+
+	t, err := token.SignedString(SECRET)
+	if err != nil {
+		return echo.ErrInternalServerError
+	}
+
+	cookie := new(http.Cookie)
+	cookie.Name = "token"
+	cookie.Value = t
+	cookie.HttpOnly = true
+	// NOTE: It should activate Secure attribute of Cookie.
+	//		 But this code is sample, it does not set this attribute and TLS.
+	// cookie.Secure = true
+	cookie.SameSite = http.SameSiteStrictMode
+	cookie.Path = "/"
+	c.SetCookie(cookie)
+
+	return c.JSON(http.StatusOK, map[string]string{
+		"message": "Sign out",
 	})
 }
 
