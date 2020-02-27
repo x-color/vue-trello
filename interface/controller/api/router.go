@@ -66,10 +66,8 @@ func NewRouter(b InteraBox) *echo.Echo {
 		SigningKey:  handler.SECRET,
 		TokenLookup: "cookie:token",
 	}))
-	api.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		TokenLookup: "header:X-XSRF-TOKEN",
-	}))
 	api.Use(checkContentType("application/json"))
+	api.Use(checkCSRFToken())
 
 	api.GET("/boards", boardHandler.GetBoards)
 	api.GET("/boards/:id", boardHandler.Get)
@@ -96,6 +94,18 @@ func checkContentType(typ string) echo.MiddlewareFunc {
 			contentType := c.Request().Header.Get("Content-Type")
 			if contentType != typ {
 				return echo.ErrBadRequest
+			}
+			return next(c)
+		}
+	}
+}
+
+func checkCSRFToken() echo.MiddlewareFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			csrf := c.Request().Header.Get("X-XSRF-TOKEN")
+			if csrf == "" {
+				return echo.ErrForbidden
 			}
 			return next(c)
 		}
