@@ -81,7 +81,7 @@ func (i *ListInteractor) validateList(list model.List) error {
 			Act: "validate contents",
 		}
 	}
-	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID})
+	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID, UserID: list.UserID})
 	if err != nil {
 		return err
 	}
