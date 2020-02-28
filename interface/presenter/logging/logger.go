@@ -19,15 +19,15 @@ func NewLogger(output io.Writer) Logger {
 
 // Debug outputs debug log.
 func (l *Logger) Debug(msg string) {
-	fmt.Fprintf(l.output, "[DEBUG] %s", msg)
+	fmt.Fprintf(l.output, "[DEBUG] %s\n", msg)
 }
 
 // Info outputs info log.
 func (l *Logger) Info(msg string) {
-	fmt.Fprintf(l.output, "[INFO] %s", msg)
+	fmt.Fprintf(l.output, "[INFO] %s\n", msg)
 }
 
 // Error outputs error log.
 func (l *Logger) Error(msg string) {
-	fmt.Fprintf(l.output, "[ERROR] %s", msg)
+	fmt.Fprintf(l.output, "[ERROR] %s\n", msg)
 }
