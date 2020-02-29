@@ -75,7 +75,7 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 	if err := i.validateItem(item); err != nil {
 		logError(i.logger, err)
-		return model.Item{}, nil
+		return model.Item{}, err
 	}
 
 	if err := i.itemRepo.Update(item); err != nil {
