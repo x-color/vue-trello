@@ -1,9 +1,9 @@
-name: deploy web app to github pages
+name: deploy web app in demo branch to github pages
 
 on:
   push:
     branches:
-      - master
+      - demo
 
 jobs:
   build-deploy:
