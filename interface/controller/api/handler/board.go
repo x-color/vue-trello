@@ -149,5 +149,7 @@ func (h *BoardHandler) GetBoards(c echo.Context) error {
 		resBoards = append(resBoards, b)
 	}
 
-	return c.JSON(http.StatusOK, resBoards)
+	return c.JSON(http.StatusOK, map[string][]Board{
+		"boards": resBoards},
+	)
 }
