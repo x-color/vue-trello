@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <v-app-bar :color="color" dark fixed>
+    <v-app-bar :color="color" dark fixed app>
       <router-link to="/boards" class="router-no-underline">
         <v-tooltip bottom>
           <template v-slot:activator="{ on }">
@@ -42,7 +41,6 @@
         </v-list>
       </v-menu>
     </v-app-bar>
-  </div>
 </template>
 
 <script>
