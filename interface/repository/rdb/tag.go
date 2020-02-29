@@ -71,7 +71,7 @@ func (m *TagDBManager) FindAll() (model.Tags, error) {
 		return model.Tags{}, model.ServerError{
 			UserID: "(No-ID)",
 			Err:    err,
-			ID:     "(No ID)",
+			ID:     "(No-ID)",
 			Act:    "find all tags",
 		}
 	}

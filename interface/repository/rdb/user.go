@@ -76,7 +76,7 @@ func (m *UserDBManager) FindByName(user model.User) (model.User, error) {
 			return model.User{}, model.NotFoundError{
 				UserID: "(No-ID)",
 				Err:    err,
-				ID:     "(No ID)",
+				ID:     "(No-ID)",
 				Act:    "find user",
 			}
 		}
