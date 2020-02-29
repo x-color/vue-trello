@@ -89,7 +89,7 @@ func (i *ListInteractor) validateList(list model.List) error {
 			UserID: list.UserID,
 			Err:    nil,
 			ID:     list.ID,
-			Act:    "validate contents in item",
+			Act:    "validate contents in list",
 		}
 	}
 	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID, UserID: list.UserID})
