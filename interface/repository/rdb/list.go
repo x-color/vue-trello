@@ -130,7 +130,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 		}
 	}
 
-	if err := tx.Where(&Item{ListID: l.ID}).Delete(List{}).Error; err != nil {
+	if err := tx.Where(&Item{ListID: l.ID}).Delete(Item{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
 			UserID: l.UserID,
