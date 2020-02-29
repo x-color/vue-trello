@@ -44,7 +44,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 			UserID: user.ID,
 			Err:    nil,
 			ID:     user.Name,
-			Act:    "sign up",
+			Act:    "validate name",
 		}
 	}
 
@@ -70,7 +70,7 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 			UserID: u.ID,
 			Err:    nil,
 			ID:     u.ID,
-			Act:    "signin user",
+			Act:    "validate password",
 		}
 	}
 

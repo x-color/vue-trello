@@ -150,7 +150,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 			UserID: board.UserID,
 			Err:    err,
 			ID:     board.ID,
-			Act:    "delete board",
+			Act:    "delete lists in deleted board",
 		}
 	}
 
@@ -162,7 +162,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 				UserID: board.UserID,
 				Err:    err,
 				ID:     board.ID,
-				Act:    "delete board",
+				Act:    "delete items in deleted board",
 			}
 		}
 	}

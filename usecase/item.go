@@ -59,8 +59,8 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 		return model.InvalidContentError{
 			UserID: item.UserID,
 			Err:    nil,
-			ID:     item.ID,
-			Act:    "validate item",
+			ID:     "(No-ID)",
+			Act:    "validate item id",
 		}
 	}
 	if err := i.itemRepo.Delete(item); err != nil {
@@ -92,7 +92,7 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 			UserID: item.UserID,
 			Err:    nil,
 			ID:     item.ID,
-			Act:    "validate contents",
+			Act:    "validate contents in item",
 		}
 	}
 	_, err := i.listRepo.Find(model.List{ID: item.ListID, UserID: item.UserID})
@@ -119,7 +119,7 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 				UserID: item.UserID,
 				Err:    nil,
 				ID:     item.ID,
-				Act:    "validate tags",
+				Act:    "validate tags of item",
 			}
 		}
 	}

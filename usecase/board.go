@@ -61,8 +61,8 @@ func (i *BoardInteractor) Delete(board model.Board) error {
 		return model.InvalidContentError{
 			UserID: board.UserID,
 			Err:    nil,
-			ID:     board.ID,
-			Act:    "validate contents",
+			ID:     "(No-ID)",
+			Act:    "validate board id",
 		}
 	}
 	if err := i.boardRepo.Delete(board); err != nil {
@@ -135,7 +135,7 @@ func (i *BoardInteractor) validateBoard(board model.Board) error {
 			UserID: board.UserID,
 			Err:    nil,
 			ID:     board.ID,
-			Act:    "validate contents",
+			Act:    "validate contents in board",
 		}
 	}
 
@@ -150,6 +150,6 @@ func (i *BoardInteractor) validateBoard(board model.Board) error {
 		UserID: board.UserID,
 		Err:    nil,
 		ID:     board.ID,
-		Act:    "validate color",
+		Act:    "validate color of board",
 	}
 }

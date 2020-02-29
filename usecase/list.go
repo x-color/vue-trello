@@ -56,8 +56,8 @@ func (i *ListInteractor) Delete(list model.List) error {
 		return model.InvalidContentError{
 			UserID: list.UserID,
 			Err:    nil,
-			ID:     list.ID,
-			Act:    "validate list",
+			ID:     "(No-ID)",
+			Act:    "validate list id",
 		}
 	}
 	if err := i.listRepo.Delete(list); err != nil {
@@ -89,7 +89,7 @@ func (i *ListInteractor) validateList(list model.List) error {
 			UserID: list.UserID,
 			Err:    nil,
 			ID:     list.ID,
-			Act:    "validate contents",
+			Act:    "validate contents in item",
 		}
 	}
 	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID, UserID: list.UserID})
