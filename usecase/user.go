@@ -65,7 +65,7 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 		return model.User{}, err
 	}
 	if user.Password != u.Password {
-		i.logger.Info(formatLogMsg(user.ID, "Invalid password. '"+user.ID+"' Fails to sign in"))
+		i.logger.Info(formatLogMsg(u.ID, "Invalid password. '"+u.ID+"' Fails to sign in"))
 		return model.User{}, model.NotFoundError{
 			UserID: u.ID,
 			Err:    nil,
@@ -74,6 +74,6 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 		}
 	}
 
-	i.logger.Info(formatLogMsg(user.ID, "Sign in user("+user.ID+")"))
+	i.logger.Info(formatLogMsg(u.ID, "Sign in user("+u.ID+")"))
 	return u, nil
 }
