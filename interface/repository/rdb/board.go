@@ -71,9 +71,10 @@ func (m *BoardDBManager) Create(board model.Board) error {
 	b.convertFrom(board)
 	if err := m.db.Create(&b).Error; err != nil {
 		return model.ServerError{
-			Err: err,
-			ID:  board.ID,
-			Act: "create board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     board.ID,
+			Act:    "create board",
 		}
 	}
 	return nil
@@ -96,15 +97,17 @@ func (m *BoardDBManager) Update(board model.Board) error {
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  b.ID,
-				Act: "update board",
+				UserID: board.UserID,
+				Err:    err,
+				ID:     b.ID,
+				Act:    "update board",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  b.ID,
-			Act: "update board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     b.ID,
+			Act:    "update board",
 		}
 	}
 	return nil
@@ -125,15 +128,17 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  board.ID,
-				Act: "delete board",
+				UserID: board.UserID,
+				Err:    err,
+				ID:     board.ID,
+				Act:    "delete board",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  board.ID,
-			Act: "delete board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     board.ID,
+			Act:    "delete board",
 		}
 	}
 
@@ -142,9 +147,10 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 	if err := tx.Where(&List{BoardID: board.ID}).Delete(List{}).Find(&lists).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
-			Err: err,
-			ID:  board.ID,
-			Act: "delete board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     board.ID,
+			Act:    "delete board",
 		}
 	}
 
@@ -153,9 +159,10 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 		if err := tx.Where(&Item{ListID: list.ID}).Delete(Item{}).Error; err != nil {
 			tx.Rollback()
 			return model.ServerError{
-				Err: err,
-				ID:  board.ID,
-				Act: "delete board",
+				UserID: board.UserID,
+				Err:    err,
+				ID:     board.ID,
+				Act:    "delete board",
 			}
 		}
 	}
@@ -174,15 +181,17 @@ func (m *BoardDBManager) Find(board model.Board) (model.Board, error) {
 	if err := m.db.Where(&Board{ID: board.ID, UserID: board.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.Board{}, model.NotFoundError{
-				Err: err,
-				ID:  board.ID,
-				Act: "find board",
+				UserID: board.UserID,
+				Err:    err,
+				ID:     board.ID,
+				Act:    "find board",
 			}
 		}
 		return model.Board{}, model.ServerError{
-			Err: err,
-			ID:  board.ID,
-			Act: "find board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     board.ID,
+			Act:    "find board",
 		}
 	}
 	return r.convertTo(), nil
@@ -197,9 +206,10 @@ func (m *BoardDBManager) FindBoards(user model.User) (model.Boards, error) {
 	r := Boards{}
 	if err := m.db.Where(&Board{UserID: user.ID}).Find(&r).Error; err != nil {
 		return model.Boards{}, model.ServerError{
-			Err: err,
-			ID:  user.ID,
-			Act: "find boards",
+			UserID: user.ID,
+			Err:    err,
+			ID:     user.ID,
+			Act:    "find boards",
 		}
 	}
 

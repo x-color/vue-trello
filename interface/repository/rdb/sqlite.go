@@ -48,9 +48,10 @@ func validatePrimaryKeys(targetName string, keys ...string) error {
 	for _, k := range keys {
 		if k == "" {
 			return model.NotFoundError{
-				Err: nil,
-				ID:  "(No ID)",
-				Act: "validate " + targetName,
+				UserID: "(No-ID)",
+				Err:    nil,
+				ID:     "(No-ID)",
+				Act:    "validate " + targetName + "'s primary key",
 			}
 		}
 	}

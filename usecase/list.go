@@ -54,9 +54,10 @@ func (i *ListInteractor) Delete(list model.List) error {
 	if list.ID == "" {
 		i.logger.Info(formatLogMsg(list.UserID, "Invalid list. ID is empty"))
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  list.ID,
-			Act: "validate list",
+			UserID: list.UserID,
+			Err:    nil,
+			ID:     list.ID,
+			Act:    "validate list",
 		}
 	}
 	if err := i.listRepo.Delete(list); err != nil {
@@ -85,9 +86,10 @@ func (i *ListInteractor) Update(list model.List) (model.List, error) {
 func (i *ListInteractor) validateList(list model.List) error {
 	if list.ID == "" || list.Title == "" || list.BoardID == "" || list.UserID == "" {
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  list.ID,
-			Act: "validate contents",
+			UserID: list.UserID,
+			Err:    nil,
+			ID:     list.ID,
+			Act:    "validate contents",
 		}
 	}
 	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID, UserID: list.UserID})

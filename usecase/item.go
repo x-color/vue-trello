@@ -57,9 +57,10 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
 		i.logger.Info(formatLogMsg(item.UserID, "Invalid item. ID is empty"))
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  item.ID,
-			Act: "validate item",
+			UserID: item.UserID,
+			Err:    nil,
+			ID:     item.ID,
+			Act:    "validate item",
 		}
 	}
 	if err := i.itemRepo.Delete(item); err != nil {
@@ -88,9 +89,10 @@ func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 func (i *ItemInteractor) validateItem(item model.Item) error {
 	if item.ID == "" || item.Title == "" || item.ListID == "" || item.UserID == "" {
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  item.ID,
-			Act: "validate contents",
+			UserID: item.UserID,
+			Err:    nil,
+			ID:     item.ID,
+			Act:    "validate contents",
 		}
 	}
 	_, err := i.listRepo.Find(model.List{ID: item.ListID, UserID: item.UserID})
@@ -114,9 +116,10 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 		}
 		if !isValid {
 			return model.InvalidContentError{
-				Err: nil,
-				ID:  item.ID,
-				Act: "validate tags",
+				UserID: item.UserID,
+				Err:    nil,
+				ID:     item.ID,
+				Act:    "validate tags",
 			}
 		}
 	}

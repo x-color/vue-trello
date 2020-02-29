@@ -59,9 +59,10 @@ func (i *BoardInteractor) Delete(board model.Board) error {
 	if board.ID == "" {
 		i.logger.Info(formatLogMsg(board.UserID, "Invalid board. ID is empty"))
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  board.ID,
-			Act: "validate contents",
+			UserID: board.UserID,
+			Err:    nil,
+			ID:     board.ID,
+			Act:    "validate contents",
 		}
 	}
 	if err := i.boardRepo.Delete(board); err != nil {
@@ -131,9 +132,10 @@ func (i *BoardInteractor) GetBoards(user model.User) (model.Boards, error) {
 func (i *BoardInteractor) validateBoard(board model.Board) error {
 	if board.ID == "" || board.Title == "" || board.UserID == "" {
 		return model.InvalidContentError{
-			Err: nil,
-			ID:  board.ID,
-			Act: "validate contents",
+			UserID: board.UserID,
+			Err:    nil,
+			ID:     board.ID,
+			Act:    "validate contents",
 		}
 	}
 
@@ -145,8 +147,9 @@ func (i *BoardInteractor) validateBoard(board model.Board) error {
 	}
 
 	return model.InvalidContentError{
-		Err: nil,
-		ID:  board.ID,
-		Act: "validate color",
+		UserID: board.UserID,
+		Err:    nil,
+		ID:     board.ID,
+		Act:    "validate color",
 	}
 }

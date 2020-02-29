@@ -55,9 +55,10 @@ func (m *TagDBManager) Create(tag model.Tag) error {
 
 	if err := m.db.Create(&t).Error; err != nil {
 		return model.ServerError{
-			Err: err,
-			ID:  t.ID,
-			Act: "create tag",
+			UserID: "(No-ID)",
+			Err:    err,
+			ID:     t.ID,
+			Act:    "create tag",
 		}
 	}
 	return nil
@@ -68,9 +69,10 @@ func (m *TagDBManager) FindAll() (model.Tags, error) {
 	r := Tags{}
 	if err := m.db.Find(&r).Error; err != nil {
 		return model.Tags{}, model.ServerError{
-			Err: err,
-			ID:  "(No ID)",
-			Act: "find all tags",
+			UserID: "(No-ID)",
+			Err:    err,
+			ID:     "(No ID)",
+			Act:    "find all tags",
 		}
 	}
 

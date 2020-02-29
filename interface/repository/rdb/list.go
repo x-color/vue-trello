@@ -61,9 +61,10 @@ func (m *ListDBManager) Create(list model.List) error {
 
 	if err := m.db.Create(&l).Error; err != nil {
 		return model.ServerError{
-			Err: err,
-			ID:  l.ID,
-			Act: "create list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     l.ID,
+			Act:    "create list",
 		}
 	}
 	return nil
@@ -84,15 +85,17 @@ func (m *ListDBManager) Update(list model.List) error {
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  l.ID,
-				Act: "update list",
+				UserID: list.UserID,
+				Err:    err,
+				ID:     l.ID,
+				Act:    "update list",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  l.ID,
-			Act: "update list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     l.ID,
+			Act:    "update list",
 		}
 	}
 	return nil
@@ -113,24 +116,27 @@ func (m *ListDBManager) Delete(list model.List) error {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  l.ID,
-				Act: "delete list",
+				UserID: list.UserID,
+				Err:    err,
+				ID:     l.ID,
+				Act:    "delete list",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  l.ID,
-			Act: "delete list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     l.ID,
+			Act:    "delete list",
 		}
 	}
 
 	if err := tx.Where(&Item{ListID: l.ID}).Delete(List{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
-			Err: err,
-			ID:  l.ID,
-			Act: "delete list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     l.ID,
+			Act:    "delete list",
 		}
 	}
 
@@ -148,15 +154,17 @@ func (m *ListDBManager) Find(list model.List) (model.List, error) {
 	if err := m.db.Where(&List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.List{}, model.NotFoundError{
-				Err: err,
-				ID:  list.ID,
-				Act: "find list",
+				UserID: list.UserID,
+				Err:    err,
+				ID:     list.ID,
+				Act:    "find list",
 			}
 		}
 		return model.List{}, model.ServerError{
-			Err: err,
-			ID:  list.ID,
-			Act: "find list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     list.ID,
+			Act:    "find list",
 		}
 	}
 	return r.convertTo(), nil
@@ -171,9 +179,10 @@ func (m *ListDBManager) FindLists(board model.Board) (model.Lists, error) {
 	r := Lists{}
 	if err := m.db.Where(&List{BoardID: board.ID, UserID: board.UserID}).Find(&r).Error; err != nil {
 		return model.Lists{}, model.ServerError{
-			Err: err,
-			ID:  board.ID,
-			Act: "find lists in board",
+			UserID: board.UserID,
+			Err:    err,
+			ID:     board.ID,
+			Act:    "find lists in board",
 		}
 	}
 

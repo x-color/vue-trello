@@ -59,9 +59,10 @@ func (m *UserDBManager) Create(user model.User) error {
 
 	if err := m.db.Create(&u).Error; err != nil {
 		return model.ServerError{
-			Err: err,
-			ID:  u.ID,
-			Act: "create user",
+			UserID: u.ID,
+			Err:    err,
+			ID:     u.ID,
+			Act:    "create user",
 		}
 	}
 	return nil
@@ -73,15 +74,17 @@ func (m *UserDBManager) FindByName(user model.User) (model.User, error) {
 	if err := m.db.Where(&User{Name: user.Name}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.User{}, model.NotFoundError{
-				Err: err,
-				ID:  "(No ID)",
-				Act: "find user",
+				UserID: "(No-ID)",
+				Err:    err,
+				ID:     "(No ID)",
+				Act:    "find user",
 			}
 		}
 		return model.User{}, model.ServerError{
-			Err: err,
-			ID:  user.ID,
-			Act: "find user",
+			UserID: user.ID,
+			Err:    err,
+			ID:     user.ID,
+			Act:    "find user",
 		}
 	}
 	return r.convertTo(), nil

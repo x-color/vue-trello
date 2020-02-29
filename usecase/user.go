@@ -41,9 +41,10 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	if user.Name == u.Name {
 		i.logger.Info(formatLogMsg(user.ID, "New user name conflicts. '"+user.Name+"' already exists"))
 		return model.User{}, model.ConflictError{
-			Err: nil,
-			ID:  user.Name,
-			Act: "sign up",
+			UserID: user.ID,
+			Err:    nil,
+			ID:     user.Name,
+			Act:    "sign up",
 		}
 	}
 
@@ -66,9 +67,10 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 	if user.Password != u.Password {
 		i.logger.Info(formatLogMsg(user.ID, "Invalid password. '"+user.ID+"' Fails to sign in"))
 		return model.User{}, model.NotFoundError{
-			Err: nil,
-			ID:  u.ID,
-			Act: "signin user",
+			UserID: u.ID,
+			Err:    nil,
+			ID:     u.ID,
+			Act:    "signin user",
 		}
 	}
 

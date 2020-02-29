@@ -90,9 +90,10 @@ func (m *ItemDBManager) Create(item model.Item) error {
 
 	if err := m.db.Create(&i).Error; err != nil {
 		return model.ServerError{
-			Err: err,
-			ID:  i.ID,
-			Act: "create item",
+			UserID: item.UserID,
+			Err:    err,
+			ID:     i.ID,
+			Act:    "create item",
 		}
 	}
 	return nil
@@ -116,15 +117,17 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  i.ID,
-				Act: "update item",
+				UserID: item.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "update item",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  i.ID,
-			Act: "update item",
+			UserID: item.UserID,
+			Err:    err,
+			ID:     i.ID,
+			Act:    "update item",
 		}
 	}
 	return nil
@@ -142,15 +145,17 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 	if err := m.db.Delete(&i).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				Err: err,
-				ID:  i.ID,
-				Act: "delete item",
+				UserID: item.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "delete item",
 			}
 		}
 		return model.ServerError{
-			Err: err,
-			ID:  i.ID,
-			Act: "delete item",
+			UserID: item.UserID,
+			Err:    err,
+			ID:     i.ID,
+			Act:    "delete item",
 		}
 	}
 	return nil
@@ -166,15 +171,17 @@ func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
 	if err := m.db.Where(&Item{ID: item.ID, UserID: item.UserID}).First(&r).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.Item{}, model.NotFoundError{
-				Err: err,
-				ID:  item.ID,
-				Act: "find item",
+				UserID: item.UserID,
+				Err:    err,
+				ID:     item.ID,
+				Act:    "find item",
 			}
 		}
 		return model.Item{}, model.ServerError{
-			Err: err,
-			ID:  item.ID,
-			Act: "find item",
+			UserID: item.UserID,
+			Err:    err,
+			ID:     item.ID,
+			Act:    "find item",
 		}
 	}
 	return r.convertTo(), nil
@@ -189,9 +196,10 @@ func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
 	r := Items{}
 	if err := m.db.Where(&Item{ListID: list.ID, UserID: list.UserID}).Find(r).Error; err != nil {
 		return model.Items{}, model.ServerError{
-			Err: err,
-			ID:  list.ID,
-			Act: "find items in list",
+			UserID: list.UserID,
+			Err:    err,
+			ID:     list.ID,
+			Act:    "find items in list",
 		}
 	}
 
