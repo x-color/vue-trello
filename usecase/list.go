@@ -45,14 +45,14 @@ func (i *ListInteractor) Create(list model.List) (model.List, error) {
 		logError(i.logger, err)
 		return model.List{}, err
 	}
-	i.logger.Info("Create list(" + list.ID + ")")
+	i.logger.Info(formatLogMsg(list.UserID, "Create list("+list.ID+")"))
 	return list, nil
 }
 
 // Delete removes List in repository.
 func (i *ListInteractor) Delete(list model.List) error {
 	if list.ID == "" {
-		i.logger.Info("Invalid list. ID is empty")
+		i.logger.Info(formatLogMsg(list.UserID, "Invalid list. ID is empty"))
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  list.ID,
@@ -63,7 +63,7 @@ func (i *ListInteractor) Delete(list model.List) error {
 		logError(i.logger, err)
 		return err
 	}
-	i.logger.Info("Delete list(" + list.ID + ")")
+	i.logger.Info(formatLogMsg(list.UserID, "Delete list("+list.ID+")"))
 	return nil
 }
 
@@ -78,7 +78,7 @@ func (i *ListInteractor) Update(list model.List) (model.List, error) {
 		logError(i.logger, err)
 		return model.List{}, err
 	}
-	i.logger.Info("Update list(" + list.ID + ")")
+	i.logger.Info(formatLogMsg(list.UserID, "Update list("+list.ID+")"))
 	return list, nil
 }
 

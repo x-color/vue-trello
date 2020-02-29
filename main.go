@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/x-color/vue-trello/interface/controller/api"
 	"github.com/x-color/vue-trello/interface/presenter/logging"
@@ -17,7 +18,15 @@ func main() {
 		return
 	}
 
-	logger := logging.NewLogger(os.Stdout)
+	location, err := time.LoadLocation("Asia/Tokyo")
+	if err != nil {
+		location = time.FixedZone("Asia/Tokyo", 9*60*60)
+	}
+	logger, err := logging.NewLogger(os.Stdout, location)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 
 	itemIntera, err := usecase.NewItemInteractor(
 		&dbm.ItemDBManager,

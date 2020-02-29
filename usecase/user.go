@@ -39,7 +39,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 		return model.User{}, err
 	}
 	if user.Name == u.Name {
-		i.logger.Info("New user name conflicts. '" + user.Name + "' already exists")
+		i.logger.Info(formatLogMsg(user.ID, "New user name conflicts. '"+user.Name+"' already exists"))
 		return model.User{}, model.ConflictError{
 			Err: nil,
 			ID:  user.Name,
@@ -52,7 +52,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 		logError(i.logger, err)
 		return model.User{}, err
 	}
-	i.logger.Info("Create user(" + user.ID + ")")
+	i.logger.Info(formatLogMsg(user.ID, "Create user("+user.ID+")"))
 	return user, nil
 }
 
@@ -64,7 +64,7 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 		return model.User{}, err
 	}
 	if user.Password != u.Password {
-		i.logger.Info("Invalid password. '" + user.ID + "' Fails to sign in")
+		i.logger.Info(formatLogMsg(user.ID, "Invalid password. '"+user.ID+"' Fails to sign in"))
 		return model.User{}, model.NotFoundError{
 			Err: nil,
 			ID:  u.ID,
@@ -72,6 +72,6 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 		}
 	}
 
-	i.logger.Info("Sign in user(" + user.ID + ")")
+	i.logger.Info(formatLogMsg(user.ID, "Sign in user("+user.ID+")"))
 	return u, nil
 }

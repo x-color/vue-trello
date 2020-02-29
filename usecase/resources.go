@@ -34,6 +34,6 @@ func (i *ResourceInteractor) GetAllTagsandColors() (model.Tags, model.Colors, er
 		logError(i.logger, err)
 		return model.Tags{}, model.Colors{}, err
 	}
-	i.logger.Info("Get resources")
+	i.logger.Info(formatLogMsg("(No-ID)", "Get resources"))
 	return tags, model.COLORS, nil
 }

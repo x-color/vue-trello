@@ -50,14 +50,14 @@ func (i *BoardInteractor) Create(board model.Board) (model.Board, error) {
 		logError(i.logger, err)
 		return model.Board{}, err
 	}
-	i.logger.Info("Create board(" + board.ID + ")")
+	i.logger.Info(formatLogMsg(board.UserID, "Create board("+board.ID+")"))
 	return board, nil
 }
 
 // Delete removes Board in repository.
 func (i *BoardInteractor) Delete(board model.Board) error {
 	if board.ID == "" {
-		i.logger.Info("Invalid board. ID is empty")
+		i.logger.Info(formatLogMsg(board.UserID, "Invalid board. ID is empty"))
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  board.ID,
@@ -68,7 +68,7 @@ func (i *BoardInteractor) Delete(board model.Board) error {
 		logError(i.logger, err)
 		return err
 	}
-	i.logger.Info("Delete board(" + board.ID + ")")
+	i.logger.Info(formatLogMsg(board.UserID, "Delete board("+board.ID+")"))
 	return nil
 }
 
@@ -83,7 +83,7 @@ func (i *BoardInteractor) Update(board model.Board) (model.Board, error) {
 		logError(i.logger, err)
 		return model.Board{}, err
 	}
-	i.logger.Info("Update board(" + board.ID + ")")
+	i.logger.Info(formatLogMsg(board.UserID, "Update board("+board.ID+")"))
 	return board, nil
 }
 
@@ -113,7 +113,7 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 		board.Lists[j].Items = items
 	}
 
-	i.logger.Info("Get board(" + board.ID + ")")
+	i.logger.Info(formatLogMsg(board.UserID, "Get board("+board.ID+")"))
 	return board, nil
 }
 
@@ -124,7 +124,7 @@ func (i *BoardInteractor) GetBoards(user model.User) (model.Boards, error) {
 		logError(i.logger, err)
 		return model.Boards{}, err
 	}
-	i.logger.Info("Get boards")
+	i.logger.Info(formatLogMsg(user.ID, "Get boards"))
 	return boards, nil
 }
 

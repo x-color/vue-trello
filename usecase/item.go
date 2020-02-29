@@ -48,14 +48,14 @@ func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 		logError(i.logger, err)
 		return model.Item{}, err
 	}
-	i.logger.Info("Create item(" + item.ID + ")")
+	i.logger.Info(formatLogMsg(item.UserID, "Create item("+item.ID+")"))
 	return item, nil
 }
 
 // Delete removes Item in repository.
 func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
-		i.logger.Info("Invalid item. ID is empty")
+		i.logger.Info(formatLogMsg(item.UserID, "Invalid item. ID is empty"))
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  item.ID,
@@ -66,7 +66,7 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 		logError(i.logger, err)
 		return err
 	}
-	i.logger.Info("Delete item(" + item.ID + ")")
+	i.logger.Info(formatLogMsg(item.UserID, "Delete item("+item.ID+")"))
 	return nil
 }
 
@@ -81,7 +81,7 @@ func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 		logError(i.logger, err)
 		return model.Item{}, err
 	}
-	i.logger.Info("Update item(" + item.ID + ")")
+	i.logger.Info(formatLogMsg(item.UserID, "Update item("+item.ID+")"))
 	return item, nil
 }
 
