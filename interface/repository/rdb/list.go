@@ -61,7 +61,7 @@ func (m *ListDBManager) Create(list model.List) error {
 
 	if err := m.db.Create(&l).Error; err != nil {
 		return model.ServerError{
-			UserID: list.UserID,
+			UserID: l.UserID,
 			Err:    err,
 			ID:     l.ID,
 			Act:    "create list",
@@ -116,14 +116,14 @@ func (m *ListDBManager) Delete(list model.List) error {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				UserID: list.UserID,
+				UserID: l.UserID,
 				Err:    err,
 				ID:     l.ID,
 				Act:    "delete list",
 			}
 		}
 		return model.ServerError{
-			UserID: list.UserID,
+			UserID: l.UserID,
 			Err:    err,
 			ID:     l.ID,
 			Act:    "delete list",
@@ -133,7 +133,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 	if err := tx.Where(&Item{ListID: l.ID}).Delete(List{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
-			UserID: list.UserID,
+			UserID: l.UserID,
 			Err:    err,
 			ID:     l.ID,
 			Act:    "delete list",

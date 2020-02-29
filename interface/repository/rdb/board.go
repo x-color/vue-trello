@@ -128,28 +128,28 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 		tx.Rollback()
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				UserID: board.UserID,
+				UserID: b.UserID,
 				Err:    err,
-				ID:     board.ID,
+				ID:     b.ID,
 				Act:    "delete board",
 			}
 		}
 		return model.ServerError{
-			UserID: board.UserID,
+			UserID: b.UserID,
 			Err:    err,
-			ID:     board.ID,
+			ID:     b.ID,
 			Act:    "delete board",
 		}
 	}
 
 	// Remove Lists in removed Board
 	lists := model.Lists{}
-	if err := tx.Where(&List{BoardID: board.ID}).Delete(List{}).Find(&lists).Error; err != nil {
+	if err := tx.Where(&List{BoardID: b.ID}).Delete(List{}).Find(&lists).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
-			UserID: board.UserID,
+			UserID: b.UserID,
 			Err:    err,
-			ID:     board.ID,
+			ID:     b.ID,
 			Act:    "delete lists in deleted board",
 		}
 	}
@@ -159,9 +159,9 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 		if err := tx.Where(&Item{ListID: list.ID}).Delete(Item{}).Error; err != nil {
 			tx.Rollback()
 			return model.ServerError{
-				UserID: board.UserID,
+				UserID: b.UserID,
 				Err:    err,
-				ID:     board.ID,
+				ID:     b.ID,
 				Act:    "delete items in deleted board",
 			}
 		}

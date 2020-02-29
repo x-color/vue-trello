@@ -94,7 +94,7 @@ func (m *ItemDBManager) Create(item model.Item) error {
 
 	if err := m.db.Create(&i).Error; err != nil {
 		return model.ServerError{
-			UserID: item.UserID,
+			UserID: i.UserID,
 			Err:    err,
 			ID:     i.ID,
 			Act:    "create item",
@@ -121,14 +121,14 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				UserID: item.UserID,
+				UserID: i.UserID,
 				Err:    err,
 				ID:     i.ID,
 				Act:    "update item",
 			}
 		}
 		return model.ServerError{
-			UserID: item.UserID,
+			UserID: i.UserID,
 			Err:    err,
 			ID:     i.ID,
 			Act:    "update item",
@@ -149,14 +149,14 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 	if err := m.db.Delete(&i).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
-				UserID: item.UserID,
+				UserID: i.UserID,
 				Err:    err,
 				ID:     i.ID,
 				Act:    "delete item",
 			}
 		}
 		return model.ServerError{
-			UserID: item.UserID,
+			UserID: i.UserID,
 			Err:    err,
 			ID:     i.ID,
 			Act:    "delete item",
