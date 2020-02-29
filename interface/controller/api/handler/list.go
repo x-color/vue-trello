@@ -70,7 +70,7 @@ func (h *ListHandler) Create(c echo.Context) error {
 	resList := List{}
 	resList.convertFrom(l)
 
-	return c.JSON(http.StatusOK, resList)
+	return c.JSON(http.StatusCreated, resList)
 }
 
 // Update is http handler to update a list process.
