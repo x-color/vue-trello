@@ -31,7 +31,9 @@ func NewResourceInteractor(
 func (i *ResourceInteractor) GetAllTagsandColors() (model.Tags, model.Colors, error) {
 	tags, err := i.tagRepo.FindAll()
 	if err != nil {
+		logError(i.logger, err)
 		return model.Tags{}, model.Colors{}, err
 	}
+	i.logger.Info("Get resources")
 	return tags, model.COLORS, nil
 }

@@ -37,18 +37,22 @@ func NewListInteractor(
 func (i *ListInteractor) Create(list model.List) (model.List, error) {
 	list.ID = uuid.New().String()
 	if err := i.validateList(list); err != nil {
+		logError(i.logger, err)
 		return model.List{}, err
 	}
 
 	if err := i.listRepo.Create(list); err != nil {
+		logError(i.logger, err)
 		return model.List{}, err
 	}
+	i.logger.Info("Create list(" + list.ID + ")")
 	return list, nil
 }
 
 // Delete removes List in repository.
 func (i *ListInteractor) Delete(list model.List) error {
 	if list.ID == "" {
+		i.logger.Info("Invalid list. ID is empty")
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  list.ID,
@@ -56,20 +60,25 @@ func (i *ListInteractor) Delete(list model.List) error {
 		}
 	}
 	if err := i.listRepo.Delete(list); err != nil {
+		logError(i.logger, err)
 		return err
 	}
+	i.logger.Info("Delete list(" + list.ID + ")")
 	return nil
 }
 
 // Update replaces a List and returns new List.
 func (i *ListInteractor) Update(list model.List) (model.List, error) {
 	if err := i.validateList(list); err != nil {
+		logError(i.logger, err)
 		return model.List{}, err
 	}
 
 	if err := i.listRepo.Update(list); err != nil {
+		logError(i.logger, err)
 		return model.List{}, err
 	}
+	i.logger.Info("Update list(" + list.ID + ")")
 	return list, nil
 }
 

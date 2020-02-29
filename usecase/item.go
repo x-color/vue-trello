@@ -40,18 +40,22 @@ func NewItemInteractor(
 func (i *ItemInteractor) Create(item model.Item) (model.Item, error) {
 	item.ID = uuid.New().String()
 	if err := i.validateItem(item); err != nil {
+		logError(i.logger, err)
 		return model.Item{}, err
 	}
 
 	if err := i.itemRepo.Create(item); err != nil {
+		logError(i.logger, err)
 		return model.Item{}, err
 	}
+	i.logger.Info("Create item(" + item.ID + ")")
 	return item, nil
 }
 
 // Delete removes Item in repository.
 func (i *ItemInteractor) Delete(item model.Item) error {
 	if item.ID == "" {
+		i.logger.Info("Invalid item. ID is empty")
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  item.ID,
@@ -59,20 +63,25 @@ func (i *ItemInteractor) Delete(item model.Item) error {
 		}
 	}
 	if err := i.itemRepo.Delete(item); err != nil {
+		logError(i.logger, err)
 		return err
 	}
+	i.logger.Info("Delete item(" + item.ID + ")")
 	return nil
 }
 
 // Update replaces a Item and returns new Item.
 func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 	if err := i.validateItem(item); err != nil {
+		logError(i.logger, err)
 		return model.Item{}, nil
 	}
 
 	if err := i.itemRepo.Update(item); err != nil {
+		logError(i.logger, err)
 		return model.Item{}, err
 	}
+	i.logger.Info("Update item(" + item.ID + ")")
 	return item, nil
 }
 

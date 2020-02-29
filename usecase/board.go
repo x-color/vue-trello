@@ -42,18 +42,22 @@ func NewBoardInteractor(
 func (i *BoardInteractor) Create(board model.Board) (model.Board, error) {
 	board.ID = uuid.New().String()
 	if err := i.validateBoard(board); err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
 
 	if err := i.boardRepo.Create(board); err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
+	i.logger.Info("Create board(" + board.ID + ")")
 	return board, nil
 }
 
 // Delete removes Board in repository.
 func (i *BoardInteractor) Delete(board model.Board) error {
 	if board.ID == "" {
+		i.logger.Info("Invalid board. ID is empty")
 		return model.InvalidContentError{
 			Err: nil,
 			ID:  board.ID,
@@ -61,20 +65,25 @@ func (i *BoardInteractor) Delete(board model.Board) error {
 		}
 	}
 	if err := i.boardRepo.Delete(board); err != nil {
+		logError(i.logger, err)
 		return err
 	}
+	i.logger.Info("Delete board(" + board.ID + ")")
 	return nil
 }
 
 // Update replaces a Board and returns new Board.
 func (i *BoardInteractor) Update(board model.Board) (model.Board, error) {
 	if err := i.validateBoard(board); err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
 
 	if err := i.boardRepo.Update(board); err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
+	i.logger.Info("Update board(" + board.ID + ")")
 	return board, nil
 }
 
@@ -82,12 +91,14 @@ func (i *BoardInteractor) Update(board model.Board) (model.Board, error) {
 func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	board, err := i.boardRepo.Find(board)
 	if err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
 
 	// Get Lists in Board.
 	lists, err := i.listRepo.FindLists(board)
 	if err != nil {
+		logError(i.logger, err)
 		return model.Board{}, err
 	}
 	board.Lists = lists
@@ -96,11 +107,13 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	for j, list := range lists {
 		items, err := i.itemRepo.FindItems(list)
 		if err != nil {
+			logError(i.logger, err)
 			return model.Board{}, err
 		}
 		board.Lists[j].Items = items
 	}
 
+	i.logger.Info("Get board(" + board.ID + ")")
 	return board, nil
 }
 
@@ -108,8 +121,10 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 func (i *BoardInteractor) GetBoards(user model.User) (model.Boards, error) {
 	boards, err := i.boardRepo.FindBoards(user)
 	if err != nil {
+		logError(i.logger, err)
 		return model.Boards{}, err
 	}
+	i.logger.Info("Get boards")
 	return boards, nil
 }
 
