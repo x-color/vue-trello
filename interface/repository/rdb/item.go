@@ -32,7 +32,11 @@ func (i *Item) convertFrom(item model.Item) {
 		tags = append(tags, t.ID)
 	}
 	ts := strings.Join(tags, ",")
-	i.Tags = &ts
+	if ts != "" {
+		i.Tags = &ts
+	} else {
+		i.Tags = nil
+	}
 
 	if item.Text == "" {
 		i.Text = nil
