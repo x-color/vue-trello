@@ -194,7 +194,7 @@ func (m *ItemDBManager) FindItems(list model.List) (model.Items, error) {
 	}
 
 	r := Items{}
-	if err := m.db.Where(&Item{ListID: list.ID, UserID: list.UserID}).Find(r).Error; err != nil {
+	if err := m.db.Where(&Item{ListID: list.ID, UserID: list.UserID}).Find(&r).Error; err != nil {
 		return model.Items{}, model.ServerError{
 			UserID: list.UserID,
 			Err:    err,
