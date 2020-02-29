@@ -113,7 +113,7 @@ func (h *BoardHandler) Delete(c echo.Context) error {
 		return convertToHTTPError(c, err)
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
 
 // Get is http handler to get user's board process.

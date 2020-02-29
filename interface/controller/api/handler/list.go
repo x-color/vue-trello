@@ -111,5 +111,5 @@ func (h *ListHandler) Delete(c echo.Context) error {
 		return convertToHTTPError(c, err)
 	}
 
-	return c.JSON(http.StatusNoContent, nil)
+	return c.NoContent(http.StatusNoContent)
 }
