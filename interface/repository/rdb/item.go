@@ -16,6 +16,8 @@ type Item struct {
 	Title     string
 	Text      *string
 	Tags      *string
+	Before    *string
+	After     *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time
@@ -32,16 +34,28 @@ func (i *Item) convertFrom(item model.Item) {
 		tags = append(tags, t.ID)
 	}
 	ts := strings.Join(tags, ",")
-	if ts != "" {
-		i.Tags = &ts
-	} else {
+	if ts == "" {
 		i.Tags = nil
+	} else {
+		i.Tags = &ts
 	}
 
 	if item.Text == "" {
 		i.Text = nil
 	} else {
 		i.Text = &item.Text
+	}
+
+	if item.Before == "" {
+		i.Before = nil
+	} else {
+		i.Before = &item.Before
+	}
+
+	if item.After == "" {
+		i.After = nil
+	} else {
+		i.After = &item.After
 	}
 }
 
@@ -53,6 +67,7 @@ func (i *Item) convertTo() model.Item {
 		Title:  i.Title,
 		Tags:   model.Tags{},
 	}
+
 	if i.Text == nil {
 		item.Text = ""
 	} else {
@@ -63,6 +78,18 @@ func (i *Item) convertTo() model.Item {
 		for _, tagID := range strings.Split(*i.Tags, ",") {
 			item.Tags = append(item.Tags, model.Tag{ID: tagID})
 		}
+	}
+
+	if i.After == nil {
+		item.After = ""
+	} else {
+		item.After = *i.After
+	}
+
+	if i.Before == nil {
+		item.Before = ""
+	} else {
+		item.Before = *i.Before
 	}
 
 	return item
@@ -89,10 +116,56 @@ func (m *ItemDBManager) Create(item model.Item) error {
 		return err
 	}
 
+	tx := m.db.Begin()
+
+	beforeItem := new(Item)
+
+	if err := tx.Where(map[string]interface{}{"list_id": item.ListID, "after": nil}).First(beforeItem).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			beforeItem = nil
+		} else {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: item.UserID,
+				Err:    err,
+				ID:     item.ID,
+				Act:    "create item",
+			}
+		}
+	}
+
 	i := Item{}
 	i.convertFrom(item)
+	i.After = nil
+	if beforeItem == nil {
+		i.Before = nil
+	} else {
+		i.Before = &beforeItem.ID
 
-	if err := m.db.Create(&i).Error; err != nil {
+		err := tx.Model(beforeItem).Updates(map[string]interface{}{
+			"after": i.ID,
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: beforeItem.UserID,
+					Err:    err,
+					ID:     beforeItem.ID,
+					Act:    "update item to create new item",
+				}
+			}
+			return model.ServerError{
+				UserID: beforeItem.UserID,
+				Err:    err,
+				ID:     beforeItem.ID,
+				Act:    "update item to create new item",
+			}
+		}
+	}
+
+	if err := tx.Create(&i).Error; err != nil {
+		tx.Rollback()
 		return model.ServerError{
 			UserID: i.UserID,
 			Err:    err,
@@ -100,6 +173,8 @@ func (m *ItemDBManager) Create(item model.Item) error {
 			Act:    "create item",
 		}
 	}
+
+	tx.Commit()
 	return nil
 }
 
@@ -115,7 +190,7 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	err := m.db.Model(&i).Updates(map[string]interface{}{
 		"title": i.Title,
 		"text":  convertData(i.Text),
-		"tags":  i.Tags,
+		"tags":  convertData(i.Tags),
 	}).Error
 
 	if err != nil {
@@ -137,8 +212,8 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	return nil
 }
 
-// Delete removes a Item from DB.
-func (m *ItemDBManager) Delete(item model.Item) error {
+// Move updates all fields of specific Item in DB.
+func (m *ItemDBManager) Move(item model.Item) error {
 	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
 		return err
 	}
@@ -146,7 +221,236 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 	i := Item{}
 	i.convertFrom(item)
 
-	if err := m.db.Delete(&i).Error; err != nil {
+	tx := m.db.Begin()
+
+	oldItem := new(Item)
+	err := tx.Where(&Item{ID: i.ID}).First(oldItem).Error
+	if err != nil {
+		tx.Rollback()
+		if gorm.IsRecordNotFoundError(err) {
+			return model.NotFoundError{
+				UserID: i.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "find moved item",
+			}
+		}
+		return model.ServerError{
+			UserID: i.UserID,
+			Err:    err,
+			ID:     i.ID,
+			Act:    "find moved item",
+		}
+	}
+
+	// Update a item before moved item's old position
+	if oldItem.Before != nil {
+		oldBeforeItem := Item{
+			ID:     *oldItem.Before,
+			UserID: oldItem.UserID,
+			After:  oldItem.After,
+		}
+
+		err = tx.Model(&oldBeforeItem).Updates(map[string]interface{}{
+			"after": convertData(oldBeforeItem.After),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: oldBeforeItem.UserID,
+					Err:    err,
+					ID:     oldBeforeItem.ID,
+					Act:    "update item before moved item's old position",
+				}
+			}
+			return model.ServerError{
+				UserID: oldBeforeItem.UserID,
+				Err:    err,
+				ID:     oldBeforeItem.ID,
+				Act:    "update item before moved item's old position",
+			}
+		}
+	}
+
+	// Update a item after moved item's old position
+	if oldItem.After != nil {
+		oldAfterItem := Item{
+			ID:     *oldItem.After,
+			UserID: oldItem.UserID,
+			Before: oldItem.Before,
+		}
+
+		err = tx.Model(&oldAfterItem).Updates(map[string]interface{}{
+			"before": convertData(oldAfterItem.Before),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: oldAfterItem.UserID,
+					Err:    err,
+					ID:     oldAfterItem.ID,
+					Act:    "update item after moved item's old position",
+				}
+			}
+			return model.ServerError{
+				UserID: oldAfterItem.UserID,
+				Err:    err,
+				ID:     oldAfterItem.ID,
+				Act:    "update item after moved item's old position",
+			}
+		}
+	}
+
+	if i.Before == nil {
+		newAfterItem := new(Item)
+		err := tx.Where(&Item{Before: nil}).First(newAfterItem).Error
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: i.UserID,
+					Err:    err,
+					ID:     i.ID,
+					Act:    "find item after moved item",
+				}
+			}
+			return model.ServerError{
+				UserID: i.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "find item after moved item",
+			}
+		}
+		i.After = &newAfterItem.ID
+	} else {
+		newBeforeItem := new(Item)
+		err := tx.Where(&Item{ID: *i.Before}).First(newBeforeItem).Error
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: i.UserID,
+					Err:    err,
+					ID:     i.ID,
+					Act:    "find item before moved item",
+				}
+			}
+			return model.ServerError{
+				UserID: i.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "find item before moved item",
+			}
+		}
+		i.After = newBeforeItem.After
+	}
+
+	// Update a item before moved item's new position
+	if i.Before != nil {
+		newBeforeItem := Item{
+			ID:     *i.Before,
+			UserID: i.UserID,
+			After:  &i.ID,
+		}
+
+		err = tx.Model(&newBeforeItem).Updates(map[string]interface{}{
+			"after": convertData(newBeforeItem.After),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: newBeforeItem.UserID,
+					Err:    err,
+					ID:     newBeforeItem.ID,
+					Act:    "update item before moved item's new position",
+				}
+			}
+			return model.ServerError{
+				UserID: newBeforeItem.UserID,
+				Err:    err,
+				ID:     newBeforeItem.ID,
+				Act:    "update item before moved item's new position",
+			}
+		}
+	}
+
+	// Update a item after moved item's new position
+	if i.After != nil {
+		newAfterItem := Item{
+			ID:     *i.After,
+			UserID: i.UserID,
+			Before: &i.ID,
+		}
+
+		err = tx.Model(&newAfterItem).Updates(map[string]interface{}{
+			"before": convertData(newAfterItem.Before),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			if gorm.IsRecordNotFoundError(err) {
+				return model.NotFoundError{
+					UserID: newAfterItem.UserID,
+					Err:    err,
+					ID:     newAfterItem.ID,
+					Act:    "update item after moved item's new position",
+				}
+			}
+			return model.ServerError{
+				UserID: newAfterItem.UserID,
+				Err:    err,
+				ID:     newAfterItem.ID,
+				Act:    "update item after moved item's new position",
+			}
+		}
+	}
+
+	err = tx.Model(&i).Updates(map[string]interface{}{
+		"listID": i.ListID,
+		"after":  convertData(i.After),
+		"before": convertData(i.Before),
+	}).Error
+
+	if err != nil {
+		tx.Rollback()
+		if gorm.IsRecordNotFoundError(err) {
+			return model.NotFoundError{
+				UserID: i.UserID,
+				Err:    err,
+				ID:     i.ID,
+				Act:    "move item",
+			}
+		}
+		return model.ServerError{
+			UserID: i.UserID,
+			Err:    err,
+			ID:     i.ID,
+			Act:    "move item",
+		}
+	}
+	tx.Commit()
+	return nil
+}
+
+// Delete removes a Item from DB.
+func (m *ItemDBManager) Delete(item model.Item) error {
+	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
+		return err
+	}
+
+	tx := m.db.Begin()
+
+	i := Item{}
+	i.convertFrom(item)
+
+	deletedItem := new(Item)
+	if err := tx.Delete(&i).Find(deletedItem).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return model.NotFoundError{
 				UserID: i.UserID,
@@ -162,6 +466,36 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 			Act:    "delete item",
 		}
 	}
+
+	// Update item before deleted item
+	err := tx.Model(&Item{ID: *deletedItem.Before, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
+		"after": convertData(deletedItem.After),
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return model.ServerError{
+			UserID: deletedItem.UserID,
+			Err:    err,
+			ID:     *deletedItem.Before,
+			Act:    "update item before deleted item",
+		}
+	}
+
+	// Update item after deleted item
+	err = tx.Model(&Item{ID: *deletedItem.After, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
+		"before": convertData(deletedItem.Before),
+	}).Error
+	if err != nil {
+		tx.Rollback()
+		return model.ServerError{
+			UserID: item.UserID,
+			Err:    err,
+			ID:     item.ID,
+			Act:    "update item after deleted item",
+		}
+	}
+
+	tx.Commit()
 	return nil
 }
 

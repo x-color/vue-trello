@@ -10,6 +10,7 @@ type ItemUsecase interface {
 	Create(item model.Item) (model.Item, error)
 	Delete(item model.Item) error
 	Update(item model.Item) (model.Item, error)
+	Move(item model.Item) error
 }
 
 // ItemInteractor includes repogitories and a logger.
@@ -86,6 +87,32 @@ func (i *ItemInteractor) Update(item model.Item) (model.Item, error) {
 	return item, nil
 }
 
+// Move moves Items.
+func (i *ItemInteractor) Move(item model.Item) error {
+	item.Title = "dummy title"
+	if err := i.validateItem(item); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	item.Title = ""
+
+	if item.Before != "" {
+		beforeItem, err := i.itemRepo.Find(model.Item{ID: item.Before, UserID: item.UserID})
+		if err != nil {
+			logError(i.logger, err)
+			return err
+		}
+		item.After = beforeItem.After
+	}
+
+	if err := i.itemRepo.Move(item); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(item.UserID, "Move item("+item.ID+") after item("+item.Before+") in list("+item.ListID+")"))
+	return nil
+}
+
 func (i *ItemInteractor) validateItem(item model.Item) error {
 	if item.ID == "" || item.Title == "" || item.ListID == "" || item.UserID == "" {
 		return model.InvalidContentError{
@@ -124,4 +151,20 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 		}
 	}
 	return nil
+}
+
+func sortItems(items model.Items) model.Items {
+	l := map[string]model.Item{}
+	for _, i := range items {
+		l[i.Before] = i
+	}
+
+	item := l[""]
+	r := model.Items{}
+	for range items {
+		r = append(r, item)
+		item = l[item.ID]
+	}
+
+	return r
 }

@@ -111,7 +111,7 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 			logError(i.logger, err)
 			return model.Board{}, err
 		}
-		board.Lists[j].Items = items
+		board.Lists[j].Items = sortItems(items)
 	}
 
 	i.logger.Info(formatLogMsg(board.UserID, "Get board("+board.ID+")"))

@@ -16,6 +16,7 @@ type ItemRepository interface {
 	Create(item model.Item) error
 	Update(item model.Item) error
 	Delete(item model.Item) error
+	Move(item model.Item) error
 	Find(item model.Item) (model.Item, error)
 	FindItems(list model.List) (model.Items, error)
 }

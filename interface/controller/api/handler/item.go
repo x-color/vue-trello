@@ -15,6 +15,8 @@ type Item struct {
 	Title  string   `json:"title"`
 	Text   string   `json:"text"`
 	Tags   []string `json:"tags"`
+	Before string   `json:"before"`
+	After  string   `json:"after"`
 }
 
 func (i *Item) convertTo() model.Item {
@@ -29,6 +31,8 @@ func (i *Item) convertTo() model.Item {
 		Title:  i.Title,
 		Text:   i.Text,
 		Tags:   tags,
+		Before: i.Before,
+		After:  i.After,
 	}
 
 	return item
@@ -45,6 +49,8 @@ func (i *Item) convertFrom(item model.Item) {
 	i.Title = item.Title
 	i.Text = item.Text
 	i.Tags = tags
+	i.Before = item.Before
+	i.After = item.After
 }
 
 // ItemHandler includes a interactor for Item usecase.
@@ -100,6 +106,25 @@ func (h *ItemHandler) Update(c echo.Context) error {
 	resItem.convertFrom(i)
 
 	return c.JSON(http.StatusOK, resItem)
+}
+
+// Move is http handler to move a item process.
+func (h *ItemHandler) Move(c echo.Context) error {
+	reqItem := new(Item)
+	if err := c.Bind(reqItem); err != nil {
+		return err
+	}
+	reqItem.ID = c.Param("id")
+
+	item := reqItem.convertTo()
+	item.UserID = getUserIDFromToken(c)
+
+	err := h.intractor.Move(item)
+	if err != nil {
+		return convertToHTTPError(c, err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // Delete is http handler to delete a item process.
