@@ -1,4 +1,4 @@
 run:
+	(cd web; npm run build)
 	echo "" > db/sqlite.db
-	go build main.go
-	DB_PATH=db/sqlite.db ./main
+	DB_PATH=db/sqlite.db go run main.go
