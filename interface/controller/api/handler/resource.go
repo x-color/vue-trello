@@ -8,18 +8,28 @@ import (
 	"github.com/x-color/vue-trello/usecase"
 )
 
-// Resources includes request data for Resources.
+// Tag includes response data for Tag.
+type Tag struct {
+	ID    string `json:"id"`
+	Name  string `json:"title"`
+	Color string `json:"color"`
+}
+
+// Resources includes response data for Resources.
 type Resources struct {
 	Colors []string `json:"colors"`
-	Tags   []string `json:"tags"`
+	Tags   []Tag    `json:"tags"`
 }
 
 func (r *Resources) convertFrom(tags model.Tags, colors model.Colors) {
-	ts := []string{}
+	r.Tags = []Tag{}
 	for _, tag := range tags {
-		ts = append(ts, tag.ID)
+		r.Tags = append(r.Tags, Tag{
+			ID:    tag.ID,
+			Name:  tag.Name,
+			Color: string(tag.Color),
+		})
 	}
-	r.Tags = ts
 
 	cs := []string{}
 	for _, color := range colors {

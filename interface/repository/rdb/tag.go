@@ -11,6 +11,7 @@ import (
 type Tag struct {
 	ID        string `gorm:"primary_key"`
 	Name      string
+	Color     string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time
@@ -19,12 +20,14 @@ type Tag struct {
 func (t *Tag) convertFrom(tag model.Tag) {
 	t.ID = tag.ID
 	t.Name = tag.Name
+	t.Color = string(tag.Color)
 }
 
 func (t *Tag) convertTo() model.Tag {
 	tag := model.Tag{
-		ID:   t.ID,
-		Name: t.Name,
+		ID:    t.ID,
+		Name:  t.Name,
+		Color: model.Color(t.Color),
 	}
 	return tag
 }
