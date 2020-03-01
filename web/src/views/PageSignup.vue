@@ -80,7 +80,6 @@ export default {
         } else if (response.status === 409) {
           this.isSignupFailed = true;
         } else {
-          // eslint-disable-next-line no-alert
           alert('Error: Failed to sign in');
         }
       });

@@ -24,7 +24,7 @@ const actions = {
   editUser({ commit }, newUser) {
     commit('editUser', newUser);
   },
-  login({ commit, state: st }, { username, password, callback }) {
+  login({ commit, dispatch, state: st }, { username, password, callback }) {
     const user = { ...st.user };
 
     const body = JSON.stringify({
@@ -44,6 +44,7 @@ const actions = {
       if (user.login) {
         user.name = username;
         commit('editUser', user);
+        dispatch('loadResources');
       }
       callback(user.login);
     });
@@ -56,11 +57,9 @@ const actions = {
       },
     }).then((response) => {
       if (!response.ok) {
-        // eslint-disable-next-line no-alert
         alert('Error: Failed to sign out');
       }
     }).catch(() => {
-      // eslint-disable-next-line no-alert
       alert('Error: Failed to sign out');
     });
 
