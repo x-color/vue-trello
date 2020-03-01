@@ -8,6 +8,8 @@ type Board struct {
 	Text   string
 	Color  Color
 	Lists  Lists
+	Before string
+	After  string
 }
 
 // Boards defines a slice of Board

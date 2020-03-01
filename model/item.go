@@ -8,6 +8,8 @@ type Item struct {
 	Title  string
 	Text   string
 	Tags   Tags
+	Before string
+	After  string
 }
 
 // Items defines a slice of Item

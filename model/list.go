@@ -7,6 +7,8 @@ type List struct {
 	UserID  string
 	Title   string
 	Items   Items
+	Before  string
+	After   string
 }
 
 // Lists defines a slice of List
