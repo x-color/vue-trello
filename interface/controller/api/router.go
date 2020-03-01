@@ -66,7 +66,7 @@ func NewRouter(b InteraBox) *echo.Echo {
 		SigningKey:  handler.SECRET,
 		TokenLookup: "cookie:token",
 	}))
-	api.Use(checkContentType("application/json"))
+	api.Use(checkContentType("application/json; charset=UTF-8"))
 	api.Use(checkCSRFToken())
 
 	api.GET("/boards", boardHandler.GetBoards)
