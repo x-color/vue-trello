@@ -9,8 +9,8 @@
 
     <v-row justify="center">
       <v-col v-if="isLoginFailed" cols="12" align="center">
-        <p class="red--text">Login Failed... <br/>
-        Please try again</p>
+        <p class="red--text">Signup Failed... <br/>
+        This username already exists</p>
       </v-col>
     </v-row>
 
@@ -38,31 +38,20 @@
           x-large
           color="primary"
           :disabled="!username || !password"
-          @click="loginAndGoToPage"
-        >LOGIN</v-btn>
-      </v-col>
-
-      <v-col cols="12" align="center">
-        <p>user name: testuser <br/> password: password</p>
+          @click="signupAndGoToPage"
+        >SINGUP</v-btn>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-
 export default {
-  name: 'PageLogin',
+  name: 'PageSignup',
   data() {
-    // NOTE: Access state.user directly. It does not use getter of store (getters.user).
-    //       gettters and computed methods do not exist still this timing.
-    if (this.$store.state.user.user.login) {
-      this.$router.push('/boards', () => {});
-    }
     return {
       show: false,
-      isLoginFailed: false,
+      isSignupFailed: false,
       username: '',
       password: '',
       rules: {
@@ -71,19 +60,29 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['login']),
-    loginAndGoToPage() {
-      this.isLoginFailed = false;
-      this.login({
-        username: this.username,
+    signupAndGoToPage() {
+      this.isSignupFailed = false;
+      const body = JSON.stringify({
+        name: this.username,
         password: this.password,
-        callback: (loggedIn) => {
-          if (loggedIn) {
-            this.$router.push('/boards', () => {});
-          } else {
-            this.isLoginFailed = true;
-          }
+      });
+
+      fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'X-XSRF-TOKEN': 'csrf',
+          'Content-Type': 'application/json; charset=UTF-8',
         },
+        body,
+      }).then((response) => {
+        if (response.ok) {
+          this.$router.push('/login', () => {});
+        } else if (response.status === 409) {
+          this.isSignupFailed = true;
+        } else {
+          // eslint-disable-next-line no-alert
+          alert('Error: Failed to sign in');
+        }
       });
     },
   },

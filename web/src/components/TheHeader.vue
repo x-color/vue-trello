@@ -67,6 +67,13 @@ export default {
           },
         },
         {
+          title: 'signup',
+          active: !this.user.login,
+          action: () => {
+            this.jumpTo('/signup');
+          },
+        },
+        {
           title: 'login',
           active: !this.user.login,
           action: () => {

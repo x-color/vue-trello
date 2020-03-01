@@ -7,6 +7,7 @@ import PageBoards from '../views/PageBoards.vue';
 import PageBoard from '../views/PageBoard.vue';
 import PageHome from '../views/PageHome.vue';
 import PageLogin from '../views/PageLogin.vue';
+import PageSignup from '../views/PageSignup.vue';
 
 Vue.use(VueRouter);
 
@@ -20,6 +21,11 @@ const routes = [
     path: '/login',
     name: 'login',
     component: PageLogin,
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: PageSignup,
   },
   {
     path: '/boards',

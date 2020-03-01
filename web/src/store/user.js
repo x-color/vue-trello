@@ -7,11 +7,9 @@
 function state() {
   return {
     user: {
-      id: '0',
-      name: 'testuser',
+      name: '',
       login: false,
       color: '',
-      boards: [],
     },
   };
 }
@@ -26,23 +24,54 @@ const actions = {
   editUser({ commit }, newUser) {
     commit('editUser', newUser);
   },
-  login({ commit, state: st }, { username, password }) {
-    // Dummy login request
-    if (!(username === 'testuser' && password === 'password')) {
-      return false;
-    }
-    // Dummy logged in user data
-    const loggedInUser = { ...st.user };
-    loggedInUser.login = true;
-    commit('editUser', loggedInUser);
-    // Get boards data from API server...
-    return true;
+  login({ commit, state: st }, { username, password, callback }) {
+    const user = { ...st.user };
+
+    const body = JSON.stringify({
+      name: username,
+      password,
+    });
+
+    fetch('/signin', {
+      method: 'POST',
+      headers: {
+        'X-XSRF-TOKEN': 'csrf',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body,
+    }).then((response) => {
+      user.login = response.ok;
+      if (user.login) {
+        user.name = username;
+        commit('editUser', user);
+      }
+      callback(user.login);
+    });
   },
-  logout({ commit, state: st }) {
-    // Dummy logged out process
-    const loggedOutUser = { ...st.user };
-    loggedOutUser.login = false;
-    commit('editUser', loggedOutUser);
+  logout({ commit }) {
+    fetch('/signout', {
+      headers: {
+        'X-XSRF-TOKEN': 'csrf',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    }).then((response) => {
+      if (!response.ok) {
+        // eslint-disable-next-line no-alert
+        alert('Error: Failed to sign out');
+      }
+    }).catch(() => {
+      // eslint-disable-next-line no-alert
+      alert('Error: Failed to sign out');
+    });
+
+    const user = {
+      id: '',
+      name: '',
+      login: false,
+      color: '',
+      boards: [],
+    };
+    commit('editUser', user);
   },
   changeColor({ commit, state: st }, { color }) {
     commit('editUser', Object.assign({ ...st.user }, { color }));
