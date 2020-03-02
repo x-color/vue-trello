@@ -147,20 +147,7 @@ func (m *ItemDBManager) Create(item model.Item) error {
 		}).Error
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: beforeItem.UserID,
-					Err:    err,
-					ID:     beforeItem.ID,
-					Act:    "update item to create new item",
-				}
-			}
-			return model.ServerError{
-				UserID: beforeItem.UserID,
-				Err:    err,
-				ID:     beforeItem.ID,
-				Act:    "update item to create new item",
-			}
+			return convertError(err, beforeItem.ID, beforeItem.UserID, "update item to create new item")
 		}
 	}
 
@@ -194,20 +181,7 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	}).Error
 
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "update item",
-			}
-		}
-		return model.ServerError{
-			UserID: i.UserID,
-			Err:    err,
-			ID:     i.ID,
-			Act:    "update item",
-		}
+		return convertError(err, i.ID, i.UserID, "update item")
 	}
 	return nil
 }
