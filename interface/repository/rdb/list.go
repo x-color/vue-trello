@@ -83,20 +83,7 @@ func (m *ListDBManager) Update(list model.List) error {
 	}).Error
 
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: list.UserID,
-				Err:    err,
-				ID:     l.ID,
-				Act:    "update list",
-			}
-		}
-		return model.ServerError{
-			UserID: list.UserID,
-			Err:    err,
-			ID:     l.ID,
-			Act:    "update list",
-		}
+		return convertError(err, l.ID, l.UserID, "update list")
 	}
 	return nil
 }
@@ -114,20 +101,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 
 	if err := tx.Delete(&l).Error; err != nil {
 		tx.Rollback()
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: l.UserID,
-				Err:    err,
-				ID:     l.ID,
-				Act:    "delete list",
-			}
-		}
-		return model.ServerError{
-			UserID: l.UserID,
-			Err:    err,
-			ID:     l.ID,
-			Act:    "delete list",
-		}
+		return convertError(err, l.ID, l.UserID, "delete list")
 	}
 
 	if err := tx.Where(&Item{ListID: l.ID}).Delete(Item{}).Error; err != nil {
@@ -152,20 +126,7 @@ func (m *ListDBManager) Find(list model.List) (model.List, error) {
 
 	r := List{}
 	if err := m.db.Where(&List{ID: list.ID, UserID: list.UserID}).First(&r).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.List{}, model.NotFoundError{
-				UserID: list.UserID,
-				Err:    err,
-				ID:     list.ID,
-				Act:    "find list",
-			}
-		}
-		return model.List{}, model.ServerError{
-			UserID: list.UserID,
-			Err:    err,
-			ID:     list.ID,
-			Act:    "find list",
-		}
+		return model.List{}, convertError(err, list.ID, list.UserID, "find list")
 	}
 	return r.convertTo(), nil
 }

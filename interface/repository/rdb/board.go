@@ -95,20 +95,7 @@ func (m *BoardDBManager) Update(board model.Board) error {
 	}).Error
 
 	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: board.UserID,
-				Err:    err,
-				ID:     b.ID,
-				Act:    "update board",
-			}
-		}
-		return model.ServerError{
-			UserID: board.UserID,
-			Err:    err,
-			ID:     b.ID,
-			Act:    "update board",
-		}
+		return convertError(err, b.ID, b.UserID, "update board")
 	}
 	return nil
 }
@@ -126,20 +113,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 
 	if err := tx.Delete(&b).Error; err != nil {
 		tx.Rollback()
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: b.UserID,
-				Err:    err,
-				ID:     b.ID,
-				Act:    "delete board",
-			}
-		}
-		return model.ServerError{
-			UserID: b.UserID,
-			Err:    err,
-			ID:     b.ID,
-			Act:    "delete board",
-		}
+		return convertError(err, b.ID, b.UserID, "delete board")
 	}
 
 	// Remove Lists in removed Board
@@ -179,20 +153,7 @@ func (m *BoardDBManager) Find(board model.Board) (model.Board, error) {
 
 	r := Board{}
 	if err := m.db.Where(&Board{ID: board.ID, UserID: board.UserID}).First(&r).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.Board{}, model.NotFoundError{
-				UserID: board.UserID,
-				Err:    err,
-				ID:     board.ID,
-				Act:    "find board",
-			}
-		}
-		return model.Board{}, model.ServerError{
-			UserID: board.UserID,
-			Err:    err,
-			ID:     board.ID,
-			Act:    "find board",
-		}
+		return model.Board{}, convertError(err, board.ID, board.UserID, "find board")
 	}
 	return r.convertTo(), nil
 }

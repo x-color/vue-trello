@@ -72,20 +72,7 @@ func (m *UserDBManager) Create(user model.User) error {
 func (m *UserDBManager) FindByName(user model.User) (model.User, error) {
 	r := User{}
 	if err := m.db.Where(&User{Name: user.Name}).First(&r).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.User{}, model.NotFoundError{
-				UserID: "(No-ID)",
-				Err:    err,
-				ID:     "(No-ID)",
-				Act:    "find user",
-			}
-		}
-		return model.User{}, model.ServerError{
-			UserID: user.ID,
-			Err:    err,
-			ID:     user.ID,
-			Act:    "find user",
-		}
+		return model.User{}, convertError(err, "(No-ID)", "(No-ID)", "find user")
 	}
 	return r.convertTo(), nil
 }

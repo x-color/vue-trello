@@ -227,20 +227,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 	err := tx.Where(&Item{ID: i.ID}).First(oldItem).Error
 	if err != nil {
 		tx.Rollback()
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "find moved item",
-			}
-		}
-		return model.ServerError{
-			UserID: i.UserID,
-			Err:    err,
-			ID:     i.ID,
-			Act:    "find moved item",
-		}
+		return convertError(err, i.ID, i.UserID, "find moved item")
 	}
 
 	// Update a item before moved item's old position
@@ -257,20 +244,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: oldBeforeItem.UserID,
-					Err:    err,
-					ID:     oldBeforeItem.ID,
-					Act:    "update item before moved item's old position",
-				}
-			}
-			return model.ServerError{
-				UserID: oldBeforeItem.UserID,
-				Err:    err,
-				ID:     oldBeforeItem.ID,
-				Act:    "update item before moved item's old position",
-			}
+			return convertError(err, oldBeforeItem.ID, oldBeforeItem.UserID, "update item before moved item's old position")
 		}
 	}
 
@@ -288,20 +262,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: oldAfterItem.UserID,
-					Err:    err,
-					ID:     oldAfterItem.ID,
-					Act:    "update item after moved item's old position",
-				}
-			}
-			return model.ServerError{
-				UserID: oldAfterItem.UserID,
-				Err:    err,
-				ID:     oldAfterItem.ID,
-				Act:    "update item after moved item's old position",
-			}
+			return convertError(err, oldAfterItem.ID, oldAfterItem.UserID, "update item after moved item's old position")
 		}
 	}
 
@@ -310,20 +271,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 		err := tx.Where(&Item{Before: nil}).First(newAfterItem).Error
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: i.UserID,
-					Err:    err,
-					ID:     i.ID,
-					Act:    "find item after moved item",
-				}
-			}
-			return model.ServerError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "find item after moved item",
-			}
+			return convertError(err, i.ID, i.UserID, "find item after moved item")
 		}
 		i.After = &newAfterItem.ID
 	} else {
@@ -331,20 +279,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 		err := tx.Where(&Item{ID: *i.Before}).First(newBeforeItem).Error
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: i.UserID,
-					Err:    err,
-					ID:     i.ID,
-					Act:    "find item before moved item",
-				}
-			}
-			return model.ServerError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "find item before moved item",
-			}
+			return convertError(err, i.ID, i.UserID, "find item before moved item")
 		}
 		i.After = newBeforeItem.After
 	}
@@ -363,20 +298,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: newBeforeItem.UserID,
-					Err:    err,
-					ID:     newBeforeItem.ID,
-					Act:    "update item before moved item's new position",
-				}
-			}
-			return model.ServerError{
-				UserID: newBeforeItem.UserID,
-				Err:    err,
-				ID:     newBeforeItem.ID,
-				Act:    "update item before moved item's new position",
-			}
+			return convertError(err, newBeforeItem.ID, newBeforeItem.UserID, "update item before moved item's new position")
 		}
 	}
 
@@ -394,20 +316,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 		if err != nil {
 			tx.Rollback()
-			if gorm.IsRecordNotFoundError(err) {
-				return model.NotFoundError{
-					UserID: newAfterItem.UserID,
-					Err:    err,
-					ID:     newAfterItem.ID,
-					Act:    "update item after moved item's new position",
-				}
-			}
-			return model.ServerError{
-				UserID: newAfterItem.UserID,
-				Err:    err,
-				ID:     newAfterItem.ID,
-				Act:    "update item after moved item's new position",
-			}
+			return convertError(err, newAfterItem.ID, newAfterItem.UserID, "update item after moved item's new position")
 		}
 	}
 
@@ -419,20 +328,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 	if err != nil {
 		tx.Rollback()
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "move item",
-			}
-		}
-		return model.ServerError{
-			UserID: i.UserID,
-			Err:    err,
-			ID:     i.ID,
-			Act:    "move item",
-		}
+		return convertError(err, i.ID, i.UserID, "move item")
 	}
 	tx.Commit()
 	return nil
@@ -451,20 +347,7 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 
 	deletedItem := new(Item)
 	if err := tx.Delete(&i).Find(deletedItem).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.NotFoundError{
-				UserID: i.UserID,
-				Err:    err,
-				ID:     i.ID,
-				Act:    "delete item",
-			}
-		}
-		return model.ServerError{
-			UserID: i.UserID,
-			Err:    err,
-			ID:     i.ID,
-			Act:    "delete item",
-		}
+		return convertError(err, i.ID, i.UserID, "delete item")
 	}
 
 	// Update item before deleted item
@@ -507,20 +390,7 @@ func (m *ItemDBManager) Find(item model.Item) (model.Item, error) {
 
 	r := Item{}
 	if err := m.db.Where(&Item{ID: item.ID, UserID: item.UserID}).First(&r).Error; err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return model.Item{}, model.NotFoundError{
-				UserID: item.UserID,
-				Err:    err,
-				ID:     item.ID,
-				Act:    "find item",
-			}
-		}
-		return model.Item{}, model.ServerError{
-			UserID: item.UserID,
-			Err:    err,
-			ID:     item.ID,
-			Act:    "find item",
-		}
+		return model.Item{}, convertError(err, item.ID, item.UserID, "find item")
 	}
 	return r.convertTo(), nil
 }

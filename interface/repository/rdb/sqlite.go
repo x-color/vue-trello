@@ -57,3 +57,20 @@ func validatePrimaryKeys(targetName string, keys ...string) error {
 	}
 	return nil
 }
+
+func convertError(err error, id, userID, act string) error {
+	if gorm.IsRecordNotFoundError(err) {
+		return model.NotFoundError{
+			UserID: userID,
+			Err:    err,
+			ID:     id,
+			Act:    act,
+		}
+	}
+	return model.ServerError{
+		UserID: userID,
+		Err:    err,
+		ID:     id,
+		Act:    act,
+	}
+}
