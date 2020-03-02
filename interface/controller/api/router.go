@@ -87,6 +87,7 @@ func NewRouter(b InteraBox) *echo.Echo {
 
 	api.PATCH("/items/:id/move", itemHandler.Move)
 	api.PATCH("/lists/:id/move", listHandler.Move)
+	api.PATCH("/boards/:id/move", boardHandler.Move)
 
 	return e
 }

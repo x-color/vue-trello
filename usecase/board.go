@@ -12,6 +12,7 @@ type BoardUsecase interface {
 	Create(board model.Board) (model.Board, error)
 	Delete(board model.Board) error
 	Update(board model.Board) (model.Board, error)
+	Move(board model.Board) error
 }
 
 // BoardInteractor includes repogitories and a logger.
@@ -88,6 +89,33 @@ func (i *BoardInteractor) Update(board model.Board) (model.Board, error) {
 	return board, nil
 }
 
+// Move moves Boards.
+func (i *BoardInteractor) Move(board model.Board) error {
+	board.Title = "dummy title"
+	board.Color = model.RED
+	if err := i.validateBoard(board); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	board.Title = ""
+
+	if board.Before != "" {
+		beforeBoard, err := i.boardRepo.Find(model.Board{ID: board.Before, UserID: board.UserID})
+		if err != nil {
+			logError(i.logger, err)
+			return err
+		}
+		board.After = beforeBoard.After
+	}
+
+	if err := i.boardRepo.Move(board); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(board.UserID, "Move board("+board.ID+") after board("+board.Before+") had user("+board.UserID+")"))
+	return nil
+}
+
 // Get returns Board embedded all data.
 func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	board, err := i.boardRepo.Find(board)
@@ -126,7 +154,7 @@ func (i *BoardInteractor) GetBoards(user model.User) (model.Boards, error) {
 		return model.Boards{}, err
 	}
 	i.logger.Info(formatLogMsg(user.ID, "Get boards"))
-	return boards, nil
+	return sortBoards(boards), nil
 }
 
 func (i *BoardInteractor) validateBoard(board model.Board) error {
@@ -152,4 +180,20 @@ func (i *BoardInteractor) validateBoard(board model.Board) error {
 		ID:     board.ID,
 		Act:    "validate color of board",
 	}
+}
+
+func sortBoards(boards model.Boards) model.Boards {
+	l := map[string]model.Board{}
+	for _, b := range boards {
+		l[b.Before] = b
+	}
+
+	board := l[""]
+	r := model.Boards{}
+	for range boards {
+		r = append(r, board)
+		board = l[board.ID]
+	}
+
+	return r
 }

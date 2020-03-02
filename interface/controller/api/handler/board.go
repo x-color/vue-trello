@@ -10,19 +10,23 @@ import (
 
 // Board includes request data for Board.
 type Board struct {
-	ID    string `json:"id"`
-	Title string `json:"title"`
-	Text  string `json:"text"`
-	Lists []List `json:"lists"`
-	Color string `json:"color"`
+	ID     string `json:"id"`
+	Title  string `json:"title"`
+	Text   string `json:"text"`
+	Lists  []List `json:"lists"`
+	Color  string `json:"color"`
+	Before string `json:"before"`
+	After  string `json:"after"`
 }
 
 func (b *Board) convertTo() model.Board {
 	board := model.Board{
-		ID:    b.ID,
-		Title: b.Title,
-		Text:  b.Text,
-		Color: model.Color(b.Color),
+		ID:     b.ID,
+		Title:  b.Title,
+		Text:   b.Text,
+		Color:  model.Color(b.Color),
+		Before: b.Before,
+		After:  b.After,
 	}
 
 	return board
@@ -40,6 +44,8 @@ func (b *Board) convertFrom(board model.Board) {
 		lists = append(lists, list)
 	}
 	b.Lists = lists
+	b.Before = board.Before
+	b.After = board.After
 }
 
 // BoardHandler includes a interactor for Board usecase.
@@ -95,6 +101,25 @@ func (h *BoardHandler) Update(c echo.Context) error {
 	resBoard.convertFrom(b)
 
 	return c.JSON(http.StatusOK, resBoard)
+}
+
+// Move is http handler to move a board process.
+func (h *BoardHandler) Move(c echo.Context) error {
+	reqBoard := new(Board)
+	if err := c.Bind(reqBoard); err != nil {
+		return err
+	}
+	reqBoard.ID = c.Param("id")
+
+	board := reqBoard.convertTo()
+	board.UserID = getUserIDFromToken(c)
+
+	err := h.intractor.Move(board)
+	if err != nil {
+		return convertToHTTPError(c, err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // Delete is http handler to delete a board process.
