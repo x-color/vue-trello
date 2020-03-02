@@ -13,6 +13,8 @@ type List struct {
 	UserID    string `gorm:"primary_key"`
 	BoardID   string
 	Title     string
+	Before    *string
+	After     *string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt *time.Time
@@ -23,6 +25,18 @@ func (l *List) convertFrom(list model.List) {
 	l.UserID = list.UserID
 	l.BoardID = list.BoardID
 	l.Title = list.Title
+
+	if list.Before == "" {
+		l.Before = nil
+	} else {
+		l.Before = &list.Before
+	}
+
+	if list.After == "" {
+		l.After = nil
+	} else {
+		l.After = &list.After
+	}
 }
 
 func (l *List) convertTo() model.List {
@@ -32,6 +46,19 @@ func (l *List) convertTo() model.List {
 		BoardID: l.BoardID,
 		Title:   l.Title,
 	}
+
+	if l.After == nil {
+		list.After = ""
+	} else {
+		list.After = *l.After
+	}
+
+	if l.Before == nil {
+		list.Before = ""
+	} else {
+		list.Before = *l.Before
+	}
+
 	return list
 }
 
@@ -56,10 +83,43 @@ func (m *ListDBManager) Create(list model.List) error {
 		return err
 	}
 
+	tx := m.db.Begin()
+
+	beforeList := new(List)
+
+	if err := tx.Where(map[string]interface{}{"board_id": list.BoardID, "after": nil}).First(beforeList).Error; err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			beforeList = nil
+		} else {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: list.UserID,
+				Err:    err,
+				ID:     list.ID,
+				Act:    "create list",
+			}
+		}
+	}
+
 	l := List{}
 	l.convertFrom(list)
+	l.After = nil
+	if beforeList == nil {
+		l.Before = nil
+	} else {
+		l.Before = &beforeList.ID
 
-	if err := m.db.Create(&l).Error; err != nil {
+		err := tx.Model(beforeList).Updates(map[string]interface{}{
+			"after": l.ID,
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, beforeList.ID, beforeList.UserID, "update List to create new list")
+		}
+	}
+
+	if err := tx.Create(&l).Error; err != nil {
+		tx.Rollback()
 		return model.ServerError{
 			UserID: l.UserID,
 			Err:    err,
@@ -67,6 +127,7 @@ func (m *ListDBManager) Create(list model.List) error {
 			Act:    "create list",
 		}
 	}
+	tx.Commit()
 	return nil
 }
 
@@ -88,8 +149,8 @@ func (m *ListDBManager) Update(list model.List) error {
 	return nil
 }
 
-// Delete removes a List from DB.
-func (m *ListDBManager) Delete(list model.List) error {
+// Move updates list's position data..
+func (m *ListDBManager) Move(list model.List) error {
 	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
 		return err
 	}
@@ -99,9 +160,164 @@ func (m *ListDBManager) Delete(list model.List) error {
 
 	tx := m.db.Begin()
 
-	if err := tx.Delete(&l).Error; err != nil {
+	oldList := new(List)
+	err := tx.Where(&List{ID: l.ID}).First(oldList).Error
+	if err != nil {
+		tx.Rollback()
+		return convertError(err, l.ID, l.UserID, "find moved list")
+	}
+
+	// Update a list before moved list's old position
+	if oldList.Before != nil {
+		oldBeforeList := List{
+			ID:     *oldList.Before,
+			UserID: oldList.UserID,
+			After:  oldList.After,
+		}
+
+		err = tx.Model(&oldBeforeList).Updates(map[string]interface{}{
+			"after": convertData(oldBeforeList.After),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, oldBeforeList.ID, oldBeforeList.UserID, "update list before moved list's old position")
+		}
+	}
+
+	// Update a list after moved list's old position
+	if oldList.After != nil {
+		oldAfterList := List{
+			ID:     *oldList.After,
+			UserID: oldList.UserID,
+			Before: oldList.Before,
+		}
+
+		err = tx.Model(&oldAfterList).Updates(map[string]interface{}{
+			"before": convertData(oldAfterList.Before),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, oldAfterList.ID, oldAfterList.UserID, "update list after moved list's old position")
+		}
+	}
+
+	if l.Before == nil {
+		newAfterList := new(List)
+		err := tx.Where(&List{Before: nil}).First(newAfterList).Error
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, l.ID, l.UserID, "find list after moved list")
+		}
+		l.After = &newAfterList.ID
+	} else {
+		newBeforeList := new(List)
+		err := tx.Where(&List{ID: *l.Before}).First(newBeforeList).Error
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, l.ID, l.UserID, "find list before moved list")
+		}
+		l.After = newBeforeList.After
+	}
+
+	// Update a list before moved list's new position
+	if l.Before != nil {
+		newBeforeList := List{
+			ID:     *l.Before,
+			UserID: l.UserID,
+			After:  &l.ID,
+		}
+
+		err = tx.Model(&newBeforeList).Updates(map[string]interface{}{
+			"after": convertData(newBeforeList.After),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, newBeforeList.ID, newBeforeList.UserID, "update list before moved list's new position")
+		}
+	}
+
+	// Update a list after moved list's new position
+	if l.After != nil {
+		newAfterList := List{
+			ID:     *l.After,
+			UserID: l.UserID,
+			Before: &l.ID,
+		}
+
+		err = tx.Model(&newAfterList).Updates(map[string]interface{}{
+			"before": convertData(newAfterList.Before),
+		}).Error
+
+		if err != nil {
+			tx.Rollback()
+			return convertError(err, newAfterList.ID, newAfterList.UserID, "update list after moved list's new position")
+		}
+	}
+
+	err = tx.Model(&l).Updates(map[string]interface{}{
+		"boardID": l.BoardID,
+		"after":   convertData(l.After),
+		"before":  convertData(l.Before),
+	}).Error
+
+	if err != nil {
+		tx.Rollback()
+		return convertError(err, l.ID, l.UserID, "move list")
+	}
+	tx.Commit()
+	return nil
+}
+
+// Delete removes a List from DB.
+func (m *ListDBManager) Delete(list model.List) error {
+	if err := validatePrimaryKeys("list", list.ID, list.UserID); err != nil {
+		return err
+	}
+
+	tx := m.db.Begin()
+
+	l := List{}
+	l.convertFrom(list)
+
+	deletedList := new(List)
+	if err := tx.Delete(&l).First(deletedList).Error; err != nil {
 		tx.Rollback()
 		return convertError(err, l.ID, l.UserID, "delete list")
+	}
+
+	// Update list before deleted list
+	if deletedList.Before != nil {
+		err := tx.Model(&List{ID: *deletedList.Before, UserID: deletedList.UserID}).Updates(map[string]interface{}{
+			"after": convertData(deletedList.After),
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: deletedList.UserID,
+				Err:    err,
+				ID:     *deletedList.Before,
+				Act:    "update list before deleted list",
+			}
+		}
+	}
+
+	// Update list after deleted list
+	if deletedList.After != nil {
+		err := tx.Model(&List{ID: *deletedList.After, UserID: deletedList.UserID}).Updates(map[string]interface{}{
+			"before": convertData(deletedList.Before),
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: deletedList.UserID,
+				Err:    err,
+				ID:     *deletedList.After,
+				Act:    "update list after deleted list",
+			}
+		}
 	}
 
 	if err := tx.Where(&Item{ListID: l.ID}).Delete(Item{}).Error; err != nil {
@@ -110,7 +326,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 			UserID: l.UserID,
 			Err:    err,
 			ID:     l.ID,
-			Act:    "delete list",
+			Act:    "delete items in deleted list",
 		}
 	}
 

@@ -26,6 +26,7 @@ type ListRepository interface {
 	Create(list model.List) error
 	Update(list model.List) error
 	Delete(list model.List) error
+	Move(list model.List) error
 	Find(list model.List) (model.List, error)
 	FindLists(board model.Board) (model.Lists, error)
 }
@@ -35,6 +36,7 @@ type BoardRepository interface {
 	Create(board model.Board) error
 	Update(board model.Board) error
 	Delete(board model.Board) error
+	// Move(board model.Board) error
 	Find(board model.Board) (model.Board, error)
 	FindBoards(user model.User) (model.Boards, error)
 }

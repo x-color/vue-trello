@@ -14,6 +14,8 @@ type List struct {
 	BoardID string `json:"board_id"`
 	Title   string `json:"title"`
 	Items   []Item `json:"items"`
+	Before  string `json:"before"`
+	After   string `json:"after"`
 }
 
 func (l *List) convertTo() model.List {
@@ -21,6 +23,8 @@ func (l *List) convertTo() model.List {
 		ID:      l.ID,
 		BoardID: l.BoardID,
 		Title:   l.Title,
+		Before:  l.Before,
+		After:   l.After,
 	}
 
 	return list
@@ -30,6 +34,9 @@ func (l *List) convertFrom(list model.List) {
 	l.ID = list.ID
 	l.BoardID = list.BoardID
 	l.Title = list.Title
+	l.Before = list.Before
+	l.After = list.After
+
 	items := []Item{}
 	for _, i := range list.Items {
 		item := Item{}
@@ -93,6 +100,25 @@ func (h *ListHandler) Update(c echo.Context) error {
 	resList.convertFrom(l)
 
 	return c.JSON(http.StatusOK, resList)
+}
+
+// Move is http handler to move a list process.
+func (h *ListHandler) Move(c echo.Context) error {
+	reqList := new(List)
+	if err := c.Bind(reqList); err != nil {
+		return err
+	}
+	reqList.ID = c.Param("id")
+
+	list := reqList.convertTo()
+	list.UserID = getUserIDFromToken(c)
+
+	err := h.intractor.Move(list)
+	if err != nil {
+		return convertToHTTPError(c, err)
+	}
+
+	return c.NoContent(http.StatusNoContent)
 }
 
 // Delete is http handler to delete a list process.

@@ -102,7 +102,7 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 		logError(i.logger, err)
 		return model.Board{}, err
 	}
-	board.Lists = lists
+	board.Lists = sortLists(lists)
 
 	// Get Items in Lists.
 	for j, list := range lists {

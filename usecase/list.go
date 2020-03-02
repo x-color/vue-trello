@@ -10,6 +10,7 @@ type ListUsecase interface {
 	Create(list model.List) (model.List, error)
 	Delete(list model.List) error
 	Update(list model.List) (model.List, error)
+	Move(list model.List) error
 }
 
 // ListInteractor includes repogitories and a logger.
@@ -83,6 +84,32 @@ func (i *ListInteractor) Update(list model.List) (model.List, error) {
 	return list, nil
 }
 
+// Move moves Items.
+func (i *ListInteractor) Move(list model.List) error {
+	list.Title = "dummy title"
+	if err := i.validateList(list); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	list.Title = ""
+
+	if list.Before != "" {
+		beforeList, err := i.listRepo.Find(model.List{ID: list.Before, UserID: list.UserID})
+		if err != nil {
+			logError(i.logger, err)
+			return err
+		}
+		list.After = beforeList.After
+	}
+
+	if err := i.listRepo.Move(list); err != nil {
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(list.UserID, "Move list("+list.ID+") after list("+list.Before+") in list("+list.BoardID+")"))
+	return nil
+}
+
 func (i *ListInteractor) validateList(list model.List) error {
 	if list.ID == "" || list.Title == "" || list.BoardID == "" || list.UserID == "" {
 		return model.InvalidContentError{
@@ -97,4 +124,20 @@ func (i *ListInteractor) validateList(list model.List) error {
 		return err
 	}
 	return nil
+}
+
+func sortLists(lists model.Lists) model.Lists {
+	ls := map[string]model.List{}
+	for _, l := range lists {
+		ls[l.Before] = l
+	}
+
+	list := ls[""]
+	r := model.Lists{}
+	for range lists {
+		r = append(r, list)
+		list = ls[list.ID]
+	}
+
+	return r
 }
