@@ -346,35 +346,39 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 	i.convertFrom(item)
 
 	deletedItem := new(Item)
-	if err := tx.Delete(&i).Find(deletedItem).Error; err != nil {
+	if err := tx.Delete(&i).First(deletedItem).Error; err != nil {
 		return convertError(err, i.ID, i.UserID, "delete item")
 	}
 
 	// Update item before deleted item
-	err := tx.Model(&Item{ID: *deletedItem.Before, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
-		"after": convertData(deletedItem.After),
-	}).Error
-	if err != nil {
-		tx.Rollback()
-		return model.ServerError{
-			UserID: deletedItem.UserID,
-			Err:    err,
-			ID:     *deletedItem.Before,
-			Act:    "update item before deleted item",
+	if deletedItem.Before != nil {
+		err := tx.Model(&Item{ID: *deletedItem.Before, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
+			"after": convertData(deletedItem.After),
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: deletedItem.UserID,
+				Err:    err,
+				ID:     *deletedItem.Before,
+				Act:    "update item before deleted item",
+			}
 		}
 	}
 
 	// Update item after deleted item
-	err = tx.Model(&Item{ID: *deletedItem.After, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
-		"before": convertData(deletedItem.Before),
-	}).Error
-	if err != nil {
-		tx.Rollback()
-		return model.ServerError{
-			UserID: item.UserID,
-			Err:    err,
-			ID:     item.ID,
-			Act:    "update item after deleted item",
+	if deletedItem.After != nil {
+		err := tx.Model(&Item{ID: *deletedItem.After, UserID: deletedItem.UserID}).Updates(map[string]interface{}{
+			"before": convertData(deletedItem.Before),
+		}).Error
+		if err != nil {
+			tx.Rollback()
+			return model.ServerError{
+				UserID: item.UserID,
+				Err:    err,
+				ID:     item.ID,
+				Act:    "update item after deleted item",
+			}
 		}
 	}
 
