@@ -186,7 +186,7 @@ func (m *ItemDBManager) Update(item model.Item) error {
 	return nil
 }
 
-// Move updates all fields of specific Item in DB.
+// Move updates item's position data..
 func (m *ItemDBManager) Move(item model.Item) error {
 	if err := validatePrimaryKeys("item", item.ID, item.UserID); err != nil {
 		return err
