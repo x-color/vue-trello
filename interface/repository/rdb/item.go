@@ -348,9 +348,9 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 		if err != nil {
 			tx.Rollback()
 			return model.ServerError{
-				UserID: item.UserID,
+				UserID: deletedItem.UserID,
 				Err:    err,
-				ID:     item.ID,
+				ID:     *deletedItem.After,
 				Act:    "update item after deleted item",
 			}
 		}
