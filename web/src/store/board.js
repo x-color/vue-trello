@@ -72,14 +72,23 @@ const actions = {
       st.boards.forEach(board => commit('deleteBoard', board));
       // Add or update boards
       boards.forEach((board) => {
-        commit('addBoard', {
-          id: board.id,
-          userId: board.userId,
-          title: board.title,
-          text: board.text,
-          color: board.color,
-          lists: [],
-        });
+        if (st.boards.findIndex(b => b.id === board.id) === -1) {
+          commit('addBoard', {
+            id: board.id,
+            title: board.title,
+            text: board.text,
+            color: board.color,
+            lists: [],
+          });
+        } else {
+          commit('editBoard', {
+            id: board.id,
+            title: board.title,
+            text: board.text,
+            color: board.color,
+            lists: [],
+          });
+        }
       });
       commit('editUser', {
         name: user.name,
