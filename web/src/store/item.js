@@ -1,4 +1,4 @@
-import generateUuid from './utils';
+import { generateUuid } from './utils';
 
 // interface Item {
 //   id: string;

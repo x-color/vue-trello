@@ -1,3 +1,5 @@
+import { fetchAPI } from './utils';
+
 // interface Tag {
 //   id: string;
 //   title: string;
@@ -24,18 +26,7 @@ const mutations = {
 
 const actions = {
   loadResources({ commit }) {
-    fetch('/api/resources', {
-      headers: {
-        'X-XSRF-TOKEN': 'csrf',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      credentials: 'same-origin',
-    }).then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`Request failed: ${response.status}`);
-    }).then((resources) => {
+    fetchAPI('/resources').then((resources) => {
       commit('setResources', resources);
     }).catch((err) => {
       console.error(err);

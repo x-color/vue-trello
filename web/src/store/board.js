@@ -1,4 +1,4 @@
-import generateUuid from './utils';
+import { fetchAPI, generateUuid } from './utils';
 
 // interface Board {
 //   id: string;
@@ -63,18 +63,7 @@ const actions = {
     commit('editBoard', board);
   },
   loadBoards({ commit, state: st }, user) {
-    fetch('/api/boards', {
-      headers: {
-        'X-XSRF-TOKEN': 'csrf',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      credentials: 'same-origin',
-    }).then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`Request failed: ${response.status}`);
-    }).then(({ boards }) => {
+    fetchAPI('/boards').then(({ boards }) => {
       // Remove deleted boards from Vuex store
       st.boards.forEach(board => commit('deleteBoard', board));
       // Add or update boards
@@ -99,22 +88,10 @@ const actions = {
     });
   },
   loadBoard({ commit, dispatch, state: st }, id) {
-    fetch(`/api/boards/${id}`, {
-      headers: {
-        'X-XSRF-TOKEN': 'csrf',
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      credentials: 'same-origin',
-    }).then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`Request failed: ${response.status}`);
-    }).then((board) => {
+    fetchAPI(`/boards/${id}`).then((board) => {
       if (st.boards.findIndex(b => b.id === board.id) === -1) {
         commit('addBoard', {
           id: board.id,
-          userId: board.user_id,
           title: board.title,
           text: board.text,
           color: board.color,
