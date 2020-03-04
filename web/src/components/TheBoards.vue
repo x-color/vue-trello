@@ -51,10 +51,10 @@ export default {
     draggable,
   },
   computed: {
-    ...mapGetters(['getBoardsByUserId']),
+    ...mapGetters(['getSortedBoards']),
     boards: {
       get() {
-        return this.getBoardsByUserId;
+        return this.getSortedBoards;
       },
       set(newValue) {
         const newUser = Object.assign(

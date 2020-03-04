@@ -128,7 +128,7 @@ const actions = {
 
 const getters = {
   getBoardById: ({ boards }) => id => boards.find(board => board.id === id),
-  getBoardsByUserId: (_, gtrs) => gtrs.user.boards.map(boardId => gtrs.getBoardById(boardId)),
+  getSortedBoards: (_, gtrs) => gtrs.user.boards.map(boardId => gtrs.getBoardById(boardId)),
 };
 
 export default {
