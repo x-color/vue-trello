@@ -51,14 +51,14 @@ export default {
     draggable,
   },
   computed: {
-    ...mapGetters(['getBoardsByUserId', 'user']),
+    ...mapGetters(['getBoardsByUserId']),
     boards: {
       get() {
         return this.getBoardsByUserId;
       },
       set(newValue) {
         const newUser = Object.assign(
-          { ...this.user },
+          { ...this.$store.state.user.user },
           { boards: newValue.map(board => board.id) },
         );
         this.editUser(newUser);
@@ -71,11 +71,14 @@ export default {
       newBoard: { title: '', text: '', color: 'indigo' },
     };
   },
+  created() {
+    this.loadBoards(this.$store.state.user.user);
+  },
   methods: {
-    ...mapActions(['addBoard', 'editUser']),
+    ...mapActions(['addBoard', 'editUser', 'loadBoards']),
     addNewBoard() {
       this.addBoard({
-        userId: this.user.id,
+        userId: this.$store.state.user.user.id,
         color: this.newBoard.color,
         text: this.newBoard.text,
         title: this.newBoard.title,

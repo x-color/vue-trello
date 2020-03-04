@@ -62,6 +62,29 @@ const actions = {
   editList({ commit }, newList) {
     commit('editList', newList);
   },
+  setLists({ commit, dispatch, state: st }, lists) {
+    // Remove deleted lists from Vuex store
+    st.lists.filter(list => lists.findIndex(l => l.id === list.id) === -1).forEach(list => commit('deleteList', list));
+    // Add or update lists
+    lists.forEach((list) => {
+      if (st.lists.findIndex(l => l.id === list.id) === -1) {
+        commit('addList', {
+          id: list.id,
+          boardId: list.board_id,
+          title: list.title,
+          items: list.items.map(item => item.id),
+        });
+      } else {
+        commit('editList', {
+          id: list.id,
+          boardId: list.board_id,
+          title: list.title,
+          items: list.items.map(item => item.id),
+        });
+      }
+      dispatch('setItems', list.items);
+    });
+  },
 };
 
 const getters = {

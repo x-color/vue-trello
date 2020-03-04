@@ -10,6 +10,7 @@ function state() {
       name: '',
       login: false,
       color: '',
+      boards: [],
     },
   };
 }

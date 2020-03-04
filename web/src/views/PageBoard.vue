@@ -104,8 +104,11 @@ export default {
       immediate: true,
     },
   },
+  created() {
+    this.loadBoard(this.$route.params.id);
+  },
   methods: {
-    ...mapActions(['addList', 'editBoard', 'deleteBoard', 'editList', 'changeColor']),
+    ...mapActions(['addList', 'editBoard', 'deleteBoard', 'editList', 'changeColor', 'loadBoard']),
     saveEditedBoard() {
       this.editBoard(this.editedBoard);
       this.editBoardMode = false;

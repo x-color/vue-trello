@@ -68,6 +68,30 @@ const actions = {
     commit('editList', toList);
     commit('editItem', item);
   },
+  setItems({ commit, state: st }, items) {
+    // Remove deleted items from Vuex store
+    st.items.filter(item => items.findIndex(i => i.id === item.id) === -1).forEach(item => commit('deleteItem', item));
+    // Add or update items
+    items.forEach((item) => {
+      if (st.items.findIndex(i => i.id === item.id) === -1) {
+        commit('addItem', {
+          id: item.id,
+          listId: item.list_id,
+          title: item.title,
+          text: item.text,
+          tags: item.tags,
+        });
+      } else {
+        commit('editItem', {
+          id: item.id,
+          listId: item.list_id,
+          title: item.title,
+          text: item.text,
+          tags: item.tags,
+        });
+      }
+    });
+  },
 };
 
 const getters = {

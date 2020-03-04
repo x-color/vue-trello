@@ -36,7 +36,6 @@ const actions = {
       }
       throw new Error(`Request failed: ${response.status}`);
     }).then((resources) => {
-      console.log(resources);
       commit('setResources', resources);
     }).catch((err) => {
       console.error(err);

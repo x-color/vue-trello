@@ -62,6 +62,79 @@ const actions = {
   editBoard({ commit }, board) {
     commit('editBoard', board);
   },
+  loadBoards({ commit, state: st }, user) {
+    fetch('/api/boards', {
+      headers: {
+        'X-XSRF-TOKEN': 'csrf',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      credentials: 'same-origin',
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Request failed: ${response.status}`);
+    }).then(({ boards }) => {
+      // Remove deleted boards from Vuex store
+      st.boards.forEach(board => commit('deleteBoard', board));
+      // Add or update boards
+      boards.forEach((board) => {
+        commit('addBoard', {
+          id: board.id,
+          userId: board.userId,
+          title: board.title,
+          text: board.text,
+          color: board.color,
+          lists: [],
+        });
+      });
+      commit('editUser', {
+        name: user.name,
+        login: user.login,
+        color: user.color,
+        boards: boards.map(board => board.id),
+      });
+    }).catch((err) => {
+      console.error(err);
+    });
+  },
+  loadBoard({ commit, dispatch, state: st }, id) {
+    fetch(`/api/boards/${id}`, {
+      headers: {
+        'X-XSRF-TOKEN': 'csrf',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      credentials: 'same-origin',
+    }).then((response) => {
+      if (response.ok) {
+        return response.json();
+      }
+      throw new Error(`Request failed: ${response.status}`);
+    }).then((board) => {
+      if (st.boards.findIndex(b => b.id === board.id) === -1) {
+        commit('addBoard', {
+          id: board.id,
+          userId: board.user_id,
+          title: board.title,
+          text: board.text,
+          color: board.color,
+          lists: board.lists.map(list => list.id),
+        });
+      } else {
+        commit('editBoard', {
+          id: board.id,
+          userId: board.user_id,
+          title: board.title,
+          text: board.text,
+          color: board.color,
+          lists: board.lists.map(list => list.id),
+        });
+      }
+      dispatch('setLists', board.lists);
+    }).catch((err) => {
+      console.error(err);
+    });
+  },
 };
 
 const getters = {
