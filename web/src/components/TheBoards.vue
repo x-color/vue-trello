@@ -20,7 +20,7 @@
           width="300"
           height="100"
           color="grey lighten-2"
-          @click="addBoardMode = true"
+          @click="openAddBoardModal"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
@@ -68,7 +68,7 @@ export default {
   data() {
     return {
       addBoardMode: false,
-      newBoard: { title: '', text: '', color: 'indigo' },
+      newBoard: { title: '', text: '', color: '' },
     };
   },
   created() {
@@ -86,8 +86,12 @@ export default {
       this.resetNewBoard();
     },
     resetNewBoard() {
-      this.newBoard = { title: '', text: '', color: 'indigo' };
+      this.newBoard = { title: '', text: '', color: this.$store.state.resource.colors[0] };
       this.addBoardMode = false;
+    },
+    openAddBoardModal() {
+      this.resetNewBoard();
+      this.addBoardMode = true;
     },
   },
 };

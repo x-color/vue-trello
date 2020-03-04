@@ -39,7 +39,7 @@
                   <v-container>
                     <v-row>
                       <v-col
-                        v-for="(color, index) in colors"
+                        v-for="(color, index) in $store.state.resource.colors"
                         :key="index"
                         cols="auto"
                         class="pa-0"
@@ -109,7 +109,6 @@ export default {
       editTitleMode: false,
       editTextMode: false,
       isOpenedMenu: false,
-      colors: ['indigo', 'red', 'orange', 'green', 'purple'],
     };
   },
   methods: {
