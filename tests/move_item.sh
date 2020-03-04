@@ -34,7 +34,7 @@ LID1=$(cat /tmp/tmp.file | tail -1 | jq .id -r)
 curl -s -X POST localhost:8080/api/items \
 -H 'X-XSRF-TOKEN:csrf' \
 -H 'Content-Type:application/json; charset=UTF-8' \
--d '{"list_id":"'$LID1'", "title": "first_item", "text": "hahaha", "tags":[]}' \
+-d '{"list_id":"'$LID1'", "title": "first_item", "text": "hahaha", "tags":["1", "2"]}' \
 -b /tmp/cookie.file \
 | tee /tmp/tmp.file
 
