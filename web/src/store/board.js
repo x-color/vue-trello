@@ -1,4 +1,4 @@
-import { fetchAPI } from './utils';
+import fetchAPI from './utils';
 
 // interface Board {
 //   id: string;
