@@ -1,4 +1,4 @@
-import { generateUuid } from './utils';
+import { fetchAPI } from './utils';
 
 // interface List {
 //   id: string;
@@ -32,17 +32,23 @@ const mutations = {
 
 const actions = {
   addList({ commit, getters }, { title, boardId }) {
-    const newList = {
-      id: generateUuid(),
-      boardId,
+    fetchAPI('/lists', 'POST', JSON.stringify({
+      board_id: boardId,
       title,
-      items: [],
-    };
-    commit('addList', newList);
+    })).then((list) => {
+      const newList = {
+        id: list.id,
+        title: list.title,
+        items: [],
+      };
+      commit('addList', newList);
 
-    const board = getters.getBoardById(boardId);
-    board.lists.push(newList.id);
-    commit('editBoard', board);
+      const board = getters.getBoardById(boardId);
+      board.lists.push(newList.id);
+      commit('editBoard', board);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   deleteList({ commit, dispatch, getters }, { id, boardId }) {
     getters.getItemsByListId(id).forEach((item) => {
