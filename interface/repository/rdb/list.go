@@ -283,7 +283,12 @@ func (m *ListDBManager) Delete(list model.List) error {
 	l.convertFrom(list)
 
 	deletedList := new(List)
-	if err := tx.Delete(&l).First(deletedList).Error; err != nil {
+	if err := tx.Where(&l).First(deletedList).Error; err != nil {
+		tx.Rollback()
+		return convertError(err, l.ID, l.UserID, "find deleting list")
+	}
+
+	if err := tx.Delete(&l).Error; err != nil {
 		tx.Rollback()
 		return convertError(err, l.ID, l.UserID, "delete list")
 	}
