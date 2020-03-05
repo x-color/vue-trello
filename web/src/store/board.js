@@ -66,7 +66,7 @@ const actions = {
   editBoard({ commit }, board) {
     commit('editBoard', board);
   },
-  loadBoards({ commit, state: st }, user) {
+  loadBoards({ commit, getters, state: st }, user) {
     fetchAPI('/boards').then(({ boards }) => {
       // Remove deleted boards from Vuex store
       st.boards.forEach(board => commit('deleteBoard', board));
@@ -86,7 +86,7 @@ const actions = {
             title: board.title,
             text: board.text,
             color: board.color,
-            lists: [],
+            lists: getters.getBoardById(board.id).lists,
           });
         }
       });
