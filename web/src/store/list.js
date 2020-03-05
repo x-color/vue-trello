@@ -63,9 +63,9 @@ const actions = {
       console.error(err);
     });
   },
-  deleteListIndeletedBoard({ commit, dispatch, getters }, { id }) {
+  deleteListIndeletedBoard({ commit, getters }, { id }) {
     getters.getItemsByListId(id).forEach((item) => {
-      dispatch('deleteItemInDeletedList', item);
+      commit('deleteItem', item);
     });
     commit('deleteList', id);
   },

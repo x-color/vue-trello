@@ -67,9 +67,6 @@ const actions = {
       console.error(err);
     });
   },
-  deleteItemInDeletedList({ commit }, { id }) {
-    commit('deleteItem', id);
-  },
   editItem({ commit }, newItem) {
     commit('editItem', newItem);
   },
