@@ -297,7 +297,12 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 	tx := m.db.Begin()
 
 	deletedBoard := new(Board)
-	if err := tx.Delete(&b).First(deletedBoard).Error; err != nil {
+	if err := tx.Where(&b).First(deletedBoard).Error; err != nil {
+		tx.Rollback()
+		return convertError(err, b.ID, b.UserID, "find deleting board")
+	}
+
+	if err := tx.Delete(&b).Error; err != nil {
 		tx.Rollback()
 		return convertError(err, b.ID, b.UserID, "delete board")
 	}
@@ -336,7 +341,12 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 
 	// Remove Lists in removed Board
 	lists := model.Lists{}
-	if err := tx.Where(&List{BoardID: b.ID}).Delete(List{}).Find(&lists).Error; err != nil {
+	if err := tx.Where(&List{BoardID: b.ID, UserID: b.UserID}).Find(&lists).Error; err != nil {
+		tx.Rollback()
+		return convertError(err, b.ID, b.UserID, "find deleting lists in deleted board")
+	}
+
+	if err := tx.Where(&List{BoardID: b.ID, UserID: b.UserID}).Delete(List{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
 			UserID: b.UserID,
@@ -348,7 +358,7 @@ func (m *BoardDBManager) Delete(board model.Board) error {
 
 	// Remove Items in removed Lists
 	for _, list := range lists {
-		if err := tx.Where(&Item{ListID: list.ID}).Delete(Item{}).Error; err != nil {
+		if err := tx.Where(&Item{ListID: list.ID, UserID: list.UserID}).Delete(Item{}).Error; err != nil {
 			tx.Rollback()
 			return model.ServerError{
 				UserID: b.UserID,
