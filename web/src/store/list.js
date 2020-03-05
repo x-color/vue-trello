@@ -69,8 +69,15 @@ const actions = {
     });
     commit('deleteList', id);
   },
-  editList({ commit }, newList) {
-    commit('editList', newList);
+  editList({ commit }, list) {
+    fetchAPI(`/lists/${list.id}`, 'PATCH', JSON.stringify({
+      board_id: list.boardId,
+      title: list.title,
+    })).then(() => {
+      commit('editList', list);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   setLists({ commit, dispatch, state: st }, lists) {
     // Remove deleted lists from Vuex store
