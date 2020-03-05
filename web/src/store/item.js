@@ -1,4 +1,4 @@
-import { generateUuid } from './utils';
+import { fetchAPI } from './utils';
 
 // interface Item {
 //   id: string;
@@ -35,18 +35,27 @@ const actions = {
   addItem({ commit, getters }, {
     listId, title, text = '', tags = [],
   }) {
-    const newItem = {
-      id: generateUuid(),
-      listId,
+    fetchAPI('/items', 'POST', JSON.stringify({
+      list_id: listId,
       title,
       text,
       tags,
-    };
-    commit('addItem', newItem);
+    })).then((item) => {
+      const newItem = {
+        id: item.id,
+        listId: item.list_id,
+        title: item.title,
+        text: item.text,
+        tags: item.tags,
+      };
+      commit('addItem', newItem);
 
-    const list = getters.getListById(listId);
-    list.items.push(newItem.id);
-    commit('editList', list);
+      const list = getters.getListById(item.list_id);
+      list.items.push(item.id);
+      commit('editList', list);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   deleteItem({ commit, getters }, { id, listId }) {
     const list = getters.getListById(listId);
