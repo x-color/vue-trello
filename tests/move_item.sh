@@ -99,10 +99,25 @@ curl -s -X PATCH localhost:8080/api/items/$IID2/move \
 -H 'Content-Type:application/json; charset=UTF-8' \
 -d '{"list_id":"'$LID1'", "before": "'$IID1'"}' \
 -b /tmp/cookie.file \
-| tee /tmp/tmp.file
 
 echo 
 echo "## Moved ##"
+echo 
+
+curl -s localhost:8080/api/boards/$BID1 \
+-H 'X-XSRF-TOKEN:csrf' \
+-H 'Content-Type:application/json; charset=UTF-8' \
+-b /tmp/cookie.file \
+| jq .
+
+
+curl -s -X DELETE localhost:8080/api/items/$IID2 \
+-H 'X-XSRF-TOKEN:csrf' \
+-H 'Content-Type:application/json; charset=UTF-8' \
+-b /tmp/cookie.file \
+
+echo 
+echo "## Deleted ##"
 echo 
 
 curl -s localhost:8080/api/boards/$BID1 \
