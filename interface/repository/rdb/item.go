@@ -320,7 +320,13 @@ func (m *ItemDBManager) Delete(item model.Item) error {
 	i.convertFrom(item)
 
 	deletedItem := new(Item)
-	if err := tx.Delete(&i).First(deletedItem).Error; err != nil {
+	if err := tx.Where(&i).First(deletedItem).Error; err != nil {
+		tx.Rollback()
+		return convertError(err, i.ID, i.UserID, "find deleting item")
+	}
+
+	if err := tx.Delete(&i).Error; err != nil {
+		tx.Rollback()
 		return convertError(err, i.ID, i.UserID, "delete item")
 	}
 
