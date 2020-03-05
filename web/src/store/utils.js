@@ -16,7 +16,10 @@ export default function fetchAPI(url, method = 'GET', body = '') {
     throw new Error(`Request failed: ${err}`);
   }).then((response) => {
     if (response.ok) {
-      return response.json();
+      if (response.status !== 204) {
+        return response.json();
+      }
+      return null;
     }
     throw new Error(`Request failed: ${response.status}`);
   });

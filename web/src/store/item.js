@@ -58,10 +58,14 @@ const actions = {
     });
   },
   deleteItem({ commit, getters }, { id, listId }) {
-    const list = getters.getListById(listId);
-    list.items = list.items.filter(itemId => itemId !== id);
-    commit('editList', list);
-    commit('deleteItem', id);
+    fetchAPI(`/items/${id}`, 'DELETE').then(() => {
+      const list = getters.getListById(listId);
+      list.items = list.items.filter(itemId => itemId !== id);
+      commit('editList', list);
+      commit('deleteItem', id);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   deleteItemInDeletedList({ commit }, { id }) {
     commit('deleteItem', id);
