@@ -52,6 +52,8 @@ const actions = {
       const user = { ...getters.user };
       user.boards.push(newBoard.id);
       commit('editUser', user);
+    }).catch((err) => {
+      console.error(err);
     });
   },
   deleteBoard({ commit, dispatch, getters }, { id }) {
