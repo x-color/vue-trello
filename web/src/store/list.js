@@ -50,14 +50,18 @@ const actions = {
       console.error(err);
     });
   },
-  deleteList({ commit, dispatch, getters }, { id, boardId }) {
-    getters.getItemsByListId(id).forEach((item) => {
-      dispatch('deleteItemInDeletedList', item);
+  deleteList({ commit, getters }, { id, boardId }) {
+    fetchAPI(`/lists/${id}`, 'DELETE').then(() => {
+      getters.getItemsByListId(id).forEach((item) => {
+        commit('deleteItem', item);
+      });
+      const board = getters.getBoardById(boardId);
+      board.lists = board.lists.filter(listId => listId !== id);
+      commit('editBoard', board);
+      commit('deleteList', id);
+    }).catch((err) => {
+      console.error(err);
     });
-    const board = getters.getBoardById(boardId);
-    board.lists = board.lists.filter(listId => listId !== id);
-    commit('editBoard', board);
-    commit('deleteList', id);
   },
   deleteListIndeletedBoard({ commit, dispatch, getters }, { id }) {
     getters.getItemsByListId(id).forEach((item) => {
