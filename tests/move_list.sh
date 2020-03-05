@@ -99,3 +99,20 @@ curl -s localhost:8080/api/boards/$BID1 \
 -H 'Content-Type:application/json; charset=UTF-8' \
 -b /tmp/cookie.file \
 | jq .
+
+# Delete
+
+curl -s -X DELETE localhost:8080/api/lists/$LID2 \
+-H 'X-XSRF-TOKEN:csrf' \
+-H 'Content-Type:application/json; charset=UTF-8' \
+-b /tmp/cookie.file \
+
+echo 
+echo "## Deleted ##"
+echo 
+
+curl -s localhost:8080/api/boards/$BID1 \
+-H 'X-XSRF-TOKEN:csrf' \
+-H 'Content-Type:application/json; charset=UTF-8' \
+-b /tmp/cookie.file \
+| jq .
