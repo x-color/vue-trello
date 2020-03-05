@@ -70,7 +70,15 @@ const actions = {
     });
   },
   editBoard({ commit }, board) {
-    commit('editBoard', board);
+    fetchAPI(`/boards/${board.id}`, 'PATCH', JSON.stringify({
+      title: board.title,
+      text: board.text,
+      color: board.color,
+    })).then(() => {
+      commit('editBoard', board);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   loadBoards({ commit, getters, state: st }, user) {
     fetchAPI('/boards').then(({ boards }) => {
