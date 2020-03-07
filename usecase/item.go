@@ -96,15 +96,6 @@ func (i *ItemInteractor) Move(item model.Item) error {
 	}
 	item.Title = ""
 
-	if item.Before != "" {
-		beforeItem, err := i.itemRepo.Find(model.Item{ID: item.Before, UserID: item.UserID})
-		if err != nil {
-			logError(i.logger, err)
-			return err
-		}
-		item.After = beforeItem.After
-	}
-
 	if err := i.itemRepo.Move(item); err != nil {
 		logError(i.logger, err)
 		return err

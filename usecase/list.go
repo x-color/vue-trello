@@ -93,15 +93,6 @@ func (i *ListInteractor) Move(list model.List) error {
 	}
 	list.Title = ""
 
-	if list.Before != "" {
-		beforeList, err := i.listRepo.Find(model.List{ID: list.Before, UserID: list.UserID})
-		if err != nil {
-			logError(i.logger, err)
-			return err
-		}
-		list.After = beforeList.After
-	}
-
 	if err := i.listRepo.Move(list); err != nil {
 		logError(i.logger, err)
 		return err

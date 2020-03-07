@@ -99,15 +99,6 @@ func (i *BoardInteractor) Move(board model.Board) error {
 	}
 	board.Title = ""
 
-	if board.Before != "" {
-		beforeBoard, err := i.boardRepo.Find(model.Board{ID: board.Before, UserID: board.UserID})
-		if err != nil {
-			logError(i.logger, err)
-			return err
-		}
-		board.After = beforeBoard.After
-	}
-
 	if err := i.boardRepo.Move(board); err != nil {
 		logError(i.logger, err)
 		return err
