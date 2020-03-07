@@ -67,8 +67,17 @@ const actions = {
       console.error(err);
     });
   },
-  editItem({ commit }, newItem) {
-    commit('editItem', newItem);
+  editItem({ commit }, item) {
+    fetchAPI(`/items/${item.id}`, 'PATCH', JSON.stringify({
+      list_id: item.listId,
+      title: item.title,
+      text: item.text,
+      tags: item.tags,
+    })).then(() => {
+      commit('editItem', item);
+    }).catch((err) => {
+      console.error(err);
+    });
   },
   moveItemAcrossLists({ commit, getters }, { item, toList }) {
     const fromList = { ...getters.getListById(item.listId) };
