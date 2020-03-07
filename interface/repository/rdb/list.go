@@ -87,7 +87,7 @@ func (m *ListDBManager) Create(list model.List) error {
 
 	beforeList := new(List)
 
-	if err := tx.Where(map[string]interface{}{"board_id": list.BoardID, "after": nil}).First(beforeList).Error; err != nil {
+	if err := tx.Where(map[string]interface{}{"board_id": list.BoardID, "user_id": list.UserID, "after": nil}).First(beforeList).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			beforeList = nil
 		} else {
@@ -161,7 +161,7 @@ func (m *ListDBManager) Move(list model.List) error {
 	tx := m.db.Begin()
 
 	oldList := new(List)
-	err := tx.Where(&List{ID: l.ID}).First(oldList).Error
+	err := tx.Where(&List{ID: l.ID, UserID: l.UserID}).First(oldList).Error
 	if err != nil {
 		tx.Rollback()
 		return convertError(err, l.ID, l.UserID, "find moved list")
@@ -205,7 +205,7 @@ func (m *ListDBManager) Move(list model.List) error {
 
 	if l.Before == nil {
 		newAfterList := new(List)
-		err := tx.Where(&List{Before: nil}).First(newAfterList).Error
+		err := tx.Where(&List{UserID: l.UserID, Before: nil}).First(newAfterList).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, l.ID, l.UserID, "find list after moved list")
@@ -213,7 +213,7 @@ func (m *ListDBManager) Move(list model.List) error {
 		l.After = &newAfterList.ID
 	} else {
 		newBeforeList := new(List)
-		err := tx.Where(&List{ID: *l.Before}).First(newBeforeList).Error
+		err := tx.Where(&List{ID: *l.Before, UserID: l.UserID}).First(newBeforeList).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, l.ID, l.UserID, "find list before moved list")
@@ -325,7 +325,7 @@ func (m *ListDBManager) Delete(list model.List) error {
 		}
 	}
 
-	if err := tx.Where(&Item{ListID: l.ID}).Delete(Item{}).Error; err != nil {
+	if err := tx.Where(&Item{ListID: l.ID, UserID: l.UserID}).Delete(Item{}).Error; err != nil {
 		tx.Rollback()
 		return model.ServerError{
 			UserID: l.UserID,

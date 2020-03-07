@@ -120,7 +120,7 @@ func (m *ItemDBManager) Create(item model.Item) error {
 
 	beforeItem := new(Item)
 
-	if err := tx.Where(map[string]interface{}{"list_id": item.ListID, "after": nil}).First(beforeItem).Error; err != nil {
+	if err := tx.Where(map[string]interface{}{"list_id": item.ListID, "user_id": item.UserID, "after": nil}).First(beforeItem).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			beforeItem = nil
 		} else {
@@ -198,7 +198,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 	tx := m.db.Begin()
 
 	oldItem := new(Item)
-	err := tx.Where(&Item{ID: i.ID}).First(oldItem).Error
+	err := tx.Where(&Item{ID: i.ID, UserID: i.UserID}).First(oldItem).Error
 	if err != nil {
 		tx.Rollback()
 		return convertError(err, i.ID, i.UserID, "find moved item")
@@ -242,7 +242,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 
 	if i.Before == nil {
 		newAfterItem := new(Item)
-		err := tx.Where(&Item{Before: nil}).First(newAfterItem).Error
+		err := tx.Where(&Item{UserID: i.UserID, Before: nil}).First(newAfterItem).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, i.ID, i.UserID, "find item after moved item")
@@ -250,7 +250,7 @@ func (m *ItemDBManager) Move(item model.Item) error {
 		i.After = &newAfterItem.ID
 	} else {
 		newBeforeItem := new(Item)
-		err := tx.Where(&Item{ID: *i.Before}).First(newBeforeItem).Error
+		err := tx.Where(&Item{ID: *i.Before, UserID: i.UserID}).First(newBeforeItem).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, i.ID, i.UserID, "find item before moved item")

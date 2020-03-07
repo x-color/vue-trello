@@ -176,7 +176,7 @@ func (m *BoardDBManager) Move(board model.Board) error {
 	tx := m.db.Begin()
 
 	oldBoard := new(Board)
-	err := tx.Where(&Board{ID: b.ID}).First(oldBoard).Error
+	err := tx.Where(&Board{ID: b.ID, UserID: b.UserID}).First(oldBoard).Error
 	if err != nil {
 		tx.Rollback()
 		return convertError(err, b.ID, b.UserID, "find moved board")
@@ -220,7 +220,7 @@ func (m *BoardDBManager) Move(board model.Board) error {
 
 	if b.Before == nil {
 		newAfterBoard := new(Board)
-		err := tx.Where(&Board{Before: nil}).First(newAfterBoard).Error
+		err := tx.Where(&Board{UserID: b.UserID, Before: nil}).First(newAfterBoard).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, b.ID, b.UserID, "find board after moved board")
@@ -228,7 +228,7 @@ func (m *BoardDBManager) Move(board model.Board) error {
 		b.After = &newAfterBoard.ID
 	} else {
 		newBeforeBoard := new(Board)
-		err := tx.Where(&Board{ID: *b.Before}).First(newBeforeBoard).Error
+		err := tx.Where(&Board{ID: *b.Before, UserID: b.UserID}).First(newBeforeBoard).Error
 		if err != nil {
 			tx.Rollback()
 			return convertError(err, b.ID, b.UserID, "find board before moved board")
