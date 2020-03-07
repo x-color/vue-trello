@@ -55,11 +55,6 @@ import { mapActions } from 'vuex';
 export default {
   name: 'PageLogin',
   data() {
-    // NOTE: Access state.user directly. It does not use getter of store (getters.user).
-    //       gettters and computed methods do not exist still this timing.
-    if (this.$store.state.user.user.login) {
-      this.$router.push('/boards', () => {});
-    }
     return {
       show: false,
       isLoginFailed: false,
