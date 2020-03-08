@@ -72,6 +72,7 @@ func main() {
 	}
 
 	userIntera, err := usecase.NewUserInteractor(
+		&dbm.TransactionManager,
 		&dbm.UserDBManager,
 		&logger,
 	)

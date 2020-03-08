@@ -15,16 +15,19 @@ type UserUsecase interface {
 
 // UserInteractor includes repogitories and a logger.
 type UserInteractor struct {
+	txRepo   TransactionRepository
 	userRepo UserRepository
 	logger   Logger
 }
 
 // NewUserInteractor generates new interactor for a User.
 func NewUserInteractor(
+	txRepo TransactionRepository,
 	userRepo UserRepository,
 	logger Logger,
 ) (UserInteractor, error) {
 	i := UserInteractor{
+		txRepo:   txRepo,
 		userRepo: userRepo,
 		logger:   logger,
 	}
@@ -33,7 +36,11 @@ func NewUserInteractor(
 
 // SignUp registers new User to repository.
 func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
-	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
+	tx := i.txRepo.BeginTransaction(false)
+
+	u, err := i.userRepo.Find(tx, map[string]interface{}{
+		"Name": user.Name,
+	})
 	if err != nil && !errors.Is(err, model.NotFoundError{}) {
 		logError(i.logger, err)
 		return model.User{}, err
@@ -49,7 +56,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	}
 
 	user.ID = uuid.New().String()
-	if err := i.userRepo.Create(user); err != nil {
+	if err := i.userRepo.Create(tx, user); err != nil {
 		logError(i.logger, err)
 		return model.User{}, err
 	}
@@ -59,7 +66,10 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 
 // SignIn returns User data if a user succeds at authentication.
 func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
-	u, err := i.userRepo.FindByName(model.User{Name: user.Name})
+	tx := i.txRepo.BeginTransaction(false)
+	u, err := i.userRepo.Find(tx, map[string]interface{}{
+		"Name": user.Name,
+	})
 	if err != nil {
 		logError(i.logger, err)
 		return model.User{}, err
