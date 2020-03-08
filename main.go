@@ -49,6 +49,7 @@ func main() {
 
 	listIntera, err := usecase.NewListInteractor(
 		&dbm.TransactionManager,
+		&dbm.ItemDBManager,
 		&dbm.ListDBManager,
 		&dbm.BoardDBManager,
 		&logger,

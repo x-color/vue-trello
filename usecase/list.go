@@ -16,6 +16,7 @@ type ListUsecase interface {
 // ListInteractor includes repogitories and a logger.
 type ListInteractor struct {
 	txRepo    TransactionRepository
+	itemRepo  ItemRepository
 	listRepo  ListRepository
 	boardRepo BoardRepository
 	logger    Logger
@@ -24,12 +25,14 @@ type ListInteractor struct {
 // NewListInteractor generates new interactor for a List.
 func NewListInteractor(
 	txRepo TransactionRepository,
+	itemRepo ItemRepository,
 	listRepo ListRepository,
 	boardRepo BoardRepository,
 	logger Logger,
 ) (ListInteractor, error) {
 	i := ListInteractor{
 		txRepo:    txRepo,
+		itemRepo:  itemRepo,
 		listRepo:  listRepo,
 		boardRepo: boardRepo,
 		logger:    logger,
@@ -163,6 +166,28 @@ func (i *ListInteractor) Delete(list model.List) error {
 		return err
 	}
 	i.logger.Info(formatLogMsg(list.UserID, "Delete list("+list.ID+")"))
+
+	items, err := i.itemRepo.Find(tx, map[string]interface{}{
+		"UserID": list.UserID,
+		"ListID": list.ID,
+	})
+	if err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(list.UserID, "Find items in deleted list("+list.ID+")"))
+
+	for _, item := range items {
+		if err := i.itemRepo.Delete(tx, item); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+	}
+	i.logger.Info(formatLogMsg(list.UserID, "Delete items in deleted list("+list.ID+")"))
 
 	tx.Commit()
 	i.logger.Info(formatLogMsg(list.UserID, "Commit transaction"))
