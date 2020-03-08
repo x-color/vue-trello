@@ -118,8 +118,13 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 		return model.Board{}, err
 	}
 
+	tx := i.txRepo.BeginTransaction(false)
+
 	// Get Lists in Board.
-	lists, err := i.listRepo.FindLists(board)
+	lists, err := i.listRepo.Find(tx, map[string]interface{}{
+		"BoardID": board.ID,
+		"UserID":  board.UserID,
+	})
 	if err != nil {
 		logError(i.logger, err)
 		return model.Board{}, err
@@ -127,7 +132,6 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	board.Lists = sortLists(lists)
 
 	// Get Items in Lists.
-	tx := i.txRepo.BeginTransaction(false)
 	for j, list := range lists {
 		items, err := i.itemRepo.Find(tx, map[string]interface{}{
 			"ListID": list.ID,

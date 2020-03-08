@@ -368,7 +368,9 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 			Act:    "validate contents in item",
 		}
 	}
-	_, err := i.listRepo.Find(model.List{ID: item.ListID, UserID: item.UserID})
+
+	tx := i.txRepo.BeginTransaction(false)
+	_, err := i.listRepo.FindByID(tx, item.ListID, item.UserID)
 	if err != nil {
 		return err
 	}

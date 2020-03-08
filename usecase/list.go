@@ -15,6 +15,7 @@ type ListUsecase interface {
 
 // ListInteractor includes repogitories and a logger.
 type ListInteractor struct {
+	txRepo    TransactionRepository
 	listRepo  ListRepository
 	boardRepo BoardRepository
 	logger    Logger
@@ -22,11 +23,13 @@ type ListInteractor struct {
 
 // NewListInteractor generates new interactor for a List.
 func NewListInteractor(
+	txRepo TransactionRepository,
 	listRepo ListRepository,
 	boardRepo BoardRepository,
 	logger Logger,
 ) (ListInteractor, error) {
 	i := ListInteractor{
+		txRepo:    txRepo,
 		listRepo:  listRepo,
 		boardRepo: boardRepo,
 		logger:    logger,
@@ -42,11 +45,53 @@ func (i *ListInteractor) Create(list model.List) (model.List, error) {
 		return model.List{}, err
 	}
 
-	if err := i.listRepo.Create(list); err != nil {
+	tx := i.txRepo.BeginTransaction(true)
+	i.logger.Info(formatLogMsg(list.UserID, "Start transaction"))
+
+	// Get last list in board
+	lists, err := i.listRepo.Find(tx, map[string]interface{}{
+		"ListID": list.BoardID,
+		"UserID": list.UserID,
+		"After":  "",
+	})
+	if err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, err)
+		return model.List{}, err
+	}
+
+	if len(lists) > 0 {
+		lastList := lists[0]
+		i.logger.Info(formatLogMsg(list.UserID, "Find last list("+lastList.ID+") in board("+lastList.BoardID+")"))
+
+		list.Before = lastList.ID
+
+		query := map[string]interface{}{
+			"After": list.ID,
+		}
+		if err := i.listRepo.Update(tx, lastList, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return model.List{}, err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Update list("+lastList.ID+")"))
+	} else {
+		i.logger.Info(formatLogMsg(list.UserID, "Find no list in board("+list.BoardID+")"))
+	}
+
+	if err := i.listRepo.Create(tx, list); err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
 		logError(i.logger, err)
 		return model.List{}, err
 	}
 	i.logger.Info(formatLogMsg(list.UserID, "Create list("+list.ID+")"))
+
+	tx.Commit()
+	i.logger.Info(formatLogMsg(list.UserID, "Commit transaction"))
+
 	return list, nil
 }
 
@@ -61,11 +106,67 @@ func (i *ListInteractor) Delete(list model.List) error {
 			Act:    "validate list id",
 		}
 	}
-	if err := i.listRepo.Delete(list); err != nil {
+
+	tx := i.txRepo.BeginTransaction(true)
+	i.logger.Info(formatLogMsg(list.UserID, "Start transaction"))
+
+	// Get list's info (e.g. list.Before, list.After...) and rewrite 'list'.
+	list, err := i.listRepo.FindByID(tx, list.ID, list.UserID)
+	if err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(list.UserID, "Find list("+list.ID+")"))
+
+	if list.Before != "" {
+		// Update list before deleting list
+		before := model.List{
+			ID:     list.Before,
+			UserID: list.UserID,
+		}
+		query := map[string]interface{}{
+			"After": list.After,
+		}
+		if err := i.listRepo.Update(tx, before, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Update list("+before.ID+") before deleted list("+list.ID+")"))
+	}
+
+	if list.After != "" {
+		// Update list after deleting list
+		after := model.List{
+			ID:     list.After,
+			UserID: list.UserID,
+		}
+		query := map[string]interface{}{
+			"Before": list.Before,
+		}
+		if err := i.listRepo.Update(tx, after, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Update list("+after.ID+") after deleted list("+list.ID+")"))
+	}
+
+	if err := i.listRepo.Delete(tx, list); err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
 		logError(i.logger, err)
 		return err
 	}
 	i.logger.Info(formatLogMsg(list.UserID, "Delete list("+list.ID+")"))
+
+	tx.Commit()
+	i.logger.Info(formatLogMsg(list.UserID, "Commit transaction"))
+
 	return nil
 }
 
@@ -76,11 +177,17 @@ func (i *ListInteractor) Update(list model.List) (model.List, error) {
 		return model.List{}, err
 	}
 
-	if err := i.listRepo.Update(list); err != nil {
+	query := map[string]interface{}{
+		"Title": list.Title,
+	}
+
+	tx := i.txRepo.BeginTransaction(false)
+	if err := i.listRepo.Update(tx, list, query); err != nil {
 		logError(i.logger, err)
 		return model.List{}, err
 	}
 	i.logger.Info(formatLogMsg(list.UserID, "Update list("+list.ID+")"))
+
 	return list, nil
 }
 
@@ -93,11 +200,153 @@ func (i *ListInteractor) Move(list model.List) error {
 	}
 	list.Title = ""
 
-	if err := i.listRepo.Move(list); err != nil {
+	tx := i.txRepo.BeginTransaction(true)
+	i.logger.Info(formatLogMsg(list.UserID, "Start transaction"))
+
+	// Get a list to move
+	if list.Before != "" {
+		before, err := i.listRepo.FindByID(tx, list.Before, list.UserID)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Find a list("+before.ID+") before list to move"))
+		if list.BoardID != before.BoardID {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			i.logger.Info(formatLogMsg(list.UserID, "Invalid list id("+list.BoardID+"). Does not equal before list's list id("+before.BoardID+")"))
+			return err
+		}
+	}
+
+	// Get a list to move
+	old, err := i.listRepo.FindByID(tx, list.ID, list.UserID)
+	if err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
 		logError(i.logger, err)
 		return err
 	}
-	i.logger.Info(formatLogMsg(list.UserID, "Move list("+list.ID+") after list("+list.Before+") in list("+list.BoardID+")"))
+	i.logger.Info(formatLogMsg(list.UserID, "Find list("+list.ID+") to move"))
+
+	// Get a list before list to move
+	if old.Before != "" {
+		beforeOld := model.List{
+			ID:     old.Before,
+			UserID: old.UserID,
+		}
+		query := map[string]interface{}{
+			"After": old.After,
+		}
+		if err := i.listRepo.Update(tx, beforeOld, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Find a list("+beforeOld.ID+") before list("+list.ID+") to move"))
+	}
+
+	// Get a list after list to move
+	if old.After != "" {
+		afterOld := model.List{
+			ID:     old.After,
+			UserID: old.UserID,
+		}
+		query := map[string]interface{}{
+			"Before": old.Before,
+		}
+		if err := i.listRepo.Update(tx, afterOld, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Find a list("+afterOld.ID+") after list("+list.ID+") to move"))
+	}
+
+	// Get a list after moved list
+	conditions := map[string]interface{}{
+		"BoardID": list.BoardID,
+		"UserID":  list.UserID,
+		"Before":  list.Before,
+	}
+	l, err := i.listRepo.Find(tx, conditions)
+	if err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, err)
+		return err
+	}
+	if len(l) != 1 {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, model.ServerError{
+			ID:     list.ID,
+			UserID: list.UserID,
+			Err:    nil,
+			Act:    "find a list before moved list",
+		})
+		return err
+	}
+	list.After = l[0].ID
+	i.logger.Info(formatLogMsg(list.UserID, "Find a list("+list.After+") after moved list("+list.ID+")"))
+
+	// Update a list before moved list
+	if list.Before != "" {
+		before := model.List{
+			ID:     list.Before,
+			UserID: list.UserID,
+		}
+		query := map[string]interface{}{
+			"After": list.ID,
+		}
+		if err := i.listRepo.Update(tx, before, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Update list("+before.ID+") before list("+list.ID+") in board("+list.BoardID+")"))
+	}
+
+	// Update a list after moved list
+	if list.After != "" {
+		after := model.List{
+			ID:     list.After,
+			UserID: list.UserID,
+		}
+		query := map[string]interface{}{
+			"Before": list.ID,
+		}
+		if err := i.listRepo.Update(tx, after, query); err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		i.logger.Info(formatLogMsg(list.UserID, "Update list("+after.ID+") after list("+list.ID+") in board("+list.BoardID+")"))
+	}
+
+	// Move list
+	query := map[string]interface{}{
+		"BoardID": list.BoardID,
+		"Before":  list.Before,
+		"After":   list.After,
+	}
+	if err := i.listRepo.Update(tx, list, query); err != nil {
+		tx.Rollback()
+		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+		logError(i.logger, err)
+		return err
+	}
+	i.logger.Info(formatLogMsg(list.UserID, "Move list("+list.ID+") after list("+list.Before+") in board("+list.BoardID+")"))
+
+	tx.Commit()
+	i.logger.Info(formatLogMsg(list.UserID, "Commit transaction"))
+
 	return nil
 }
 
