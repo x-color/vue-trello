@@ -293,30 +293,42 @@ func (i *ListInteractor) Move(list model.List) error {
 	}
 
 	// Get a list after moved list
-	conditions := map[string]interface{}{
-		"BoardID": list.BoardID,
-		"UserID":  list.UserID,
-		"Before":  list.Before,
+	if list.Before == "" {
+		conditions := map[string]interface{}{
+			"BoardID": list.BoardID,
+			"UserID":  list.UserID,
+			"Before":  "",
+		}
+		l, err := i.listRepo.Find(tx, conditions)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		if len(l) == 1 {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			err = model.ServerError{
+				ID:     list.ID,
+				UserID: list.UserID,
+				Err:    nil,
+				Act:    "find a list before moved list",
+			}
+			logError(i.logger, err)
+			return err
+		}
+		list.After = l[0].ID
+	} else {
+		before, err := i.listRepo.FindByID(tx, list.Before, list.UserID)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		list.After = before.After
 	}
-	l, err := i.listRepo.Find(tx, conditions)
-	if err != nil {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
-		logError(i.logger, err)
-		return err
-	}
-	if len(l) != 1 {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
-		logError(i.logger, model.ServerError{
-			ID:     list.ID,
-			UserID: list.UserID,
-			Err:    nil,
-			Act:    "find a list before moved list",
-		})
-		return err
-	}
-	list.After = l[0].ID
 	i.logger.Info(formatLogMsg(list.UserID, "Find a list("+list.After+") after moved list("+list.ID+")"))
 
 	// Update a list before moved list

@@ -277,30 +277,42 @@ func (i *ItemInteractor) Move(item model.Item) error {
 	}
 
 	// Get a item after moved item
-	conditions := map[string]interface{}{
-		"ListID": item.ListID,
-		"UserID": item.UserID,
-		"Before": item.Before,
+	if item.Before == "" {
+		conditions := map[string]interface{}{
+			"ListID": item.ListID,
+			"UserID": item.UserID,
+			"Before": "",
+		}
+		l, err := i.itemRepo.Find(tx, conditions)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		if len(l) == 1 {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
+			err = model.ServerError{
+				ID:     item.ID,
+				UserID: item.UserID,
+				Err:    nil,
+				Act:    "find a item before moved item",
+			}
+			logError(i.logger, err)
+			return err
+		}
+		item.After = l[0].ID
+	} else {
+		before, err := i.itemRepo.FindByID(tx, item.Before, item.UserID)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		item.After = before.After
 	}
-	l, err := i.itemRepo.Find(tx, conditions)
-	if err != nil {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
-		logError(i.logger, err)
-		return err
-	}
-	if len(l) != 1 {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
-		logError(i.logger, model.ServerError{
-			ID:     item.ID,
-			UserID: item.UserID,
-			Err:    nil,
-			Act:    "find a item before moved item",
-		})
-		return err
-	}
-	item.After = l[0].ID
 	i.logger.Info(formatLogMsg(item.UserID, "Find a item("+item.After+") after moved item("+item.ID+")"))
 
 	// Update a item before moved item

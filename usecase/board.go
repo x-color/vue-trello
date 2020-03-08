@@ -303,29 +303,41 @@ func (i *BoardInteractor) Move(board model.Board) error {
 	}
 
 	// Get a board after moved board
-	conditions := map[string]interface{}{
-		"UserID": board.UserID,
-		"Before": board.Before,
+	if board.Before == "" {
+		conditions := map[string]interface{}{
+			"UserID": board.UserID,
+			"Before": "",
+		}
+		l, err := i.boardRepo.Find(tx, conditions)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		if len(l) == 1 {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
+			err = model.ServerError{
+				ID:     board.ID,
+				UserID: board.UserID,
+				Err:    nil,
+				Act:    "find a board before moved board",
+			}
+			logError(i.logger, err)
+			return err
+		}
+		board.After = l[0].ID
+	} else {
+		before, err := i.boardRepo.FindByID(tx, board.Before, board.UserID)
+		if err != nil {
+			tx.Rollback()
+			i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
+			logError(i.logger, err)
+			return err
+		}
+		board.After = before.After
 	}
-	l, err := i.boardRepo.Find(tx, conditions)
-	if err != nil {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
-		logError(i.logger, err)
-		return err
-	}
-	if len(l) != 1 {
-		tx.Rollback()
-		i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
-		logError(i.logger, model.ServerError{
-			ID:     board.ID,
-			UserID: board.UserID,
-			Err:    nil,
-			Act:    "find a board before moved board",
-		})
-		return err
-	}
-	board.After = l[0].ID
 	i.logger.Info(formatLogMsg(board.UserID, "Find a board("+board.After+") after moved board("+board.ID+")"))
 
 	// Update a board before moved board
