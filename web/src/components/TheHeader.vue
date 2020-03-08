@@ -41,12 +41,11 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'TheHeader',
   computed: {
-    ...mapGetters(['user']),
     menu() {
       return [
         {
@@ -58,28 +57,28 @@ export default {
         },
         {
           title: 'home',
-          active: this.user.login,
+          active: this.$store.state.user.user.login,
           action: () => {
             this.jumpTo('/boards');
           },
         },
         {
           title: 'signup',
-          active: !this.user.login,
+          active: !this.$store.state.user.user.login,
           action: () => {
             this.jumpTo('/signup');
           },
         },
         {
           title: 'login',
-          active: !this.user.login,
+          active: !this.$store.state.user.user.login,
           action: () => {
             this.jumpTo('/login');
           },
         },
         {
           title: 'logout',
-          active: this.user.login,
+          active: this.$store.state.user.user.login,
           action: () => {
             this.logout();
             this.jumpTo('/');
@@ -89,7 +88,7 @@ export default {
     },
     color() {
       if (this.$route.path.startsWith('/boards/')) {
-        return this.user.color;
+        return this.$store.state.user.user.color;
       }
       return 'primary';
     },
