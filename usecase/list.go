@@ -53,9 +53,9 @@ func (i *ListInteractor) Create(list model.List) (model.List, error) {
 
 	// Get last list in board
 	lists, err := i.listRepo.Find(tx, map[string]interface{}{
-		"ListID": list.BoardID,
-		"UserID": list.UserID,
-		"After":  "",
+		"BoardID": list.BoardID,
+		"UserID":  list.UserID,
+		"After":   "",
 	})
 	if err != nil {
 		tx.Rollback()
