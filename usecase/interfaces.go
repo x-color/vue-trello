@@ -58,6 +58,6 @@ type UserRepository interface {
 
 // TagRepository is interface. It defines CR methods for Tag.
 type TagRepository interface {
-	Create(tag model.Tag) error
-	FindAll() (model.Tags, error)
+	Create(tx Transaction, tag model.Tag) error
+	Find(tx Transaction, conditions map[string]interface{}) (model.Tags, error)
 }

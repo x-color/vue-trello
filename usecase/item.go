@@ -387,7 +387,7 @@ func (i *ItemInteractor) validateItem(item model.Item) error {
 		return err
 	}
 
-	allTags, err := i.tagRepo.FindAll()
+	allTags, err := i.tagRepo.Find(tx, map[string]interface{}{})
 	if err != nil {
 		return err
 	}

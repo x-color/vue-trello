@@ -11,16 +11,19 @@ type ResourceUsecase interface {
 
 // ResourceInteractor includes repogitories and a logger.
 type ResourceInteractor struct {
+	txRepo  TransactionRepository
 	tagRepo TagRepository
 	logger  Logger
 }
 
 // NewResourceInteractor generates new interactor for resources.
 func NewResourceInteractor(
+	txRepo TransactionRepository,
 	tagRepo TagRepository,
 	logger Logger,
 ) (ResourceInteractor, error) {
 	i := ResourceInteractor{
+		txRepo:  txRepo,
 		tagRepo: tagRepo,
 		logger:  logger,
 	}
@@ -29,7 +32,8 @@ func NewResourceInteractor(
 
 // GetAllTagsandColors returns all Tags and Colors.
 func (i *ResourceInteractor) GetAllTagsandColors() (model.Tags, model.Colors, error) {
-	tags, err := i.tagRepo.FindAll()
+	tx := i.txRepo.BeginTransaction(false)
+	tags, err := i.tagRepo.Find(tx, map[string]interface{}{})
 	if err != nil {
 		logError(i.logger, err)
 		return model.Tags{}, model.Colors{}, err

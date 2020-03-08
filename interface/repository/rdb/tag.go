@@ -5,6 +5,7 @@ import (
 
 	"github.com/jinzhu/gorm"
 	"github.com/x-color/vue-trello/model"
+	"github.com/x-color/vue-trello/usecase"
 )
 
 // Tag is Tag data model for DB.
@@ -36,19 +37,15 @@ func (t *Tag) convertTo() model.Tag {
 type Tags []Tag
 
 // TagDBManager is DB manager for Tag.
-type TagDBManager struct {
-	db *gorm.DB
-}
+type TagDBManager struct{}
 
 func newTagDBManager(db *gorm.DB) TagDBManager {
 	db.AutoMigrate(&Tag{})
-	return TagDBManager{
-		db: db,
-	}
+	return TagDBManager{}
 }
 
 // Create registers a Tag to DB.
-func (m *TagDBManager) Create(tag model.Tag) error {
+func (*TagDBManager) Create(tx usecase.Transaction, tag model.Tag) error {
 	if err := validatePrimaryKeys("tag", tag.ID); err != nil {
 		return err
 	}
@@ -56,7 +53,7 @@ func (m *TagDBManager) Create(tag model.Tag) error {
 	t := Tag{}
 	t.convertFrom(tag)
 
-	if err := m.db.Create(&t).Error; err != nil {
+	if err := tx.DB().(*gorm.DB).Create(&t).Error; err != nil {
 		return model.ServerError{
 			UserID: "(No-ID)",
 			Err:    err,
@@ -67,10 +64,10 @@ func (m *TagDBManager) Create(tag model.Tag) error {
 	return nil
 }
 
-// FindAll gets all Tags from DB.
-func (m *TagDBManager) FindAll() (model.Tags, error) {
+// Find get Tags.
+func (*TagDBManager) Find(tx usecase.Transaction, conditions map[string]interface{}) (model.Tags, error) {
 	r := Tags{}
-	if err := m.db.Find(&r).Error; err != nil {
+	if err := tx.DB().(*gorm.DB).Where(queryForTag(conditions)).Find(&r).Error; err != nil {
 		return model.Tags{}, model.ServerError{
 			UserID: "(No-ID)",
 			Err:    err,
@@ -85,4 +82,18 @@ func (m *TagDBManager) FindAll() (model.Tags, error) {
 	}
 
 	return tags, nil
+}
+
+func queryForTag(data map[string]interface{}) map[string]interface{} {
+	query := make(map[string]interface{})
+	if v, ok := data["ID"]; ok {
+		query["id"] = v
+	}
+	if v, ok := data["Name"]; ok {
+		query["name"] = v
+	}
+	if v, ok := data["Color"]; ok {
+		query["color"] = v
+	}
+	return query
 }
