@@ -359,7 +359,10 @@ func (i *ListInteractor) validateList(list model.List) error {
 			Act:    "validate contents in list",
 		}
 	}
-	_, err := i.boardRepo.Find(model.Board{ID: list.BoardID, UserID: list.UserID})
+
+	tx := i.txRepo.BeginTransaction(false)
+
+	_, err := i.boardRepo.FindByID(tx, list.BoardID, list.UserID)
 	if err != nil {
 		return err
 	}

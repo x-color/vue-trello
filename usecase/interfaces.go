@@ -43,12 +43,11 @@ type ListRepository interface {
 
 // BoardRepository is interface. It defines CURD methods for Board.
 type BoardRepository interface {
-	Create(board model.Board) error
-	Update(board model.Board) error
-	Delete(board model.Board) error
-	Move(board model.Board) error
-	Find(board model.Board) (model.Board, error)
-	FindBoards(user model.User) (model.Boards, error)
+	Create(tx Transaction, board model.Board) error
+	Update(tx Transaction, board model.Board, updates map[string]interface{}) error
+	Delete(tx Transaction, board model.Board) error
+	FindByID(tx Transaction, id, userID string) (model.Board, error)
+	Find(tx Transaction, condititons map[string]interface{}) (model.Boards, error)
 }
 
 // UserRepository is interface. It defines CR methods for User.
