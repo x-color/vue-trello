@@ -278,6 +278,7 @@ func (i *ItemInteractor) Move(item model.Item) error {
 
 	// Get a item after moved item
 	conditions := map[string]interface{}{
+		"ListID": item.ListID,
 		"UserID": item.UserID,
 		"Before": item.Before,
 	}
