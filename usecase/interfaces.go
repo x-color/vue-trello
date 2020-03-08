@@ -11,14 +11,25 @@ type Logger interface {
 	Error(msg string)
 }
 
+// Transaction is interface. It defined transaction methods.
+type Transaction interface {
+	Commit()
+	Rollback()
+	DB() interface{}
+}
+
+// TransactionRepository is interface. It defines Transaction getter.
+type TransactionRepository interface {
+	BeginTransaction(on bool) Transaction
+}
+
 // ItemRepository is interface. It defines CURD methods for Item.
 type ItemRepository interface {
-	Create(item model.Item) error
-	Update(item model.Item) error
-	Delete(item model.Item) error
-	Move(item model.Item) error
-	Find(item model.Item) (model.Item, error)
-	FindItems(list model.List) (model.Items, error)
+	Create(tx Transaction, item model.Item) error
+	Update(tx Transaction, item model.Item, updates map[string]interface{}) error
+	Delete(tx Transaction, item model.Item) error
+	FindByID(tx Transaction, ID, userID string) (model.Item, error)
+	Find(tx Transaction, conditions map[string]interface{}) (model.Items, error)
 }
 
 // ListRepository is interface. It defines CURD methods for List.

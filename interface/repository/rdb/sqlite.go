@@ -13,11 +13,12 @@ import (
 
 // DBManager includes DB managers for all data model.
 type DBManager struct {
-	ItemDBManager  ItemDBManager
-	ListDBManager  ListDBManager
-	BoardDBManager BoardDBManager
-	UserDBManager  UserDBManager
-	TagDBManager   TagDBManager
+	TransactionManager TransactionManager
+	ItemDBManager      ItemDBManager
+	ListDBManager      ListDBManager
+	BoardDBManager     BoardDBManager
+	UserDBManager      UserDBManager
+	TagDBManager       TagDBManager
 }
 
 // NewDBManager generates new DB manager.
@@ -28,11 +29,12 @@ func NewDBManager() (DBManager, error) {
 	}
 
 	dbm := DBManager{
-		ItemDBManager:  newItemDBManager(db),
-		ListDBManager:  newListDBManager(db),
-		BoardDBManager: newBoardDBManager(db),
-		UserDBManager:  newUserDBManager(db),
-		TagDBManager:   newTagDBManager(db),
+		TransactionManager: newTransactionManager(db),
+		ItemDBManager:      newItemDBManager(db),
+		ListDBManager:      newListDBManager(db),
+		BoardDBManager:     newBoardDBManager(db),
+		UserDBManager:      newUserDBManager(db),
+		TagDBManager:       newTagDBManager(db),
 	}
 	return dbm, nil
 }

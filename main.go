@@ -36,6 +36,7 @@ func main() {
 	}
 
 	itemIntera, err := usecase.NewItemInteractor(
+		&dbm.TransactionManager,
 		&dbm.ItemDBManager,
 		&dbm.ListDBManager,
 		&dbm.TagDBManager,
@@ -57,6 +58,7 @@ func main() {
 	}
 
 	boardIntera, err := usecase.NewBoardInteractor(
+		&dbm.TransactionManager,
 		&dbm.BoardDBManager,
 		&dbm.ListDBManager,
 		&dbm.ItemDBManager,

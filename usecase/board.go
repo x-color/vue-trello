@@ -17,6 +17,7 @@ type BoardUsecase interface {
 
 // BoardInteractor includes repogitories and a logger.
 type BoardInteractor struct {
+	txRepo    TransactionRepository
 	boardRepo BoardRepository
 	listRepo  ListRepository
 	itemRepo  ItemRepository
@@ -25,12 +26,14 @@ type BoardInteractor struct {
 
 // NewBoardInteractor generates new interactor for a Board.
 func NewBoardInteractor(
+	txRepo TransactionRepository,
 	boardRepo BoardRepository,
 	listRepo ListRepository,
 	itemRepo ItemRepository,
 	logger Logger,
 ) (BoardInteractor, error) {
 	i := BoardInteractor{
+		txRepo:    txRepo,
 		boardRepo: boardRepo,
 		listRepo:  listRepo,
 		itemRepo:  itemRepo,
@@ -124,8 +127,12 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	board.Lists = sortLists(lists)
 
 	// Get Items in Lists.
+	tx := i.txRepo.BeginTransaction(false)
 	for j, list := range lists {
-		items, err := i.itemRepo.FindItems(list)
+		items, err := i.itemRepo.Find(tx, map[string]interface{}{
+			"ListID": list.ID,
+			"UserID": list.UserID,
+		})
 		if err != nil {
 			logError(i.logger, err)
 			return model.Board{}, err
