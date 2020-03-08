@@ -161,14 +161,14 @@ func (*ItemDBManager) Delete(tx usecase.Transaction, item model.Item) error {
 }
 
 // FindByID gets a Item had specific ID from DB.
-func (*ItemDBManager) FindByID(tx usecase.Transaction, ID, userID string) (model.Item, error) {
-	if err := validatePrimaryKeys("item", ID, userID); err != nil {
+func (*ItemDBManager) FindByID(tx usecase.Transaction, id, userID string) (model.Item, error) {
+	if err := validatePrimaryKeys("item", id, userID); err != nil {
 		return model.Item{}, err
 	}
 
 	r := Item{}
-	if err := tx.DB().(*gorm.DB).Where(&Item{ID: ID, UserID: userID}).First(&r).Error; err != nil {
-		return model.Item{}, convertError(err, ID, userID, "find item")
+	if err := tx.DB().(*gorm.DB).Where(&Item{ID: id, UserID: userID}).First(&r).Error; err != nil {
+		return model.Item{}, convertError(err, id, userID, "find item")
 	}
 	return r.convertTo(), nil
 }
