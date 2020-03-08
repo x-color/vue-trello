@@ -57,11 +57,7 @@ export default {
         return this.getSortedBoards;
       },
       set(newValue) {
-        const newUser = Object.assign(
-          { ...this.$store.state.user.user },
-          { boards: newValue.map(board => board.id) },
-        );
-        this.editUser(newUser);
+        this.moveBoard(newValue.map(board => board.id));
       },
     },
   },
@@ -75,7 +71,7 @@ export default {
     this.loadBoards(this.$store.state.user.user);
   },
   methods: {
-    ...mapActions(['addBoard', 'editUser', 'loadBoards']),
+    ...mapActions(['addBoard', 'loadBoards', 'moveBoard']),
     addNewBoard() {
       this.addBoard({
         userId: this.$store.state.user.user.id,
