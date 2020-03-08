@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"net/http"
 	"time"
 
@@ -75,6 +76,9 @@ func (h *UserHandler) SignIn(c echo.Context) error {
 
 	u, err := h.interactor.SignIn(user.convertTo())
 	if err != nil {
+		if errors.Is(err, model.NotFoundError{}) {
+			return echo.ErrUnauthorized
+		}
 		return convertToHTTPError(c, err)
 	}
 
