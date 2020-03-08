@@ -28,7 +28,7 @@ type ItemRepository interface {
 	Create(tx Transaction, item model.Item) error
 	Update(tx Transaction, item model.Item, updates map[string]interface{}) error
 	Delete(tx Transaction, item model.Item) error
-	FindByID(tx Transaction, ID, userID string) (model.Item, error)
+	FindByID(tx Transaction, id, userID string) (model.Item, error)
 	Find(tx Transaction, conditions map[string]interface{}) (model.Items, error)
 }
 
@@ -37,7 +37,7 @@ type ListRepository interface {
 	Create(tx Transaction, list model.List) error
 	Update(tx Transaction, list model.List, updates map[string]interface{}) error
 	Delete(tx Transaction, list model.List) error
-	FindByID(tx Transaction, ID, UserID string) (model.List, error)
+	FindByID(tx Transaction, id, UserID string) (model.List, error)
 	Find(tx Transaction, conditions map[string]interface{}) (model.Lists, error)
 }
 
