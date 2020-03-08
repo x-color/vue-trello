@@ -306,7 +306,7 @@ func (i *ListInteractor) Move(list model.List) error {
 			logError(i.logger, err)
 			return err
 		}
-		if len(l) == 1 {
+		if len(l) != 1 {
 			tx.Rollback()
 			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
 			err = model.ServerError{

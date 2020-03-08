@@ -290,7 +290,7 @@ func (i *ItemInteractor) Move(item model.Item) error {
 			logError(i.logger, err)
 			return err
 		}
-		if len(l) == 1 {
+		if len(l) != 1 {
 			tx.Rollback()
 			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
 			err = model.ServerError{

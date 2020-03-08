@@ -315,7 +315,7 @@ func (i *BoardInteractor) Move(board model.Board) error {
 			logError(i.logger, err)
 			return err
 		}
-		if len(l) == 1 {
+		if len(l) != 1 {
 			tx.Rollback()
 			i.logger.Info(formatLogMsg(board.UserID, "Rollback transaction"))
 			err = model.ServerError{
