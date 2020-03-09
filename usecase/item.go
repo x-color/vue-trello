@@ -290,7 +290,9 @@ func (i *ItemInteractor) Move(item model.Item) error {
 			logError(i.logger, err)
 			return err
 		}
-		if len(l) != 1 {
+		if len(l) == 1 {
+			item.After = l[0].ID
+		} else if len(l) > 1 {
 			tx.Rollback()
 			i.logger.Info(formatLogMsg(item.UserID, "Rollback transaction"))
 			err = model.ServerError{
@@ -302,7 +304,6 @@ func (i *ItemInteractor) Move(item model.Item) error {
 			logError(i.logger, err)
 			return err
 		}
-		item.After = l[0].ID
 	} else {
 		before, err := i.itemRepo.FindByID(tx, item.Before, item.UserID)
 		if err != nil {

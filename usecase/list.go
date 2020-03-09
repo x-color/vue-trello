@@ -306,7 +306,9 @@ func (i *ListInteractor) Move(list model.List) error {
 			logError(i.logger, err)
 			return err
 		}
-		if len(l) != 1 {
+		if len(l) == 1 {
+			list.After = l[0].ID
+		} else if len(l) > 1 {
 			tx.Rollback()
 			i.logger.Info(formatLogMsg(list.UserID, "Rollback transaction"))
 			err = model.ServerError{
@@ -318,7 +320,6 @@ func (i *ListInteractor) Move(list model.List) error {
 			logError(i.logger, err)
 			return err
 		}
-		list.After = l[0].ID
 	} else {
 		before, err := i.listRepo.FindByID(tx, list.Before, list.UserID)
 		if err != nil {
