@@ -138,6 +138,47 @@ const actions = {
       console.error(err);
     });
   },
+  moveList({ commit }, { board, newLists }) {
+    const lists = [...board.lists];
+
+    board.lists = newLists;
+    commit('editBoard', board);
+
+    lists.some((listId, i) => {
+      if (listId !== newLists[i]) {
+        let moved;
+        let before = '';
+
+        const index = newLists.indexOf(listId);
+        if (index === i + 1) {
+          // Move before 'i'-th list
+          // e.g. A B C D E => A B E C D (Moved 'E')
+          moved = newLists[i];
+          if (i > 0) {
+            before = newLists[i - 1];
+          }
+        } else {
+          // Move 'i'-th list
+          // e.g. A B C D E => A B D E C (Moved 'C')
+          moved = listId;
+          before = newLists[index - 1];
+        }
+
+        fetchAPI(`/lists/${moved}/move`, 'PATCH', JSON.stringify({
+          board_id: board.id,
+          before,
+        })).catch((err) => {
+          console.error(err);
+          board.lists = lists;
+          commit('editBoard', board);
+        });
+
+        return true;
+      }
+      return false;
+    });
+  },
+
 };
 
 const getters = {

@@ -76,11 +76,7 @@ export default {
         return this.getListsByBoardId(this.id);
       },
       set(newValue) {
-        const newBoard = Object.assign(
-          { ...this.board },
-          { lists: newValue.map(list => list.id) },
-        );
-        this.editBoard(newBoard);
+        this.moveList({ board: this.board, newLists: newValue.map(list => list.id) });
       },
     },
   },
@@ -91,7 +87,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['addList', 'editBoard']),
+    ...mapActions(['addList', 'moveList']),
     addNewList() {
       const newTitle = this.newListTitle.trim();
       if (newTitle) {
