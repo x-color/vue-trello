@@ -2,6 +2,7 @@ package api
 
 import (
 	"errors"
+	"net/http"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
@@ -47,6 +48,10 @@ func NewRouter(b InteraBox) *echo.Echo {
 	listHandler := handler.NewListHandler(b.list)
 	boardHandler := handler.NewBoardHandler(b.board)
 	resourceHandler := handler.NewResourceHandler(b.resource)
+
+	echo.NotFoundHandler = func(c echo.Context) error {
+		return c.Redirect(http.StatusMovedPermanently, "/?redirect="+c.Request().URL.Path)
+	}
 
 	e := echo.New()
 
