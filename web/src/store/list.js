@@ -102,6 +102,56 @@ const actions = {
       dispatch('setItems', list.items);
     });
   },
+  moveItem({ commit }, { list, newItems }) {
+    const items = [...list.items];
+
+    list.items = newItems;
+    commit('editList', list);
+
+    if (items.length > newItems.length) {
+      // Move item from this list
+      return;
+    }
+
+    let moved;
+    let before = '';
+
+    items.some((itemId, i) => {
+      if (itemId !== newItems[i]) {
+        const index = newItems.indexOf(itemId);
+        if (index === i + 1) {
+          // Move before 'i'-th item
+          // e.g. A B C D E => A B E C D (Moved 'E')
+          moved = newItems[i];
+          if (i > 0) {
+            before = newItems[i - 1];
+          }
+        } else {
+          // Move 'i'-th item
+          // e.g. A B C D E => A B D E C (Moved 'C')
+          moved = itemId;
+          before = newItems[index - 1];
+        }
+        return true;
+      }
+      return false;
+    });
+
+    if (newItems.length > items.length && moved === undefined) {
+      // Move item to last of this list
+      moved = newItems[newItems.length - 1];
+      if (newItems.length > 1) {
+        before = newItems[newItems.length - 2];
+      }
+    }
+
+    fetchAPI(`/items/${moved}/move`, 'PATCH', JSON.stringify({
+      list_id: list.id,
+      before,
+    })).catch((err) => {
+      console.error(err);
+    });
+  },
 };
 
 const getters = {

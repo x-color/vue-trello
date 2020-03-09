@@ -79,14 +79,6 @@ const actions = {
       console.error(err);
     });
   },
-  moveItemAcrossLists({ commit, getters }, { item, toList }) {
-    const fromList = { ...getters.getListById(item.listId) };
-    fromList.items = fromList.items.filter(itemId => itemId !== item.id);
-    item.listId = toList.id;
-    commit('editList', fromList);
-    commit('editList', toList);
-    commit('editItem', item);
-  },
   setItems({ commit, state: st }, items) {
     // Remove deleted items from Vuex store
     st.items.filter(item => items.findIndex(i => i.id === item.id) === -1).forEach(item => commit('deleteItem', item));

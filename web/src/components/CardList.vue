@@ -120,7 +120,7 @@ export default {
     id: String,
   },
   computed: {
-    ...mapGetters(['getListById', 'getItemsByListId', 'getItemById']),
+    ...mapGetters(['getListById', 'getItemsByListId']),
     list() {
       return this.getListById(this.id);
     },
@@ -129,19 +129,7 @@ export default {
         return this.getItemsByListId(this.id);
       },
       set(newValue) {
-        const toList = Object.assign(
-          { ...this.list },
-          { items: newValue.map(item => item.id) },
-        );
-        if (this.items.length === toList.items.length) {
-          // It Update this list if it moves item in this list.
-          this.editList(toList);
-        } else if (this.items.length < toList.items.length) {
-          // This process runs if it moves item to this list.
-          const newItemId = toList.items.find(newId => !this.list.items.includes(newId));
-          const item = this.getItemById(newItemId);
-          this.moveItemAcrossLists({ item, toList });
-        }
+        this.moveItem({ list: this.list, newItems: newValue.map(item => item.id) });
       },
     },
   },
@@ -172,7 +160,7 @@ export default {
     };
   },
   methods: {
-    ...mapActions(['editList', 'deleteList', 'addItem', 'moveItemAcrossLists']),
+    ...mapActions(['editList', 'deleteList', 'addItem', 'moveItem']),
     addNewItem() {
       const newTitle = this.newItemTitle.trim();
       if (newTitle) {
