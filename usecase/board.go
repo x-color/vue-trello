@@ -419,7 +419,7 @@ func (i *BoardInteractor) Get(board model.Board) (model.Board, error) {
 	i.logger.Info(formatLogMsg(board.UserID, "Find lists in board("+board.ID+")"))
 
 	// Get Items in Lists.
-	for j, list := range lists {
+	for j, list := range board.Lists {
 		items, err := i.itemRepo.Find(tx, map[string]interface{}{
 			"ListID": list.ID,
 			"UserID": list.UserID,
