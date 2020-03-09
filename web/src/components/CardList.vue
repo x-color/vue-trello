@@ -55,7 +55,7 @@
 
       <!-- PIN: Items -->
       <v-list dense color="grey lighten-4">
-        <draggable v-model="items" group="items">
+        <draggable v-model="items" group="items" :animation="300">
           <v-list-item v-for="(item, index) in items" :key="index">
             <card-item :id="item.id" />
           </v-list-item>

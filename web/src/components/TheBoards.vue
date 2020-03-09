@@ -6,6 +6,7 @@
       group="boards"
       v-model="boards"
       draggable=".item"
+      :animation="300"
     >
       <v-col v-for="(board, i) in boards" :key="i" cols="auto" class="item">
         <v-card dark>

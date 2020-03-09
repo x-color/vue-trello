@@ -7,6 +7,7 @@
       v-model="lists"
       draggable=".item"
       handle=".handle"
+      :animation="300"
     >
       <v-col v-for="(list, i) in lists" :key="i" cols="auto" class="item">
         <card-list :id="list.id" class="handle" />
