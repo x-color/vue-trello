@@ -169,8 +169,6 @@ const actions = {
           before,
         })).catch((err) => {
           console.error(err);
-          board.lists = lists;
-          commit('editBoard', board);
         });
 
         return true;
@@ -178,7 +176,6 @@ const actions = {
       return false;
     });
   },
-
 };
 
 const getters = {
