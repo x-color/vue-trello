@@ -27,6 +27,23 @@ const actions = {
   editUser({ commit }, newUser) {
     commit('editUser', newUser);
   },
+  signup(_, { username, password, callback }) {
+    const body = JSON.stringify({
+      name: username,
+      password,
+    });
+
+    fetch('/signup', {
+      method: 'POST',
+      headers: {
+        'X-XSRF-TOKEN': 'csrf',
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body,
+    }).then((response) => {
+      callback(response);
+    });
+  },
   login({ commit, dispatch, state: st }, { username, password, callback }) {
     const user = { ...st.user };
 

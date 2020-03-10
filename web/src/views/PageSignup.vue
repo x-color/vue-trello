@@ -8,7 +8,7 @@
     </v-row>
 
     <v-row justify="center">
-      <v-col v-if="isLoginFailed" cols="12" align="center">
+      <v-col v-if="isSignupFailed" cols="12" align="center">
         <p class="red--text">Signup Failed... <br/>
         This username already exists</p>
       </v-col>
@@ -46,6 +46,8 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+
 export default {
   name: 'PageSignup',
   data() {
@@ -60,28 +62,21 @@ export default {
     };
   },
   methods: {
+    ...mapActions(['signup']),
     signupAndGoToPage() {
       this.isSignupFailed = false;
-      const body = JSON.stringify({
-        name: this.username,
+      this.signup({
+        username: this.username,
         password: this.password,
-      });
-
-      fetch('/signup', {
-        method: 'POST',
-        headers: {
-          'X-XSRF-TOKEN': 'csrf',
-          'Content-Type': 'application/json; charset=UTF-8',
+        callback: (response) => {
+          if (response.ok) {
+            this.$router.push('/login', () => {});
+          } else if (response.status === 409) {
+            this.isSignupFailed = true;
+          } else {
+            alert('Error: Failed to sign in');
+          }
         },
-        body,
-      }).then((response) => {
-        if (response.ok) {
-          this.$router.push('/login', () => {});
-        } else if (response.status === 409) {
-          this.isSignupFailed = true;
-        } else {
-          alert('Error: Failed to sign in');
-        }
       });
     },
   },
