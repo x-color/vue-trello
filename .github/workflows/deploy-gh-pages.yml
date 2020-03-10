@@ -25,20 +25,26 @@ jobs:
           ${{ runner.os }}-node-
 
     - name: install
-      run: npm ci
+      run: |
+        cd web
+        npm ci
 
     - name: lint
-      run: npm run lint
+      run: |
+        cd web
+        npm run lint
 
     - name: build
-      run: npm run build
+      run: |
+        cd web
+        npm run build:prod
 
     - name: deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
       with:
         ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         BRANCH: gh-pages
-        FOLDER: dist
+        FOLDER: web/dist
 
     - name: Slack Notification Success
       uses: rtCamp/action-slack-notify@v2.0.0
