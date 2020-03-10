@@ -5,6 +5,10 @@
         <h1>Vue Trello</h1>
         <p>This application is Trello clone with Vue.js.</p>
       </v-col>
+
+      <v-col cols="12" align="center">
+        <h2>Login Page</h2>
+      </v-col>
     </v-row>
 
     <v-row justify="center">
@@ -40,10 +44,6 @@
           :disabled="!username || !password"
           @click="loginAndGoToPage"
         >LOGIN</v-btn>
-      </v-col>
-
-      <v-col cols="12" align="center">
-        <p>user name: testuser <br/> password: password</p>
       </v-col>
     </v-row>
   </v-container>
