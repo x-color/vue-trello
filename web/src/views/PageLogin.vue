@@ -13,29 +13,31 @@
 
     <v-row justify="center">
       <v-col v-if="isLoginFailed" cols="12" align="center">
-        <p class="red--text">Login Failed... <br/>
-        Please try again</p>
+        <p class="red--text">
+          Login Failed...
+          <br />Please try again
+        </p>
       </v-col>
     </v-row>
 
     <v-row justify="center">
       <v-col cols="auto" align="center">
-          <v-text-field
-            v-model="username"
-            :rules="[rules.required]"
-            type="text"
-            name="input-10-2"
-            label="User name"
-          ></v-text-field>
-          <v-text-field
-            v-model="password"
-            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-            :rules="[rules.required]"
-            :type="show ? 'text' : 'password'"
-            name="input-10-2"
-            label="Password"
-            @click:append="show = !show"
-          ></v-text-field>
+        <v-text-field
+          v-model="username"
+          :rules="[rules.required]"
+          type="text"
+          name="input-10-2"
+          label="User name"
+        ></v-text-field>
+        <v-text-field
+          v-model="password"
+          :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+          :rules="[rules.required]"
+          :type="show ? 'text' : 'password'"
+          name="input-10-2"
+          label="Password"
+          @click:append="show = !show"
+        ></v-text-field>
       </v-col>
       <v-col cols="12" align="center">
         <v-btn

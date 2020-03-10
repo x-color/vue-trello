@@ -1,11 +1,5 @@
 <template>
-  <v-chip
-    :color="tag.color"
-    class="ma-1"
-    small
-    label
-    text-color="white"
-  >
+  <v-chip :color="tag.color" class="ma-1" small label text-color="white">
     <v-icon small left>mdi-label</v-icon>
     {{ tag.title }}
   </v-chip>
