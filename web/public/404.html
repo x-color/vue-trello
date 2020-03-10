@@ -1,0 +1,11 @@
+<html>
+
+<head>
+    <script>
+        var pathName = window.location.pathname.slice(11);
+        var redirectPath = '/vue-trello/';
+        location.href = redirectPath + '?redirect=' + encodeURI(pathName);
+    </script>
+</head>
+
+</html>
