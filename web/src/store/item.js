@@ -1,4 +1,4 @@
-import { fetchAPI, generateUuid } from './utils';
+import generateUuid from './utils';
 
 // struct Item {
 //   id: string;
@@ -34,68 +34,26 @@ const actions = {
   addItem({ commit, getters }, {
     listId, title, text = '', tags = [],
   }) {
-    // Add item before API request
-    const tmpItem = {
+    const newItem = {
       id: generateUuid(),
       title,
       text,
       tags,
     };
-    commit('addItem', tmpItem);
+    commit('addItem', newItem);
 
-    let list = getters.getListById(listId);
-    list.items.push(tmpItem.id);
+    const list = getters.getListById(listId);
+    list.items.push(newItem.id);
     commit('editList', list);
-
-    fetchAPI('/items', 'POST', JSON.stringify({
-      list_id: listId,
-      title,
-      text,
-      tags,
-    })).then((item) => {
-      const newItem = {
-        id: item.id,
-        title: item.title,
-        text: item.text,
-        tags: item.tags,
-      };
-      commit('addItem', newItem);
-
-      // Replace temporary item
-      list = getters.getListById(listId);
-      list.items = list.items.map((itemId) => {
-        if (itemId === tmpItem.id) {
-          return newItem.id;
-        }
-        return itemId;
-      });
-      commit('editList', list);
-      commit('deleteItem', tmpItem.id);
-    }).catch((err) => {
-      console.error(err);
-    });
   },
   deleteItem({ commit, getters }, { id, listId }) {
-    fetchAPI(`/items/${id}`, 'DELETE').then(() => {
-      const list = getters.getListById(listId);
-      list.items = list.items.filter(itemId => itemId !== id);
-      commit('editList', list);
-      commit('deleteItem', id);
-    }).catch((err) => {
-      console.error(err);
-    });
+    const list = getters.getListById(listId);
+    list.items = list.items.filter(itemId => itemId !== id);
+    commit('editList', list);
+    commit('deleteItem', id);
   },
   editItem({ commit }, item) {
-    fetchAPI(`/items/${item.id}`, 'PATCH', JSON.stringify({
-      list_id: item.listId,
-      title: item.title,
-      text: item.text,
-      tags: item.tags,
-    })).then(() => {
-      commit('editItem', item);
-    }).catch((err) => {
-      console.error(err);
-    });
+    commit('editItem', item);
   },
   setItems({ commit, state: st }, items) {
     // Add or update items

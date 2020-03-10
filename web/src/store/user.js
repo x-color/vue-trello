@@ -1,5 +1,3 @@
-import fetchAPI from './utils';
-
 // interface User {
 //   id: string;
 //   name: string;
@@ -14,6 +12,12 @@ function state() {
       color: '',
       boards: [],
     },
+    users: [
+      {
+        name: 'testuser',
+        password: 'password',
+      },
+    ],
   };
 }
 
@@ -21,67 +25,51 @@ const mutations = {
   editUser(st, newUser) {
     st.user = newUser;
   },
+  addUser(st, newUser) {
+    st.users.push(newUser);
+  },
 };
 
 const actions = {
   editUser({ commit }, newUser) {
     commit('editUser', newUser);
   },
-  signup(_, { username, password, callback }) {
-    const body = JSON.stringify({
-      name: username,
-      password,
-    });
-
-    fetch('/auth/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body,
-    }).then((response) => {
-      callback(response);
-    });
+  signup({ commit, state: st }, { username, password, callback }) {
+    const res = {
+      ok: false,
+      status: 400,
+    };
+    if (typeof username === 'string' && typeof password === 'string') {
+      if (username !== '' && password !== '') {
+        if (st.users.findIndex(user => user.name === username) === -1) {
+          commit('addUser', {
+            name: username,
+            password,
+          });
+          res.ok = true;
+        } else {
+          res.status = 409;
+        }
+      }
+    }
+    callback(res);
   },
   login({ commit, dispatch, state: st }, { username, password, callback }) {
-    const user = { ...st.user };
-
-    const body = JSON.stringify({
+    const user = {
       name: username,
-      password,
-    });
-
-    fetch('/auth/signin', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body,
-    }).then((response) => {
-      user.login = response.ok;
-      if (user.login) {
-        user.name = username;
-        commit('editUser', user);
-        dispatch('loadResources');
-      }
-      callback(user.login);
-    });
+      login: false,
+      color: '',
+      boards: [],
+    };
+    if (st.users.findIndex(u => u.name === username && u.password === password) !== -1) {
+      user.login = true;
+      commit('editUser', user);
+      dispatch('loadResources');
+    }
+    callback(user.login);
   },
   logout({ commit }) {
-    fetch('/auth/signout', {
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    }).then((response) => {
-      if (!response.ok) {
-        alert('Error: Failed to sign out');
-      }
-    }).catch(() => {
-      alert('Error: Failed to sign out');
-    });
-
     const user = {
-      id: '',
       name: '',
       login: false,
       color: '',
@@ -93,8 +81,6 @@ const actions = {
     commit('editUser', Object.assign({ ...st.user }, { color }));
   },
   moveBoard({ commit, state: st }, newBoards) {
-    const boards = [...st.user.boards];
-
     const user = {
       name: st.user.name,
       login: st.user.login,
@@ -102,37 +88,6 @@ const actions = {
       boards: newBoards,
     };
     commit('editUser', user);
-
-    boards.some((boardId, i) => {
-      if (boardId !== newBoards[i]) {
-        let moved;
-        let before = '';
-
-        const index = newBoards.indexOf(boardId);
-        if (index === i + 1) {
-          // Move before 'i'-th board
-          // e.g. A B C D E => A B E C D (Moved 'E')
-          moved = newBoards[i];
-          if (i > 0) {
-            before = newBoards[i - 1];
-          }
-        } else {
-          // Move 'i'-th board
-          // e.g. A B C D E => A B D E C (Moved 'C')
-          moved = boardId;
-          before = newBoards[index - 1];
-        }
-
-        fetchAPI(`/boards/${moved}/move`, 'PATCH', JSON.stringify({
-          before,
-        })).catch((err) => {
-          console.error(err);
-        });
-
-        return true;
-      }
-      return false;
-    });
   },
 };
 
