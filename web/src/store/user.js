@@ -33,10 +33,9 @@ const actions = {
       password,
     });
 
-    fetch('/signup', {
+    fetch('/auth/signup', {
       method: 'POST',
       headers: {
-        'X-XSRF-TOKEN': 'csrf',
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body,
@@ -52,10 +51,9 @@ const actions = {
       password,
     });
 
-    fetch('/signin', {
+    fetch('/auth/signin', {
       method: 'POST',
       headers: {
-        'X-XSRF-TOKEN': 'csrf',
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body,
@@ -70,9 +68,8 @@ const actions = {
     });
   },
   logout({ commit }) {
-    fetch('/signout', {
+    fetch('/auth/signout', {
       headers: {
-        'X-XSRF-TOKEN': 'csrf',
         'Content-Type': 'application/json; charset=UTF-8',
       },
     }).then((response) => {

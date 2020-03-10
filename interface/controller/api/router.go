@@ -61,9 +61,10 @@ func NewRouter(b InteraBox) *echo.Echo {
 	e.Static("/", "web/dist")
 	e.File("/", "web/dist/index.html")
 
-	e.POST("/signup", userHandler.SignUp)
-	e.POST("/signin", userHandler.SignIn)
-	e.GET("/signout", userHandler.SignOut)
+	auth := e.Group("/auth")
+	auth.POST("/signup", userHandler.SignUp)
+	auth.POST("/signin", userHandler.SignIn)
+	auth.GET("/signout", userHandler.SignOut)
 
 	api := e.Group("/api")
 	api.Use(middleware.JWTWithConfig(middleware.JWTConfig{
