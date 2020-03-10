@@ -1,4 +1,4 @@
-import fetchAPI from './utils';
+import { fetchAPI, generateUuid } from './utils';
 
 // struct Item {
 //   id: string;
@@ -34,6 +34,19 @@ const actions = {
   addItem({ commit, getters }, {
     listId, title, text = '', tags = [],
   }) {
+    // Add item before API request
+    const tmpItem = {
+      id: generateUuid(),
+      title,
+      text,
+      tags,
+    };
+    commit('addItem', tmpItem);
+
+    let list = getters.getListById(listId);
+    list.items.push(tmpItem.id);
+    commit('editList', list);
+
     fetchAPI('/items', 'POST', JSON.stringify({
       list_id: listId,
       title,
@@ -48,9 +61,16 @@ const actions = {
       };
       commit('addItem', newItem);
 
-      const list = getters.getListById(item.list_id);
-      list.items.push(item.id);
+      // Replace temporary item
+      list = getters.getListById(listId);
+      list.items = list.items.map((itemId) => {
+        if (itemId === tmpItem.id) {
+          return newItem.id;
+        }
+        return itemId;
+      });
       commit('editList', list);
+      commit('deleteItem', tmpItem.id);
     }).catch((err) => {
       console.error(err);
     });
@@ -78,8 +98,6 @@ const actions = {
     });
   },
   setItems({ commit, state: st }, items) {
-    // Remove deleted items from Vuex store
-    st.items.filter(item => items.findIndex(i => i.id === item.id) === -1).forEach(item => commit('deleteItem', item));
     // Add or update items
     items.forEach((item) => {
       if (st.items.findIndex(i => i.id === item.id) === -1) {

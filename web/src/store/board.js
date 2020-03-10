@@ -1,4 +1,4 @@
-import fetchAPI from './utils';
+import { fetchAPI, generateUuid } from './utils';
 
 // struct Board {
 //   id: string;
@@ -35,6 +35,20 @@ const actions = {
   addBoard({ commit, getters }, {
     title, text, color,
   }) {
+    // Add board before API request
+    const tmpBoard = {
+      id: generateUuid(),
+      title,
+      text,
+      color,
+      lists: [],
+    };
+    commit('addBoard', tmpBoard);
+
+    let user = { ...getters.user };
+    user.boards.push(tmpBoard.id);
+    commit('editUser', user);
+
     fetchAPI('/boards', 'POST', JSON.stringify({
       title,
       text,
@@ -49,9 +63,16 @@ const actions = {
       };
       commit('addBoard', newBoard);
 
-      const user = { ...getters.user };
-      user.boards.push(newBoard.id);
+      // Replace temporary board
+      user = { ...getters.user };
+      user.boards = user.boards.map((boardId) => {
+        if (boardId === tmpBoard.id) {
+          return newBoard.id;
+        }
+        return boardId;
+      });
       commit('editUser', user);
+      commit('deleteBoard', tmpBoard.id);
     }).catch((err) => {
       console.error(err);
     });
@@ -82,8 +103,6 @@ const actions = {
   },
   loadBoards({ commit, getters, state: st }, user) {
     fetchAPI('/boards').then(({ boards }) => {
-      // Remove deleted boards from Vuex store
-      st.boards.forEach(board => commit('deleteBoard', board));
       // Add or update boards
       boards.forEach((board) => {
         if (st.boards.findIndex(b => b.id === board.id) === -1) {

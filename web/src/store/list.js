@@ -1,4 +1,4 @@
-import fetchAPI from './utils';
+import { fetchAPI, generateUuid } from './utils';
 
 // struct List {
 //   id: string;
@@ -31,6 +31,18 @@ const mutations = {
 
 const actions = {
   addList({ commit, getters }, { title, boardId }) {
+    // Add list before API request
+    const tmpList = {
+      id: generateUuid(),
+      title,
+      items: [],
+    };
+    commit('addList', tmpList);
+
+    let board = getters.getBoardById(boardId);
+    board.lists.push(tmpList.id);
+    commit('editBoard', board);
+
     fetchAPI('/lists', 'POST', JSON.stringify({
       board_id: boardId,
       title,
@@ -42,9 +54,16 @@ const actions = {
       };
       commit('addList', newList);
 
-      const board = getters.getBoardById(boardId);
-      board.lists.push(newList.id);
+      // Replace temporary list
+      board = getters.getBoardById(boardId);
+      board.lists = board.lists.map((listId) => {
+        if (listId === tmpList.id) {
+          return newList.id;
+        }
+        return listId;
+      });
       commit('editBoard', board);
+      commit('deleteList', tmpList.id);
     }).catch((err) => {
       console.error(err);
     });
@@ -79,8 +98,6 @@ const actions = {
     });
   },
   setLists({ commit, dispatch, state: st }, lists) {
-    // Remove deleted lists from Vuex store
-    st.lists.filter(list => lists.findIndex(l => l.id === list.id) === -1).forEach(list => commit('deleteList', list));
     // Add or update lists
     lists.forEach((list) => {
       if (st.lists.findIndex(l => l.id === list.id) === -1) {
