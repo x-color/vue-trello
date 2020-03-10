@@ -1,6 +1,6 @@
 import fetchAPI from './utils';
 
-// interface Board {
+// struct Board {
 //   id: string;
 //   title: string;
 //   text: string;
