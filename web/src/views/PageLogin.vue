@@ -47,6 +47,14 @@
           @click="loginAndGoToPage"
         >LOGIN</v-btn>
       </v-col>
+
+      <v-col cols="12" align="center">
+        <p>↓ Sample User</p>
+        <p>
+          username: testuser
+          <br />password: password
+        </p>
+      </v-col>
     </v-row>
   </v-container>
 </template>
