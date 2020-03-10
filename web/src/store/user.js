@@ -16,6 +16,7 @@ function state() {
       {
         name: 'testuser',
         password: 'password',
+        boards: [],
       },
     ],
   };
@@ -27,6 +28,14 @@ const mutations = {
   },
   addUser(st, newUser) {
     st.users.push(newUser);
+  },
+  storeBoards(st, user) {
+    st.users = st.users.map((u) => {
+      if (u.name === user.name) {
+        u.boards = user.boards;
+      }
+      return u;
+    });
   },
 };
 
@@ -45,6 +54,7 @@ const actions = {
           commit('addUser', {
             name: username,
             password,
+            boards: [],
           });
           res.ok = true;
         } else {
@@ -61,14 +71,22 @@ const actions = {
       color: '',
       boards: [],
     };
-    if (st.users.findIndex(u => u.name === username && u.password === password) !== -1) {
+    const i = st.users.findIndex(u => u.name === username && u.password === password);
+    if (i !== -1) {
       user.login = true;
+      user.boards = st.users[i].boards;
       commit('editUser', user);
       dispatch('loadResources');
     }
     callback(user.login);
   },
-  logout({ commit }) {
+  logout({ commit, state: st }) {
+    const u = {
+      name: st.user.name,
+      boards: [...st.user.boards],
+    };
+    commit('storeBoards', u);
+
     const user = {
       name: '',
       login: false,
