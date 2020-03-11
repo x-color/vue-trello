@@ -38,6 +38,7 @@ const actions = {
     // Add item before API request
     const tmpItem = {
       id: generateUuid(),
+      listId,
       title,
       text,
       tags,

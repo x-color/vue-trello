@@ -35,6 +35,7 @@ const actions = {
     // Add list before API request
     const tmpList = {
       id: generateUuid(),
+      boardId,
       title,
       items: [],
     };
@@ -50,6 +51,7 @@ const actions = {
     })).then((list) => {
       const newList = {
         id: list.id,
+        boardId: list.board_id,
         title: list.title,
         items: [],
       };
