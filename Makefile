@@ -1,7 +1,7 @@
 build-frontend:
 	@cd web && npm run build:prod
 
-build-backend:
+build-backend: clean-db
 	@if [ ! -d ./dist ]; then \
 		mkdir dist; \
 	fi
@@ -11,8 +11,10 @@ build: build-frontend build-backend
 	@echo "Built SPA and API server"
 
 clean-db:
+	@if [ ! -d ./db ]; then \
+		mkdir db; \
+	fi
 	@echo "" > db/sqlite.db
-	@echo "Reset DB"
 
 run-dev:
 	@(cd web && npm run build:dev) &
