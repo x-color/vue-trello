@@ -3,9 +3,9 @@
 set -eu
 
 
-curl -s -X POST localhost:8080/signup -H 'Content-Type:application/json; charset=UTF-8' -d '{"name":"testuser", "password":"pass"}'
+curl -s -X POST localhost:8080/auth/signup -H 'Content-Type:application/json; charset=UTF-8' -d '{"name":"testuser", "password":"pass"}'
 
-curl -s -X POST localhost:8080/signin -H 'Content-Type:application/json; charset=UTF-8' -d '{"name":"testuser", "password":"pass"}' -c /tmp/cookie.file
+curl -s -X POST localhost:8080/auth/signin -H 'Content-Type:application/json; charset=UTF-8' -d '{"name":"testuser", "password":"pass"}' -c /tmp/cookie.file
 
 curl -s localhost:8080/api/resources -H 'X-XSRF-TOKEN:csrf' -H 'Content-Type:application/json; charset=UTF-8' -b /tmp/cookie.file
 
