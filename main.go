@@ -21,10 +21,10 @@ func main() {
 
 	// Add init tags.
 	tx := dbm.TransactionManager.BeginTransaction(false)
-	dbm.TagDBManager.Create(tx, model.Tag{ID: "0", Name: "p1", Color: model.RED})
-	dbm.TagDBManager.Create(tx, model.Tag{ID: "1", Name: "p2", Color: model.YELLOW})
-	dbm.TagDBManager.Create(tx, model.Tag{ID: "2", Name: "p3", Color: model.GREEN})
-	dbm.TagDBManager.Create(tx, model.Tag{ID: "3", Name: "p4", Color: model.BLUE})
+	dbm.TagDBManager.Create(tx, model.Tag{ID: "0", Name: "t1", Color: model.RED})
+	dbm.TagDBManager.Create(tx, model.Tag{ID: "1", Name: "t2", Color: model.YELLOW})
+	dbm.TagDBManager.Create(tx, model.Tag{ID: "2", Name: "t3", Color: model.GREEN})
+	dbm.TagDBManager.Create(tx, model.Tag{ID: "3", Name: "t4", Color: model.BLUE})
 
 	location, err := time.LoadLocation("Asia/Tokyo")
 	if err != nil {
