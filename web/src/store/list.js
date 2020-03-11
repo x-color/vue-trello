@@ -1,7 +1,8 @@
 import { fetchAPI, generateUuid } from './utils';
 
-// struct List {
+// interface List {
 //   id: string;
+//   boardId: string;
 //   title: string;
 //   items: []string;
 // }
@@ -103,12 +104,14 @@ const actions = {
       if (st.lists.findIndex(l => l.id === list.id) === -1) {
         commit('addList', {
           id: list.id,
+          boardId: list.board_id,
           title: list.title,
           items: list.items.map(item => item.id),
         });
       } else {
         commit('editList', {
           id: list.id,
+          boardId: list.board_id,
           title: list.title,
           items: list.items.map(item => item.id),
         });

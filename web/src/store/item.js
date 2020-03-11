@@ -1,7 +1,8 @@
 import { fetchAPI, generateUuid } from './utils';
 
-// struct Item {
+// interface Item {
 //   id: string;
+//   listId: string;
 //   title: string;
 //   text: string;
 //   tags: Tag[];
@@ -55,6 +56,7 @@ const actions = {
     })).then((item) => {
       const newItem = {
         id: item.id,
+        listId: item.list_id,
         title: item.title,
         text: item.text,
         tags: item.tags,
@@ -103,6 +105,7 @@ const actions = {
       if (st.items.findIndex(i => i.id === item.id) === -1) {
         commit('addItem', {
           id: item.id,
+          listId: item.list_id,
           title: item.title,
           text: item.text,
           tags: item.tags,
@@ -110,6 +113,7 @@ const actions = {
       } else {
         commit('editItem', {
           id: item.id,
+          listId: item.list_id,
           title: item.title,
           text: item.text,
           tags: item.tags,

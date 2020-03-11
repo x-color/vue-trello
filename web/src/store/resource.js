@@ -1,12 +1,12 @@
 import { fetchAPI } from './utils';
 
-// struct Tag {
+// interface Tag {
 //   id: string;
 //   title: string;
 //   color: string;
 // }
 
-// struct Color {
+// interface Color {
 //   color: string;
 // }
 

@@ -1,6 +1,6 @@
 import { fetchAPI, generateUuid } from './utils';
 
-// struct Board {
+// interface Board {
 //   id: string;
 //   title: string;
 //   text: string;
