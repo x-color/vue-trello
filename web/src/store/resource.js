@@ -17,10 +17,10 @@ function state() {
   ];
   return {
     tags: [
-      { id: '0', title: 'p1', color: colors[0] },
-      { id: '1', title: 'p2', color: colors[1] },
-      { id: '2', title: 'p3', color: colors[2] },
-      { id: '3', title: 'p4', color: colors[3] },
+      { id: '0', title: 't1', color: colors[0] },
+      { id: '1', title: 't2', color: colors[1] },
+      { id: '2', title: 't3', color: colors[2] },
+      { id: '3', title: 't4', color: colors[3] },
     ],
     colors,
   };
