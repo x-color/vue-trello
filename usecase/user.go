@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/x-color/vue-trello/model"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // UserUsecase is interface. It defines to control a User authentication.
@@ -48,7 +49,7 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	if user.Name == u.Name {
 		i.logger.Info(formatLogMsg(user.ID, "New user name conflicts. '"+user.Name+"' already exists"))
 		return model.User{}, model.ConflictError{
-			UserID: user.ID,
+			UserID: "(No-ID)",
 			Err:    nil,
 			ID:     user.Name,
 			Act:    "validate name",
@@ -56,6 +57,17 @@ func (i *UserInteractor) SignUp(user model.User) (model.User, error) {
 	}
 
 	user.ID = uuid.New().String()
+	p, err := hashPassword(user.Password)
+	if err != nil {
+		i.logger.Info(formatLogMsg(user.ID, err.Error()))
+		return model.User{}, model.InvalidContentError{
+			UserID: "(No-ID)",
+			Err:    err,
+			ID:     user.Name,
+			Act:    "hash password",
+		}
+	}
+	user.Password = p
 	if err := i.userRepo.Create(tx, user); err != nil {
 		logError(i.logger, err)
 		return model.User{}, err
@@ -74,11 +86,12 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 		logError(i.logger, err)
 		return model.User{}, err
 	}
-	if user.Password != u.Password {
+
+	if err := comparePassword(user.Password, u.Password); err != nil {
 		i.logger.Info(formatLogMsg(u.ID, "Invalid password. '"+u.ID+"' Fails to sign in"))
 		return model.User{}, model.NotFoundError{
 			UserID: u.ID,
-			Err:    nil,
+			Err:    err,
 			ID:     u.ID,
 			Act:    "validate password",
 		}
@@ -86,4 +99,22 @@ func (i *UserInteractor) SignIn(user model.User) (model.User, error) {
 
 	i.logger.Info(formatLogMsg(u.ID, "Sign in user("+u.ID+")"))
 	return u, nil
+}
+
+func hashPassword(password string) (string, error) {
+	if len(password) > 72 {
+		return "", errors.New("password length is too long")
+	}
+	h, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	return string(h), err
+}
+
+func comparePassword(password string, hash string) error {
+	if len(password) > 72 {
+		return errors.New("password length is too long")
+	}
+	return bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 }
