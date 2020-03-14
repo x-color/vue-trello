@@ -38,6 +38,8 @@ Install
 
 ```sh
 git clone https://github.com/x-color/vue-trello.git
+cd vue-trello
+make install
 ```
 
 Run

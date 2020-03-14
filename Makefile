@@ -20,5 +20,8 @@ run-dev:
 	@(cd web && npm run build:dev) &
 	@DB_PATH=db/sqlite.db go run main.go
 
+install:
+	@cd web && npm install
+
 run: build
 	@./dist/server
